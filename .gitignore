@@ -1,0 +1,33 @@
+*~
+*.pyc
+
+# ignore cache
+__pycache__
+.cache/
+
+# ignore eclipse files
+.project
+.pydevproject
+.settings
+
+# ignore personal
+notes.txt
+conda_tests.sh
+doc_build.sh
+
+# ignore conda build files
+conda_build/
+
+# ignore build files
+build/
+dist/
+DeepGraph.egg-info/
+doc/build
+
+# ignore examples
+examples/
+
+# IPython Notebook Checkpoints
+.ipynb_checkpoints/
+
+
