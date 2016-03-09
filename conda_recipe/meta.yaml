@@ -23,21 +23,21 @@ requirements:
     - numpy
     - pandas
 
-test:
-    files:
-      - ../tests/test_DeepGraph.py
-      - ../tests/test_CreateEdges.py
-    requires:
-      - deepgraph
-      - pytest
-#      - numpy
-#      - pandas
-    imports:
-      - deepgraph
-#      - numpy 
-#      - pandas
-    commands:
-      - py.test -v
+# test:
+#   files:
+#     - ../tests/test_DeepGraph.py
+#     - ../tests/test_CreateEdges.py
+#   requires:
+#     - deepgraph
+#     - pytest
+#     - numpy
+#     - pandas
+#   imports:
+#     - deepgraph
+#     - numpy 
+#     - pandas
+#   commands:
+#     - py.test -v
 
 about:
   summary: DeepGraph is an efficient, general-purpose data analysis Python package. Based on pandas DataFrames, it provides the means to analyze data via graph theory (a.k.a. networks).
