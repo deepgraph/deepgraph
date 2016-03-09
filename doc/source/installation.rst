@@ -20,7 +20,7 @@ or if you have `Conda <http://conda.pydata.org/docs/>`_, install with
 
 ::
 
-   conda install deepgraph
+   conda install -c https://conda.anaconda.org/deepgraph deepgraph
 
 
 Installing from Source
