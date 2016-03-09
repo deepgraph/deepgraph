@@ -30,9 +30,6 @@ requirements:
 #   requires:
 #     - pytest
 
-source:
-  path: /home/macaco/Work/git/deepgraph/conda_build/
-
 about:
   summary: DeepGraph is an efficient, general-purpose data analysis Python package. Based on pandas DataFrames, it provides the means to analyze data via graph theory (a.k.a. networks).
   home: https://github.com/deepgraph/deepgraph
