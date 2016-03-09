@@ -23,12 +23,12 @@ requirements:
     - numpy
     - pandas
 
-test:
-  imports:
-    - deepgraph
+# test:
+#   imports:
+#     - deepgraph
 
-  requires:
-    - pytest
+#   requires:
+#     - pytest
 
 source:
   path: /home/macaco/Work/git/deepgraph/conda_build/
