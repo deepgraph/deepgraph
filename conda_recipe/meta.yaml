@@ -28,12 +28,12 @@ test:
       - ../tests/test_DeepGraph.py
       - ../tests/test_CreateEdges.py
     requires:
-#      - deepgraph
+      - deepgraph
       - pytest
 #      - numpy
 #      - pandas
     imports:
-      - deepgraph
+#      - deepgraph
 #      - numpy 
 #      - pandas
     commands:
