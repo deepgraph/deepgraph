@@ -49,7 +49,7 @@ representations and graph objects of popular Python network packages.
 **To get started, have a look at**
 
   - :ref:`Installation of DeepGraph <installation>`
-  - :ref:`A Quick Introduction to DeepGraph <precipitation>`
+  - :ref:`DeepGraph's Tutorials <tutorials>`
   - :ref:`API Reference <api_reference>`
 
 .. note::
