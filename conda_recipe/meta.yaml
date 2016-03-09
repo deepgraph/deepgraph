@@ -33,7 +33,7 @@ test:
 #      - numpy
 #      - pandas
     imports:
-#      - deepgraph
+      - deepgraph
 #      - numpy 
 #      - pandas
     commands:
