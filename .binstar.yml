@@ -1,4 +1,14 @@
 package: deepgraph
+
+platform:
+  - linux-64
+  - linux-32
+
 script:
   - conda build .
+
+engine:
+  - python=2
+  - python=3
+
 build_targets: conda
