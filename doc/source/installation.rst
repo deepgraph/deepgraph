@@ -93,7 +93,7 @@ Requirements
 
 The easiest way to get Python and the required/optional packages is to use
 `Conda <http://conda.pydata.org/docs/>`_ (or
-`Miniconda <conda.pydata.org/miniconda.html>`_), a cross-platform (Linux, Mac
+`Miniconda <http://conda.pydata.org/miniconda.html>`_), a cross-platform (Linux, Mac
 OS X, Windows) Python distribution for data analytics and scientific computing.
 
 Python
