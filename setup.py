@@ -7,6 +7,7 @@ setup(
     author="Dominik Traxl",
     author_email="dominik.traxl@posteo.org",
     url='https://github.com/deepgraph/deepgraph/',
+    download_url='https://github.com/deepgraph/deepgraph/tarball/0.0.1',
     description=("DeepGraph is an efficient, general-purpose data analysis "
                  "Python package. Based on pandas DataFrames, it provides "
                  "the means to analyze data via graph theory "
