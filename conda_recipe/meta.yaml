@@ -29,7 +29,7 @@ test:
       - ../tests/test_CreateEdges.py
     requires:
 #      - deepgraph
-#      - pytest
+      - pytest
 #      - numpy
 #      - pandas
     imports:
