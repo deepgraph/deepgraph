@@ -24,7 +24,11 @@ requirements:
     - pandas
 
 test:
+    files:
+      - ../tests/test_DeepGraph.py
+      - ../tests/test_CreateEdges.py
     requires:
+      - deepgraph
       - pytest
       - numpy
       - pandas

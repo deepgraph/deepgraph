@@ -2,7 +2,6 @@ package: deepgraph
 
 platform:
   - linux-64
-  - linux-32
 
 script:
   - conda build .
