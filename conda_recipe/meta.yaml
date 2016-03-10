@@ -6,12 +6,11 @@ build:
   number: 0
 
 source:
-  # fn: DeepGraph-0.0.1.tar.gz
-  # url: https://pypi.python.org/packages/source/D/DeepGraph/DeepGraph-0.0.1.tar.gz
-  # md5: b581a944b8de37095210668383bc2652
-  git_url: https://github.com/deepgraph/deepgraph.git
-  git_rev: master  # 0.0.1
-  # path: /home/macaco/Work/git/deepgraph/dist/DeepGraph-0.0.1/
+  fn: DeepGraph-0.0.2.tar.gz
+  url: https://pypi.python.org/packages/source/D/DeepGraph/DeepGraph-0.0.2.tar.gz
+  md5: a8be4e5f3523ff6f59c037bd319d72f0
+  # git_url: https://github.com/deepgraph/deepgraph.git
+  # git_rev: master  # 0.0.1
 
 requirements:
   build:
