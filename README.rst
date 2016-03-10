@@ -1,9 +1,24 @@
 
-.. image:: https://anaconda.org/deepgraph/deepgraph/badges/build.svg   :target: https://anaconda.org/deepgraph/deepgraph/builds
-.. image:: https://anaconda.org/deepgraph/deepgraph/badges/version.svg   :target: https://anaconda.org/deepgraph/deepgraph
-.. image:: https://anaconda.org/deepgraph/deepgraph/badges/license.svg   :target: https://anaconda.org/deepgraph/deepgraph
-.. image:: https://anaconda.org/deepgraph/deepgraph/badges/downloads.svg   :target: https://anaconda.org/deepgraph/deepgraph
-.. image:: https://anaconda.org/deepgraph/deepgraph/badges/installer/conda.svg   :target: https://conda.anaconda.org/deepgraph
+  .. image:: https://anaconda.org/deepgraph/deepgraph/badges/build.svg
+     :target: https://anaconda.org/deepgraph/deepgraph/builds
+
+  .. image:: https://anaconda.org/deepgraph/deepgraph/badges/version.svg
+     :target: https://anaconda.org/deepgraph/deepgraph
+
+  .. image:: https://anaconda.org/deepgraph/deepgraph/badges/license.svg
+     :target: https://anaconda.org/deepgraph/deepgraph
+
+
+  .. image:: https://anaconda.org/deepgraph/deepgraph/badges/installer/conda.svg
+     :target: https://conda.anaconda.org/deepgraph
+
+  .. image:: https://readthedocs.org/projects/deepgraph/badge/?version=latest
+     :target: http://deepgraph.readthedocs.org/en/latest/?badge=latest
+     :alt: Documentation Status
+
+  .. image:: https://badge.fury.io/py/deepgraph.svg
+     :target: https://badge.fury.io/py/deepgraph
+
 
 DeepGraph
 =========
