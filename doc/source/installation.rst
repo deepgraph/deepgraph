@@ -143,6 +143,16 @@ interactive environments across platforms.
 
 Allows you to use the :ref:`plotting methods <plotting_methods>` of DeepGraph.
 
+
+PyTables
+--------
+`PyTables <http://www.pytables.org/>`_ is a package for managing hierarchical
+datasets and designed to efficiently and easily cope with extremely large
+amounts of data.
+
+Necessary for HDF5-based storage of pandas DataFrames.
+
+
 SciPy
 -----
 
@@ -176,8 +186,8 @@ network representation (see :py:meth:`return_gt_graph <.return_gt_graph>`).
 Optional Packages
 =================
 
-The following are recommended packages that DeepGraph can use to provide
-additional functionality.
+The following packages are considered to provide very useful tools and methods.
+
 
 Scikit-Learn
 ------------
