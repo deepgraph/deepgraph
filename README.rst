@@ -1,7 +1,3 @@
-WORK IN PROGRESS..
-
-Please come back later. The first usable version is ready when this message
-disappeared.
 
 DeepGraph
 =========
@@ -20,5 +16,5 @@ Licence
 
 Distributed with a BSD license; see LICENSE.txt::
 
-    Copyright (C) 2014-2016 DeepGraph Developers
+    Copyright (C) 2016 DeepGraph Developers
     Dominik Traxl <dominik.traxl@posteo.org>
