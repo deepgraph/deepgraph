@@ -40,7 +40,7 @@ test:
     - deepgraph
   commands:
     # - pip install tables
-    - conda install -n _test -c https://conda.anaconda.org/anaconda pytables
+    - conda install -y -n _test -c https://conda.anaconda.org/anaconda pytables
     - py.test -v
 
 about:
