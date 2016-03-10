@@ -4,15 +4,14 @@ package:
 
 build:
   number: 0
-  script:
-    - echo "This is my anaconda build with conda"
 
 source:
-#   fn: DeepGraph-0.0.1.tar.gz
-#   url: https://pypi.python.org/packages/source/D/DeepGraph/DeepGraph-0.0.1.tar.gz
-#   md5: b581a944b8de37095210668383bc2652
+  # fn: DeepGraph-0.0.1.tar.gz
+  # url: https://pypi.python.org/packages/source/D/DeepGraph/DeepGraph-0.0.1.tar.gz
+  # md5: b581a944b8de37095210668383bc2652
   git_url: https://github.com/deepgraph/deepgraph.git
-  git_rev: 0.0.1
+  git_rev: master  # 0.0.1
+  # path: /home/macaco/Work/git/deepgraph/dist/DeepGraph-0.0.1/
 
 requirements:
   build:
@@ -25,21 +24,23 @@ requirements:
     - numpy
     - pandas
 
-# test:
-#   files:
-#     - ../tests/test_DeepGraph.py
-#     - ../tests/test_CreateEdges.py
-#   requires:
-#     - deepgraph
-#     - pytest
-#     - numpy
-#     - pandas
-#   imports:
-#     - deepgraph
-#     - numpy 
-#     - pandas
-#   commands:
-#     - py.test -v
+test:
+  files:
+    - ../tests/test_DeepGraph.py
+    - ../tests/test_CreateEdges.py
+  requires:
+    - deepgraph
+    - pytest
+    - numpy
+    - pandas
+    # - tables
+    - scipy
+    - networkx
+  imports:
+    - deepgraph
+  commands:
+    # - pip install tables
+    - py.test -v
 
 about:
   summary: DeepGraph is an efficient, general-purpose data analysis Python package. Based on pandas DataFrames, it provides the means to analyze data via graph theory (a.k.a. networks).
