@@ -1,8 +1,9 @@
 """Test DeepGraph methods"""
 
-# Copyright (c) 2015 by
+# Copyright (C) 2016 by
 # Dominik Traxl <dominik.traxl@posteo.org>
 # All rights reserved.
+# BSD license.
 
 import pytest
 

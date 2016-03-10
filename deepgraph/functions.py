@@ -10,9 +10,10 @@ They are described in their corresponding docstrings.
 
 from __future__ import print_function, division, absolute_import
 
-# Copyright (c) 2015 by
+# Copyright (C) 2016 by
 # Dominik Traxl <dominik.traxl@posteo.org>
 # All rights reserved.
+# BSD license.
 
 # py2/3 compatibility
 try:

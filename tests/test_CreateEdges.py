@@ -1,8 +1,9 @@
 """Test create_edges and create_edges_ft."""
 
-# Copyright (c) 2015 by
+# Copyright (C) 2016 by
 # Dominik Traxl <dominik.traxl@posteo.org>
 # All rights reserved.
+# BSD license.
 
 import pytest
 

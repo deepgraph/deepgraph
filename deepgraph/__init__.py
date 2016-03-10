@@ -44,9 +44,10 @@ can use this BibTeX entry: [coming soon..]
 
 from __future__ import print_function, division, absolute_import
 
-# Copyright (c) 2015 by
+# Copyright (C) 2016 by
 # Dominik Traxl <dominik.traxl@posteo.org>
 # All rights reserved.
+# BSD license.
 
 from .deepgraph import DeepGraph
 from . import functions
