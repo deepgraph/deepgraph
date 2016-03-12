@@ -23,6 +23,9 @@ DeepGraph is an efficient, general-purpose data analysis Python package. Based
 on pandas DataFrames, it provides means to analyze data via graph theory
 (a.k.a. networks).
 
+It is based on a new network representation introduced in (coming soon..).
+
+
 Quick Start
 -----------
 
@@ -31,14 +34,14 @@ DeepGraph can be installed via pip from
 
 ::
 
-   pip install deepgraph
+   $ pip install deepgraph
 
 or if you're using `Conda <http://conda.pydata.org/docs/>`_,
 install with
 
 ::
 
-   conda install -c https://conda.anaconda.org/deepgraph deepgraph
+   $ conda install -c https://conda.anaconda.org/deepgraph deepgraph
 
 Then, import and get started with::
 
