@@ -14,10 +14,6 @@ Documentation for DeepGraph
   .. image:: https://anaconda.org/deepgraph/deepgraph/badges/version.svg
      :target: https://anaconda.org/deepgraph/deepgraph
 
-  .. image:: https://anaconda.org/deepgraph/deepgraph/badges/license.svg
-     :target: https://anaconda.org/deepgraph/deepgraph
-
-
   .. image:: https://anaconda.org/deepgraph/deepgraph/badges/installer/conda.svg
      :target: https://conda.anaconda.org/deepgraph
 
@@ -39,6 +35,7 @@ Contents
    installation
    tutorials/index
    api_reference
+   contact
 
 
 Indices and tables
