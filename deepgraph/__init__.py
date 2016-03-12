@@ -26,19 +26,19 @@ See http://deepgraph.readthedocs.org for a full documentation, and
 [coming soon..] for the paper describing the theoretical framework. Otherwise,
 see the docstrings of the objects in the deepgraph namespace.
 
-The docstrings assume that ``deepgraph`` has been imported as ``dg``,
-``numpy`` as ``np`` and ``pandas`` as ``pd``.
-
 >>> import deepgraph as dg
 >>> help(dg.DeepGraph)
 >>> help(dg.functions)
 
+The docstrings assume that ``deepgraph`` has been imported as ``dg``,
+``numpy`` as ``np``, and ``pandas`` as ``pd``.
+
 Citing DeepGraph
 ----------------
 
-If deepgraph contributes to a project that leads to a scientific
-publication, please acknowledge this fact by citing the project. You
-can use this BibTeX entry: [coming soon..]
+Please acknowledge and cite the use of this software and its authors when
+results are used in publications or published elsewhere. You can use the
+following BibTex entry (coming soon..):
 
 """
 
