@@ -16,7 +16,15 @@ DeepGraph can be installed via pip from
 
    pip install deepgraph
 
-or if you have `Conda <http://conda.pydata.org/docs/>`_, install with
+Depending on your system, you may need root privileges. On UNIX-based operating
+systems (Linux, Mac OS X etc.) this is achieved with sudo
+
+::
+
+   sudo pip install deepgraph
+
+Alternatively, if you're using `Conda <http://conda.pydata.org/docs/>`_,
+install with
 
 ::
 
@@ -61,6 +69,9 @@ GitHub
      `pytest <https://pypi.python.org/pypi/pytest>`_ installed.
 
 
+Installing without Root Privileges
+----------------------------------
+
 If you don't have permission to install software on your system, you can
 install into another directory using the :samp:`--user`, :samp:`--prefix`,
 or :samp:`--home` flags to setup.py.
@@ -83,9 +94,10 @@ or
 
     python setup.py install --user
 
-If you didn't install in the standard Python site-packages directory
-you will need to set your PYTHONPATH variable to the alternate location.
-See http://docs.python.org/2/install/index.html#search-path for further details.
+Note: If you didn't install in the standard Python site-packages directory you
+will need to set your PYTHONPATH variable to the alternate location. See
+`here <https://docs.python.org/2/install/index.html#modifying-python-s-search-path>`_
+for further details.
 
 
 Requirements
@@ -144,13 +156,31 @@ interactive environments across platforms.
 Allows you to use the :ref:`plotting methods <plotting_methods>` of DeepGraph.
 
 
+Matplotlib Basemap Toolkit
+--------------------------
+
+`basemap <http://matplotlib.org/basemap/>`_ is an add-on toolkit for matplotlib
+that lets you plot data on map projections with coastlines, lakes, rivers and
+political boundaries. See the
+`basemap tutorial <https://basemaptutorial.readthedocs.org/en/latest/>`_ for
+documentation and examples of what it can do.
+
+Used by :py:meth:`plot_map <.plot_map>` and
+:py:meth:`plot_map_generator <.plot_map_generator>` to plot networks on map
+projections.
+
+
 PyTables
 --------
 `PyTables <http://www.pytables.org/>`_ is a package for managing hierarchical
 datasets and designed to efficiently and easily cope with extremely large
 amounts of data.
 
-Necessary for HDF5-based storage of pandas DataFrames.
+Necessary for HDF5-based storage of pandas DataFrames. DeepGraph's
+:py:class:`core class <.DeepGraph>` may be initialized with a HDFStore
+containing a node table in order to iteratively create edges directly from disc
+(see :py:meth:`create_edges <.create_edges>` and
+:py:meth:`create_edges_ft <.create_edges_ft>`).
 
 
 SciPy
