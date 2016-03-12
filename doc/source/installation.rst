@@ -14,21 +14,21 @@ DeepGraph can be installed via pip from
 
 ::
 
-   pip install deepgraph
+   $ pip install deepgraph
 
 Depending on your system, you may need root privileges. On UNIX-based operating
 systems (Linux, Mac OS X etc.) this is achieved with sudo
 
 ::
 
-   sudo pip install deepgraph
+   $ sudo pip install deepgraph
 
 Alternatively, if you're using `Conda <http://conda.pydata.org/docs/>`_,
 install with
 
 ::
 
-   conda install -c https://conda.anaconda.org/deepgraph deepgraph
+   $ conda install -c https://conda.anaconda.org/deepgraph deepgraph
 
 
 Installing from Source
@@ -80,19 +80,19 @@ For example
 
 ::
 
-    python setup.py install --prefix=/home/username/python
+    $ python setup.py install --prefix=/home/username/python
 
 or
 
 ::
 
-    python setup.py install --home=~
+    $ python setup.py install --home=~
 
 or
 
 ::
 
-    python setup.py install --user
+    $ python setup.py install --user
 
 Note: If you didn't install in the standard Python site-packages directory you
 will need to set your PYTHONPATH variable to the alternate location. See
