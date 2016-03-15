@@ -97,18 +97,16 @@ class DeepGraph(object):
         reference to the input DataFrame is created, not a copy.
 
     supernode_labels_by : dict, optional (default=None)
-        A dictionary of the form where keys are strings and values are
-        (lists of) column names of ``v``. Appends columns to ``v`` named by
-        the dict's keys, where the values of a created column correspond to
-        supernode labels, enumerating all distinct (tuples of) values of the
-        column(s) given by the dict's value.
+        A dictionary whose keys are strings and their values are (lists of)
+        column names of ``v``. Appends a column to ``v`` for each key, whose
+        values correspond to supernode labels, enumerating all distinct (tuples
+        of) values of the column(s) given by the dict's value.
 
     superedge_labels_by : dict, optional (default=None)
-        A dictionary where keys are strings and values are (lists of) column
-        names of ``e``. Appends columns to ``e`` named by the dict's keys,
-        where the values of a created column correspond to superedge labels,
-        enumerating all distinct (tuples of) values of the column(s) given
-        by the dict's value.
+        A dictionary whose keys are strings and their values are (lists of)
+        column names of ``e``. Appends a column to ``e`` for each key, whose
+        values correspond to superedge labels enumerating all distinct (tuples
+        of) values of the column(s) given by the dict's value.
 
     Attributes
     ----------
