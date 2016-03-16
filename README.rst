@@ -19,9 +19,12 @@
 DeepGraph
 =========
 
-DeepGraph is an efficient, general-purpose data analysis Python package. Based
-on pandas DataFrames, it provides means to analyze data via graph theory
-(a.k.a. networks).
+DeepGraph is a scalable, general-purpose data analysis package. It implements a
+`network representation <https://en.wikipedia.org/wiki/Network_theory>`_ based
+on `pandas <http://pandas.pydata.org/>`_
+`DataFrames <http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html>`_
+and provides methods to construct, partition and plot graphs, to interface with
+popular network packages and more.
 
 It is based on a new network representation introduced in (coming soon..).
 
