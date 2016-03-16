@@ -99,14 +99,14 @@ class DeepGraph(object):
     supernode_labels_by : dict, optional (default=None)
         A dictionary whose keys are strings and their values are (lists of)
         column names of ``v``. Appends a column to ``v`` for each key, whose
-        values correspond to supernode labels, enumerating all distinct (tuples
-        of) values of the column(s) given by the dict's value.
+        values correspond to supernode labels, enumerating all distinct
+        (tuples of) values of the column(s) given by the dict's value.
 
     superedge_labels_by : dict, optional (default=None)
         A dictionary whose keys are strings and their values are (lists of)
         column names of ``e``. Appends a column to ``e`` for each key, whose
-        values correspond to superedge labels enumerating all distinct (tuples
-        of) values of the column(s) given by the dict's value.
+        values correspond to superedge labels enumerating all distinct
+        (tuples of) values of the column(s) given by the dict's value.
 
     Attributes
     ----------
