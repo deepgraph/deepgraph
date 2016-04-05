@@ -1,16 +1,16 @@
 package:
   name: deepgraph
-  version: "0.0.4"
+  version: "0.0.5"
 
 build:
   number: 0
 
 source:
-  # fn: DeepGraph-0.0.4.tar.gz
-  # url: https://pypi.python.org/packages/source/D/DeepGraph/DeepGraph-0.0.4.tar.gz
-  # md5: a8be4e5f3523ff6f59c037bd319d72f0
+  # fn: DeepGraph-0.0.5.tar.gz
+  # url: https://pypi.python.org/packages/source/D/DeepGraph/DeepGraph-0.0.5.tar.gz
+  # md5: 63ff3877e8c6342413b9d617856100db
   git_url: https://github.com/deepgraph/deepgraph.git
-  git_rev: master  # 0.0.4
+  git_rev: master  # 0.0.5
 
 requirements:
   build:

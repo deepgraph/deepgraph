@@ -27,8 +27,9 @@ Documentation
 -------------
 
 See http://deepgraph.readthedocs.org for a full documentation, and
-[coming soon..] for the paper describing the theoretical framework.
-Otherwise, see the docstrings of the objects in the deepgraph namespace.
+http://arxiv.org/abs/1604.00971 for the paper describing the theoretical
+framework. Otherwise, see the docstrings of the objects in the deepgraph
+namespace.
 
 >>> import deepgraph as dg
 >>> help(dg.DeepGraph)
@@ -69,7 +70,7 @@ from .deepgraph import DeepGraph
 from . import functions
 
 __all__ = ['DeepGraph', 'functions']
-__version__ = '0.0.4'
+__version__ = '0.0.5'
 __author__ = "Dominik Traxl <dominik.traxl@posteo.org>"
 __copyright__ = "Copyright 2014-2016 Dominik Traxl"
 __license__ = "BSD"
