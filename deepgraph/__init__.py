@@ -42,7 +42,19 @@ Citing DeepGraph
 
 Please acknowledge and cite the use of this software and its authors
 when results are used in publications or published elsewhere. You can
-use the following BibTex entry (coming soon..):
+use the following BibTex entry
+
+@Article{traxl-2016-deep,
+  author      = {Dominik Traxl AND Niklas Boers AND J\"urgen Kurths},
+  title       = {Deep Graphs - a general framework to represent and analyze
+                 heterogeneous complex systems across scales},
+  version     = {1},
+  date        = {2016-04-04},
+  eprinttype  = {arxiv},
+  eprintclass = {physics.data-an, cs.SI, physics.ao-ph, physics.soc-ph},
+  eprint      = {http://arxiv.org/abs/1604.00971v1},
+  url         = {http://arxiv.org/abs/1604.00971v1}
+}
 
 """
 
@@ -62,4 +74,14 @@ __author__ = "Dominik Traxl <dominik.traxl@posteo.org>"
 __copyright__ = "Copyright 2014-2016 Dominik Traxl"
 __license__ = "BSD"
 __URL__ = "https://github.com/deepgraph/deepgraph/"
-__bibtex__ = """coming soon.."""
+__bibtex__ = """@Article{traxl-2016-deep,
+  author      = {Dominik Traxl AND Niklas Boers AND J\"urgen Kurths},
+  title       = {Deep Graphs - a general framework to represent and analyze
+                 heterogeneous complex systems across scales},
+  version     = {1},
+  date        = {2016-04-04},
+  eprinttype  = {arxiv},
+  eprintclass = {physics.data-an, cs.SI, physics.ao-ph, physics.soc-ph},
+  eprint      = {http://arxiv.org/abs/1604.00971v1},
+  url         = {http://arxiv.org/abs/1604.00971v1}
+}"""
