@@ -7,8 +7,8 @@ implements a network representation based on pandas DataFrames and
 provides methods to construct, partition and plot graphs, to interface
 with popular network packages and more.
 
-It is based on a new network representation introduced in (coming
-soon..).
+It is based on a new network representation introduced here:
+http://arxiv.org/abs/1604.00971
 
 This module provides:
 

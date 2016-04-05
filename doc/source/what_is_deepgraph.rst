@@ -6,8 +6,9 @@ What is DeepGraph
 *****************
 
 DeepGraph is an open source `Python <https://www.python.org/>`_ implementation
-of a new network representation introduced in (coming soon..). Its purpose is
-to facilitate any kind of
+of a new network representation introduced
+`here <http://arxiv.org/abs/1604.00971>`_. Its purpose is to facilitate any
+kind of
 `data analysis <https://en.wikipedia.org/wiki/Data_analysis>`_ by
 interpreting data in terms of
 `network theory <https://en.wikipedia.org/wiki/Network_theory>`_.
