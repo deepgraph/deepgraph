@@ -20,6 +20,7 @@ dist/
 DeepGraph.egg-info/
 doc/build
 doc/source/generated
+doc/source/tutorials/tmp
 
 # ignore examples
 examples/
