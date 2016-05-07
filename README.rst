@@ -63,6 +63,30 @@ The documentation provides a good starting point for learning how
 to use the library. Expect the docs to continue to expand as time goes on.
 
 
+Development
+-----------
+
+Since this project is fairly new, it's not unlikely you might encounter some
+bugs here and there. Although the core functionalities are covered pretty well
+by test scripts, particularly the plotting methods could use some more testing.
+
+Furthermore, at this point, you can expect rather frequent updates to the
+package as well as the documentation. So please make sure to check for updates
+every once in a while.
+
+So far the package has only been developed by me, a fact that I would like
+to change very much. So if you feel like contributing in any way, shape or
+form, please feel free to contact me, report bugs, create pull requestes,
+milestones, etc. You can contact me via email: dominik.traxl@posteo.org
+
+
+Bug Reports
+-----------
+
+To search for bugs or report them, please use the bug tracker:
+https://github.com/deepgraph/deepgraph/issues
+
+
 Citing DeepGraph
 ----------------
 
@@ -70,19 +94,19 @@ Please acknowledge and cite the use of this software and its authors when
 results are used in publications or published elsewhere. You can use the
 following BibTex entry
 
-.. code-block:: bibtex
+::
 
-    @Article{traxl-2016-deep,
-      author      = {Dominik Traxl AND Niklas Boers AND J\"urgen Kurths},
-      title       = {Deep Graphs - a general framework to represent and analyze
-                     heterogeneous complex systems across scales},
-      version     = {1},
-      date        = {2016-04-04},
-      eprinttype  = {arxiv},
-      eprintclass = {physics.data-an, cs.SI, physics.ao-ph, physics.soc-ph},
-      eprint      = {http://arxiv.org/abs/1604.00971v1},
-      url         = {http://arxiv.org/abs/1604.00971v1}
-    }
+   @Article{traxl-2016-deep,
+       author      = {Dominik Traxl AND Niklas Boers AND J\"urgen Kurths},
+       title       = {Deep Graphs - a general framework to represent and analyze
+                      heterogeneous complex systems across scales},
+       version     = {1},
+       date        = {2016-04-04},
+       eprinttype  = {arxiv},
+       eprintclass = {physics.data-an, cs.SI, physics.ao-ph, physics.soc-ph},
+       eprint      = {http://arxiv.org/abs/1604.00971v1},
+       url         = {http://arxiv.org/abs/1604.00971v1}
+   }
 
 Licence
 -------
