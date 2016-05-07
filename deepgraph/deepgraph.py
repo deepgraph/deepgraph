@@ -173,7 +173,7 @@ class DeepGraph(object):
             transfer_features=None,
             r_dtype_dic=None,
             no_transfer_rs=None,
-            step_size=1e6,
+            step_size=1e7,
             from_pos=0, to_pos=None, hdf_key=None,
             verbose=False, logfile=None):
         """Create an edge table ``e`` linking the nodes in ``v``.
@@ -608,7 +608,7 @@ class DeepGraph(object):
             transfer_features=None,
             r_dtype_dic=None,
             no_transfer_rs=None,
-            min_chunk_size=1000, max_pairs=1e6,
+            min_chunk_size=1000, max_pairs=1e7,
             from_pos=0, to_pos=None, hdf_key=None,
             verbose=False, logfile=None):
         """Create (ft) an edge table ``e`` linking the nodes in ``v``.
@@ -2109,16 +2109,9 @@ class DeepGraph(object):
                            verbose=True):
         """Work in progress!
 
-        Return a motif graph `mt` & `mlt`.
+        This methods is not working at the moment!
 
-        The component table contains scalar information of the
-        distributions of features and/or relations of each connected
-        component of the graph represented by `v` and `e`. The scalar
-        information is defined by the user given functions passed to
-        `feature_funcs` and `relation_funcs`.
-        `v` needs a `cp` column in order to compute `ct`. If
-        `relation_funcs` and/or `n_edges`=True, `e` needs a
-        `cp` column as well. See `dg.DeepGraph.append_cp`.
+        Return a motif graph `mv` & `me`.
 
         Parameters
         ----------
@@ -2144,9 +2137,8 @@ class DeepGraph(object):
             Whether to add a `edges` column to `ct`, indicating the
             number of edges in each connected component.
 
-        cp_col_name : str, optional (default='cp')
-            The column name of the component indices as in `v` and
-            optionally `e`.
+        verbose : bool, optional (default=True)
+            Whether to print information about the progress.
 
         Returns
         -------
@@ -2155,10 +2147,7 @@ class DeepGraph(object):
 
         Notes
         -----
-        Non-scalar information (set);
-        Functions between sets of features/relations.
-        For cython optimized aggregation methods, better aggregate
-        outside this function.
+
 
         Examples
         --------
@@ -2985,8 +2974,8 @@ class DeepGraph(object):
         """Plot nodes and corresponding edges by groups.
 
         Create a generator of scatter plots of the nodes in ``v``, split in
-        groups by ``v``.groupby(``by``). If edges is not set False, also create
-        a quiver plot of each group's corresponding edges.
+        groups by ``v``.groupby(``by``). If edges is set True, also create a
+        quiver plot of each group's corresponding edges.
 
         The xy-coordinates of the scatter plots are determined by the values of
         ``v[x]`` and ``v[y]``, where ``x`` and ``y`` are column names of ``v``
@@ -3059,8 +3048,8 @@ class DeepGraph(object):
         obj : generator
             If ``C_split_0`` has been passed, return a generator of dicts of
             matplotlib objects with the following keys: ['fig', 'ax', 'pc',
-            'qu', 'qu_0']. Otherwise, return a generator of dicts with keys:
-            ['fig', 'ax', 'pc', 'qu'].
+            'qu', 'qu_0', 'group']. Otherwise, return a generator of dicts
+            with keys: ['fig', 'ax', 'pc', 'qu', 'group'].
 
         Notes
         -----
@@ -3199,7 +3188,7 @@ class DeepGraph(object):
 
         Create a generator of scatter plots of the nodes in ``v``, split in
         groups by ``v``.groupby(``by``), on a ``mpl_toolkits.basemap.Basemap``
-        instance. If edges is not set False, also create a quiver plot of each
+        instance. If edges is set True, also create a quiver plot of each
         group's corresponding edges.
 
         The coordinates of the scatter plots are determined by the node's
@@ -3278,8 +3267,8 @@ class DeepGraph(object):
         obj : generator
             If ``C_split_0`` has been passed, return a generator of dicts of
             matplotlib objects with the following keys: ['fig', 'ax', 'm',
-            'pc', 'qu', 'qu_0']. Otherwise, return a generator of dicts with
-            keys: ['fig', 'ax', 'm', 'pc', 'qu'].
+            'pc', 'qu', 'qu_0', 'group']. Otherwise, return a generator of
+            dicts with keys: ['fig', 'ax', 'm', 'pc', 'qu', 'group'].
 
         Notes
         -----
@@ -3738,10 +3727,10 @@ class DeepGraph(object):
 
         obj['pc_e'] = pc_e
 
-        msg = 'iterations: {} | total time: {:.2f}s | total edges: {}'
+        msg = 'iterations: {:d} | total time: {:.2f}s | total edges: {:d}'
         ax.set_title(msg.format(len(logfile),
                                 logfile[:, 3].sum(),
-                                logfile[:, 2].sum()))
+                                int(logfile[:, 2].sum())))
         ax.set_xlabel('nr.of pairs')
         ax.set_ylabel('comp.time (s)')
         ax.set_xscale('log')
@@ -3831,12 +3820,20 @@ class DeepGraph(object):
         # set kwds
         if kwds_basemap is None:
             kwds_basemap = {}
+        else:
+            kwds_basemap = kwds_basemap.copy()
         if kwds_scatter is None:
             kwds_scatter = {}
+        else:
+            kwds_scatter = kwds_scatter.copy()
         if kwds_quiver is None:
             kwds_quiver = {}
+        else:
+            kwds_quiver = kwds_quiver.copy()
         if kwds_quiver_0 is None:
             kwds_quiver_0 = {}
+        else:
+            kwds_quiver_0 = kwds_quiver_0.copy()
 
         # create dict for matplotlib objects
         obj = {}
@@ -3851,7 +3848,7 @@ class DeepGraph(object):
         obj['ax'] = ax
 
         if is_map and m is None:
-            m = Basemap(**kwds_basemap)
+            m = Basemap(ax=ax, **kwds_basemap)
             obj['m'] = m
 
         # create PathCollection by scatter
@@ -3953,12 +3950,20 @@ class DeepGraph(object):
         # set kwargs
         if kwds_basemap is None:
             kwds_basemap = {}
+        else:
+            kwds_basemap = kwds_basemap.copy()
         if kwds_scatter is None:
             kwds_scatter = {}
+        else:
+            kwds_scatter = kwds_scatter.copy()
         if kwds_quiver is None:
             kwds_quiver = {}
+        else:
+            kwds_quiver = kwds_quiver.copy()
         if kwds_quiver_0 is None:
             kwds_quiver_0 = {}
+        else:
+            kwds_quiver_0 = kwds_quiver_0.copy()
 
         # assert there's no color given in quiver kwds
         if kwds_quiver is not None:
