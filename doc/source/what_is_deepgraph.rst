@@ -33,8 +33,8 @@ at hand (from netbooks to cluster architectures).
 
 Furthermore, once a graph is constructed, DeepGraph allows you to partition its
 :py:meth:`nodes <deepgraph.deepgraph.DeepGraph.partition_nodes>`,
-:py:meth:`edges <deepgraph.deepgraph.DeepGraph.partition_edges>` or the
-:py:meth:`entire graph <deepgraph.deepgraph.DeepGraph.partition_graph>` by the
+:py:meth:`edges <deepgraph.deepgraph.DeepGraph.partition_edges>` or the entire
+:py:meth:`graph <deepgraph.deepgraph.DeepGraph.partition_graph>` by the
 graph's properties and labels, enabling the aggregation, computation and
 allocation of information on and between arbitrary *groups* of nodes.
 
@@ -46,13 +46,28 @@ class of DeepGraph provides :ref:`interfacing methods <interfacing_methods>` to
 convert to common network representations and graph objects of popular Python
 network packages.
 
+**Disclaimer**
+
+Since this project is fairly new, it's not unlikely you might encounter some
+bugs here and there. Although the core functionalities are covered pretty well
+by test scripts, particularly the plotting methods could use some more testing.
+
+Furthermore, at this point, you can expect rather frequent updates to the
+package as well as the documentation. So please make sure to check for updates
+every once in a while.
+
+So far the package has only been developed by me, a fact that I would like
+to change very much. So if you feel like contributing in any way, shape or
+form, please feel free to contact me, report bugs, create pull requestes,
+milestones, etc. You can contact me via email: dominik.traxl@posteo.org
+
 .. attention::
 
    Please acknowledge and cite the use of this software and its authors when
    results are used in publications or published elsewhere. You can use the
    following BibTex entry
 
-    .. code-block:: bibtex
+    ::
 
         @Article{traxl-2016-deep,
           author      = {Dominik Traxl AND Niklas Boers AND J\"urgen Kurths},
