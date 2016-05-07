@@ -24,19 +24,19 @@ First of all, we need to import some packages
     # data i/o
     import os
     import xarray
-    
+
     # for plots
     %matplotlib inline
     import matplotlib.pyplot as plt
     plt.rcParams['figure.figsize'] = 8, 6
-    
+
     # for videos
     from IPython.display import HTML
-    
+
     # the usual
     import numpy as np
     import pandas as pd
-    
+
     import deepgraph as dg
 
 Selecting and Preprocessing the Precipitation Data
@@ -84,43 +84,43 @@ Next, we need to convert the downloaded netCDF files to a pandas `DataFrame <htt
     r = .1
     # choose "extreme" precipitation threshold
     p = .9
-    
+
     v_list = []
     for file in os.listdir('tmp'):
         if file.startswith('3B42.'):
-        
+
             # open the downloaded netCDF file
             # unfortunately, we have to decode times ourselves, since
             # the format of the downloaded files doesn't work
             # see also: https://github.com/pydata/xarray/issues/521
             f = xarray.open_dataset('tmp/{}'.format(file), decode_times=False)
-            
+
             # create integer-based (x,y) coordinates
             f['x'] = (('longitude'), np.arange(len(f.longitude)))
             f['y'] = (('latitude'), np.arange(len(f.latitude)))
-        
+
             # convert to pd.DataFrame
             vt = f.to_dataframe()
-    
+
             # we only consider "wet times", pcp >= 0.1mm/h
             vt = vt[vt.pcp >= r]
-    
+
             # reset index
             vt.reset_index(inplace=True)
-            
+
             # add correct times
             ftime = f.time.units.split()[2:]
             year, month, day = ftime[0].split('-')
             hour = ftime[1]
             time = pd.datetime(int(year), int(month), int(day), int(hour))
-            vt['time'] = time 
-    
+            vt['time'] = time
+
             # compute "area" for each event
             vt['area'] = 111**2 * .25**2 * np.cos(2*np.pi*vt.latitude / 360.)
-    
+
             # compute "volume of water precipitated" for each event
             vt['vol'] = vt.pcp * 3 * vt.area
-    
+
             # set dtypes -> economize ram
             vt['pcp'] = vt['pcp'] * 100
             vt['pcp'] = vt['pcp'].astype(np.uint16)
@@ -130,39 +130,39 @@ Next, we need to convert the downloaded netCDF files to a pandas `DataFrame <htt
             vt['vol'] = vt['vol'].astype(np.uint32)
             vt['x'] = vt['x'].astype(np.uint16)
             vt['y'] = vt['y'].astype(np.uint16)
-    
+
             # append to list
             v_list.append(vt)
             f.close()
-    
+
     # concatenate the DataFrames
     v = pd.concat(v_list)
-    
+
     # append a column indicating geographical locations (i.e., supernode labels)
     v['g_id'] = v.groupby(['longitude', 'latitude']).grouper.group_info[0]
     v['g_id'] = v['g_id'].astype(np.uint32)
-    
+
     # select `p`th percentile of precipitation events for each geographical location
     v = v.groupby('g_id').apply(lambda x: x[x.pcp >= x.pcp.quantile(p)])
-    
+
     # append integer-based time
     dtimes = pd.date_range(v.time.min(), v.time.max(), freq='3H')
     dtdic = {dtime: itime for itime, dtime in enumerate(dtimes)}
     v['itime'] = v.time.apply(lambda x: dtdic[x])
     v['itime'] = v['itime'].astype(np.uint16)
-    
+
     # sort by time
     v.sort_values('time', inplace=True)
-    
+
     # set unique node index
     v.set_index(np.arange(len(v)), inplace=True)
-    
+
     # shorten column names
-    v.rename(columns={'pcp': 'r', 
-                      'latitude': 'lat', 
+    v.rename(columns={'pcp': 'r',
+                      'latitude': 'lat',
                       'longitude': 'lon',
                       'time': 'dtime',
-                      'itime': 'time'}, 
+                      'itime': 'time'},
              inplace=True)
 
 The created `DataFrame <http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html>`_ of extreme precipitation measurements looks like this
@@ -201,29 +201,29 @@ Let's take a look at the data by creating a video of the time-evolution of preci
                     'llcrnrlat': v.lat.min() - 1,
                     'urcrnrlat': v.lat.max() + 1,
                     'resolution': 'i'}
-    
+
     # configure scatter plots
     kwds_scatter = {'s': 1.5,
                     'c': g.v.r.values / 100.,
                     'edgecolors': 'none',
                     'cmap': 'viridis_r'}
-    
+
     # create generator of scatter plots on map
     objs = g.plot_map_generator('lon', 'lat', 'dtime',
                                 kwds_basemap=kwds_basemap,
                                 kwds_scatter=kwds_scatter)
-    
+
     # plot and store frames
     for i, obj in enumerate(objs):
-    
+
         # configure plots
         cb = obj['fig'].colorbar(obj['pc'], fraction=0.025, pad=0.01)
         cb.set_label('[mm/h]')
         obj['m'].fillcontinents(color='0.2', zorder=0, alpha=.4)
         obj['ax'].set_title('{}'.format(obj['group']))
-    
+
         # store and close
-        obj['fig'].savefig('tmp/pcp_{:03d}.png'.format(i), 
+        obj['fig'].savefig('tmp/pcp_{:03d}.png'.format(i),
                            dpi=300, bbox_inches='tight')
         plt.close(obj['fig'])
 
@@ -247,9 +247,9 @@ Let's take a look at the data by creating a video of the time-evolution of preci
 
 .. raw:: html
 
-    
+
     <video width="700" height="350" controls>
-      <source src="precipitation_files/pcp.mp4" type="video/mp4">
+      <source src="http://deepgraph.readthedocs.io/en/latest/_downloads/pcp.mp4" type="video/mp4">
     </video>
 
 
@@ -284,7 +284,7 @@ For that matter, we pass the following **connectors**
     def grid_2d_dx(x_s, x_t):
         dx = x_t - x_s
         return dx
-    
+
     def grid_2d_dy(y_s, y_t):
         dy = y_t - y_s
         return dy
@@ -298,7 +298,7 @@ and **selectors**
         sources = sources[dxa <= 1]
         targets = targets[dxa <= 1]
         return sources, targets
-    
+
     def s_grid_2d_dy(dy, sources, targets):
         dya = np.abs(dy)
         sources = sources[dya <= 1]
@@ -309,15 +309,15 @@ to the :py:meth:`create_edges_ft <.create_edges_ft>` method
 
 .. code:: python
 
-    g.create_edges_ft(ft_feature=('time', 1), 
-                      connectors=[grid_2d_dx, grid_2d_dy], 
+    g.create_edges_ft(ft_feature=('time', 1),
+                      connectors=[grid_2d_dx, grid_2d_dy],
                       selectors=[s_grid_2d_dx, s_grid_2d_dy],
                       r_dtype_dic={'ft_r': np.bool,
                                    'dx': np.int8,
-                                   'dy': np.int8}, 
+                                   'dy': np.int8},
                       logfile='create_e',
                       max_pairs=1e7)
-    
+
     # rename fast track relation
     g.e.rename(columns={'ft_r': 'dt'}, inplace=True)
 
@@ -347,7 +347,7 @@ The edges we just created look like this
 .. parsed-literal::
 
             dx  dy     dt
-    s t                  
+    s t
     0 1362   0   1  False
       1432   1   0  False
       1433   1   1  False
@@ -456,19 +456,19 @@ In order to aggregate and compute some information about the precipitiation clus
                      'vol': [np.sum],
                      'lat': [np.mean],
                      'lon': [np.mean]}
-    
+
     # partition the node table
     cpv, gv = g.partition_nodes('cp', feature_funcs, return_gv=True)
-    
+
     # append geographical id sets
     cpv['g_ids'] = gv['g_id'].apply(set)
-    
+
     # append cardinality of g_id sets
     cpv['n_unique_g_ids'] = cpv['g_ids'].apply(len)
-    
+
     # append time spans
     cpv['dt'] = cpv['dtime_amax'] - cpv['dtime_amin']
-    
+
     # append spatial coverage
     def area(group):
         return group.drop_duplicates('g_id').area.sum()
@@ -484,36 +484,36 @@ The first couple of clusters look like this
 .. parsed-literal::
 
         n_nodes  time_amin  time_amax   lon_mean          dtime_amin  \
-    cp                                                                 
-    0     64678          0        304  -63.40625 2004-08-20 00:00:00   
-    1     16460         98        230  -65.12500 2004-09-01 06:00:00   
-    2      8519        225        285  -44.62500 2004-09-17 03:00:00   
-    3      6381         51        137  -64.12500 2004-08-26 09:00:00   
-    4      3403         15         36 -111.93750 2004-08-21 21:00:00   
-    
+    cp
+    0     64678          0        304  -63.40625 2004-08-20 00:00:00
+    1     16460         98        230  -65.12500 2004-09-01 06:00:00
+    2      8519        225        285  -44.62500 2004-09-17 03:00:00
+    3      6381         51        137  -64.12500 2004-08-26 09:00:00
+    4      3403         15         36 -111.93750 2004-08-21 21:00:00
+
                 dtime_amax   lat_mean    vol_sum  \
-    cp                                             
-    0  2004-09-27 00:00:00  17.609375  627097323   
-    1  2004-09-17 18:00:00  17.281250  351187150   
-    2  2004-09-24 15:00:00  26.906250  133698579   
-    3  2004-09-06 03:00:00  21.062500  113782748   
-    4  2004-08-24 12:00:00  10.578125   66675326   
-    
+    cp
+    0  2004-09-27 00:00:00  17.609375  627097323
+    1  2004-09-17 18:00:00  17.281250  351187150
+    2  2004-09-24 15:00:00  26.906250  133698579
+    3  2004-09-06 03:00:00  21.062500  113782748
+    4  2004-08-24 12:00:00  10.578125   66675326
+
                                                     g_ids  n_unique_g_ids  \
-    cp                                                                      
-    0   {0, 1, 2, 6, 7, 10, 12, 13, 14, 22, 23, 24, 25...           49808   
-    1   {65536, 65537, 65538, 65539, 65540, 65541, 655...            6629   
-    2   {73728, 73729, 73730, 73731, 73732, 73733, 737...            3730   
-    3   {65555, 65556, 65557, 65558, 65559, 65560, 655...            2442   
-    4   {8141, 14654, 11805, 16363, 8142, 11806, 20490...            1294   
-    
-                     dt      area  
-    cp                             
-    0  38 days 00:00:00  34781178  
-    1  16 days 12:00:00   4803624  
-    2   7 days 12:00:00   2507350  
-    3  10 days 18:00:00   1749673  
-    4   2 days 15:00:00    978604  
+    cp
+    0   {0, 1, 2, 6, 7, 10, 12, 13, 14, 22, 23, 24, 25...           49808
+    1   {65536, 65537, 65538, 65539, 65540, 65541, 655...            6629
+    2   {73728, 73729, 73730, 73731, 73732, 73733, 737...            3730
+    3   {65555, 65556, 65557, 65558, 65559, 65560, 655...            2442
+    4   {8141, 14654, 11805, 16363, 8142, 11806, 20490...            1294
+
+                     dt      area
+    cp
+    0  38 days 00:00:00  34781178
+    1  16 days 12:00:00   4803624
+    2   7 days 12:00:00   2507350
+    3  10 days 18:00:00   1749673
+    4   2 days 15:00:00    978604
 
 
 Plot the Largest Component
@@ -523,11 +523,11 @@ Let's see how the largest cluster of extreme precipitation evolves over time, ag
 
 .. code:: python
 
-    # temporary DeepGraph instance containing 
+    # temporary DeepGraph instance containing
     # only the largest component
     gt = dg.DeepGraph(g.v)
     gt.filter_by_values_v('cp', 1)
-    
+
     # configure map projection
     from mpl_toolkits.basemap import Basemap
     m1 = Basemap(projection='ortho',
@@ -536,7 +536,7 @@ Let's see how the largest cluster of extreme precipitation evolves over time, ag
                  resolution=None)
     width = (m1.urcrnrx - m1.llcrnrx) * .65
     height = (m1.urcrnry - m1.llcrnry) * .45
-    
+
     kwds_basemap = {'projection': 'ortho',
                     'lon_0': cpv.loc[1].lon_mean + 12,
                     'lat_0': cpv.loc[1].lat_mean + 8,
@@ -545,29 +545,29 @@ Let's see how the largest cluster of extreme precipitation evolves over time, ag
                     'urcrnrx': 0.5 * width,
                     'urcrnry': 0.5 * height,
                     'resolution': 'i'}
-    
+
     # configure scatter plots
     kwds_scatter = {'s': 2,
                     'c': np.log(gt.v.r.values / 100.),
                     'edgecolors': 'none',
                     'cmap': 'viridis_r'}
-    
+
     # create generator of scatter plots on map
     objs = gt.plot_map_generator('lon', 'lat', 'dtime',
                                   kwds_basemap=kwds_basemap,
                                   kwds_scatter=kwds_scatter)
-    
+
     # plot and store frames
     for i, obj in enumerate(objs):
-    
+
         # configure plots
         obj['m'].fillcontinents(color='0.2', zorder=0, alpha=.4)
         obj['m'].drawparallels(range(-50, 50, 20), linewidth=.2)
         obj['m'].drawmeridians(range(0, 360, 20), linewidth=.2)
         obj['ax'].set_title('{}'.format(obj['group']))
-    
+
         # store and close
-        obj['fig'].savefig('tmp/cp1_ortho_{:03d}.png'.format(i), 
+        obj['fig'].savefig('tmp/cp1_ortho_{:03d}.png'.format(i),
                            dpi=300, bbox_inches='tight')
         plt.close(obj['fig'])
 
@@ -591,9 +591,9 @@ Let's see how the largest cluster of extreme precipitation evolves over time, ag
 
 .. raw:: html
 
-    
+
     <video width="700" height="500" controls>
-      <source src="precipitation_files/cp1_ortho.mp4" type="video/mp4">
+      <source src="http://deepgraph.readthedocs.io/en/latest/_downloads/cp1_ortho.mp4" type="video/mp4">
     </video>
 
 
@@ -621,14 +621,14 @@ the following **connectors** and **selector**
             intsec[i] = g_ids_s[i].intersection(g_ids_t[i])
             intsec_card[i] = len(intsec[i])
         return intsec_card
-    
+
     # compute a spatial overlap measure between clusters
     def cp_intersection_strength(n_unique_g_ids_s, n_unique_g_ids_t, intsec_card):
-        min_card = np.array(np.vstack((n_unique_g_ids_s, n_unique_g_ids_t)).min(axis=0), 
+        min_card = np.array(np.vstack((n_unique_g_ids_s, n_unique_g_ids_t)).min(axis=0),
                             dtype=np.float64)
         intsec_strength = intsec_card / min_card
         return intsec_strength
-    
+
     # compute temporal distance between clusters
     def time_dist(dtime_amin_s, dtime_amin_t):
         dt = dtime_amin_t - dtime_amin_s
@@ -640,15 +640,15 @@ to the :py:meth:`create_edges <.create_edges>` method will provide the informati
 
     # discard singular components
     cpv.drop(0, inplace=True)
-    
+
     # we only consider the largest 5000 clusters
     cpv = cpv.iloc[:5000]
-    
+
     # initiate DeepGraph
     cpg = dg.DeepGraph(cpv)
-    
+
     # create edges
-    cpg.create_edges(connectors=[cp_node_intersection, 
+    cpg.create_edges(connectors=[cp_node_intersection,
                                  cp_intersection_strength],
                      no_transfer_rs=['intsec_card'],
                      logfile='create_cpe',
@@ -678,7 +678,7 @@ be ``cpg.n``\ \*(\ ``cpg.n``-1)/2
 .. parsed-literal::
 
          intsec_strength
-    s t                 
+    s t
     1 2         0.018499
       3         0.002457
       4         0.000000
@@ -711,19 +711,19 @@ clusters into regionally coherent families.
 .. code:: python
 
     from scipy.cluster.hierarchy import linkage, fcluster
-    
+
     # create condensed distance matrix
     dv = 1 - cpg.e.intsec_strength.values
     del cpg.e
-    
+
     # create linkage matrix
     lm = linkage(dv, method='average', metric='euclidean')
     del dv
-    
+
     # form flat clusters and append their labels to cpv
     cpv['F'] = fcluster(lm, 1000, criterion='maxclust')
     del lm
-    
+
     # relabel families by size
     f = cpv['F'].value_counts().index.values
     fdic = {j: i for i, j in enumerate(f)}
@@ -749,12 +749,12 @@ Let's see how many clusters there are in the largest families
 Create a "Raster Plot" of Families
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Let's plot the clusters of the largest 10 families in a raster-like boxplot, by means of the :py:meth:`plot_rects_label_numeric <.plot_rects_label_numeric>` method 
+Let's plot the clusters of the largest 10 families in a raster-like boxplot, by means of the :py:meth:`plot_rects_label_numeric <.plot_rects_label_numeric>` method
 
 .. code:: python
 
     cpgt = dg.DeepGraph(cpg.v[cpg.v.F <= 10])
-    obj = cpgt.plot_rects_label_numeric('F', 'time_amin', 'time_amax', 
+    obj = cpgt.plot_rects_label_numeric('F', 'time_amin', 'time_amax',
                                         colors=np.log(cpgt.v.vol_sum.values))
     obj['ax'].set_xlabel('time', fontsize=20)
     obj['ax'].set_ylabel('family', fontsize=20)
@@ -776,17 +776,17 @@ Geographical Locations
 
 .. code:: python
 
-    # how many components have hit a certain 
+    # how many components have hit a certain
     # geographical location (discarding singular cps)
     def count(cp):
         return len(set(cp[cp != 0]))
-    
+
     # feature functions, will be applied to each g_id
     feature_funcs = {'cp': [count],
                      'vol': [np.sum],
                      'lat': np.min,
                      'lon': np.min}
-    
+
     gv = g.partition_nodes('g_id', feature_funcs)
     gv.rename(columns={'lat_amin': 'lat',
                        'lon_amin': 'lon'}, inplace=True)
@@ -799,7 +799,7 @@ Geographical Locations
 .. parsed-literal::
 
           n_nodes     lat      lon  cp_count  vol_sum
-    g_id                                             
+    g_id
     0           2 -10.125 -125.125         1    10142
     1           2  -9.875 -125.125         1     8716
     2           2  -9.625 -125.125         0     4372
@@ -815,40 +815,40 @@ Plot GeoLocational Information
     cols = {'n_nodes': gv.n_nodes,
             'vol sum': gv.vol_sum,
             'cp count': gv.cp_count}
-    
+
     for name, col in cols.items():
-    
-        # for easy filtering, we create a new DeepGraph instance for 
+
+        # for easy filtering, we create a new DeepGraph instance for
         # each component
         gt = dg.DeepGraph(gv)
-    
+
         # configure map projection
         kwds_basemap = {'llcrnrlon': v.lon.min() - 1,
                         'urcrnrlon': v.lon.max() + 1,
                         'llcrnrlat': v.lat.min() - 1,
                         'urcrnrlat': v.lat.max() + 1}
-        
+
         # configure scatter plots
         kwds_scatter = {'s': 1,
                         'c': col.values,
                         'cmap': 'viridis_r',
                         'alpha': .5,
                         'edgecolors': 'none'}
-    
+
         # create scatter plot on map
         obj = gt.plot_map(lon='lon', lat='lat',
                           kwds_basemap=kwds_basemap,
                           kwds_scatter=kwds_scatter)
-    
+
         # configure plots
         obj['m'].drawcoastlines(linewidth=.8)
         obj['m'].drawparallels(range(-50, 50, 20), linewidth=.2)
         obj['m'].drawmeridians(range(0, 360, 20), linewidth=.2)
         obj['ax'].set_title(name)
-        
+
         # colorbar
         cb = obj['fig'].colorbar(obj['pc'], fraction=.022, pad=.02)
-        cb.set_label('{}'.format(name), fontsize=15)                        
+        cb.set_label('{}'.format(name), fontsize=15)
 
 
 
@@ -876,7 +876,7 @@ and families, we first need to append a family membership column to
     v['F'] = np.ones(len(v), dtype=int) * -1
     gcpv = cpv.groupby('F')
     it = gcpv.apply(lambda x: x.index.values)
-    
+
     for F in range(len(it)):
         cp_index = v.cp.isin(it.iloc[F])
         v.loc[cp_index, 'F'] = F
@@ -888,12 +888,12 @@ Then we create the intersection partition
     # feature funcs
     def n_cp_nodes(cp):
         return len(cp.unique())
-    
+
     feature_funcs = {'vol': [np.sum],
                      'lat': np.min,
                      'lon': np.min,
                      'cp': n_cp_nodes}
-    
+
     # create family-g_id intersection graph
     fgv = g.partition_nodes(['F', 'g_id'], feature_funcs=feature_funcs)
     fgv.rename(columns={'lat_amin': 'lat',
@@ -910,7 +910,7 @@ which looks like this
 .. parsed-literal::
 
              n_nodes  n_cp_nodes      lon     lat  vol_sum
-    F  g_id                                               
+    F  g_id
     -1 0           2           2 -125.125 -10.125    10142
        1           2           2 -125.125  -9.875     8716
        2           2           1 -125.125  -9.625     4372
@@ -924,36 +924,36 @@ Plot Family Information
 .. code:: python
 
     families = [0,1,2,3]
-    
+
     for F in families:
-    
-        # for easy filtering, we create a new DeepGraph instance for 
+
+        # for easy filtering, we create a new DeepGraph instance for
         # each component
         gt = dg.DeepGraph(fgv.loc[F])
-    
+
         # configure map projection
         kwds_basemap = {'llcrnrlon': v.lon.min() - 1,
                         'urcrnrlon': v.lon.max() + 1,
                         'llcrnrlat': v.lat.min() - 1,
                         'urcrnrlat': v.lat.max() + 1}
-    
+
         # configure scatter plots
         kwds_scatter = {'s': 1,
                         'c': gt.v.n_cp_nodes.values,
                         'cmap': 'viridis_r',
                         'edgecolors': 'none'}
-    
+
         # create scatter plot on map
         obj = gt.plot_map(
             lat='lat', lon='lon',
             kwds_basemap=kwds_basemap, kwds_scatter=kwds_scatter)
-    
+
         # configure plots
         obj['m'].drawcoastlines(linewidth=.8)
         obj['m'].drawparallels(range(-50, 50, 20), linewidth=.2)
         obj['m'].drawmeridians(range(0, 360, 20), linewidth=.2)
         cb = obj['fig'].colorbar(obj['pc'], fraction=.022, pad=.02)
-        cb.set_label('n_cps', fontsize=15) 
+        cb.set_label('n_cps', fontsize=15)
         obj['ax'].set_title('Family {}'.format(F))
 
 
@@ -982,10 +982,10 @@ Geographical Locations and Components
     feature_funcs = {'vol': [np.sum],
                      'lat': np.min,
                      'lon': np.min}
-    
+
     # create gcpv
     gcpv = g.partition_nodes(['cp', 'g_id'], feature_funcs)
-    
+
     gcpv.rename(columns={'lat_amin': 'lat',
                          'lon_amin': 'lon'}, inplace=True)
 
@@ -997,7 +997,7 @@ Geographical Locations and Components
 .. parsed-literal::
 
              n_nodes      lon     lat  vol_sum
-    cp g_id                                   
+    cp g_id
     0  0           1 -125.125 -10.125     5071
        1           1 -125.125  -9.875     4415
        2           2 -125.125  -9.625     4372
@@ -1012,34 +1012,34 @@ Plot Component Information
 
     # select the components to plot
     comps = [1, 2, 3, 4]
-    
+
     fig, axs = plt.subplots(2, 2, figsize=[10,8])
     axs = axs.flatten()
-    
+
     for comp, ax in zip(comps, axs):
-        
-        # for easy filtering, we create a new DeepGraph instance for 
+
+        # for easy filtering, we create a new DeepGraph instance for
         # each component
         gt = dg.DeepGraph(gcpv[gcpv.index.get_level_values(1) == comp])
-    
+
         # configure map projection
         kwds_basemap = {'projection': 'ortho',
                         'lon_0': cpv.loc[comp].lon_mean,
                         'lat_0': cpv.loc[comp].lat_mean,
                         'resolution': 'c'}
-        
+
         # configure scatter plots
         kwds_scatter = {'s': .5,
                         'c': gt.v.vol_sum.values,
                         'cmap': 'viridis_r',
                         'edgecolors': 'none'}
-    
+
         # create scatter plot on map
         obj = gt.plot_map(lon='lon', lat='lat',
                           kwds_basemap=kwds_basemap,
                           kwds_scatter=kwds_scatter,
                           ax=ax)
-        
+
         # configure plots
         obj['m'].fillcontinents(color='0.2', zorder=0, alpha=.2)
         obj['m'].drawparallels(range(-50, 50, 20), linewidth=.2)
