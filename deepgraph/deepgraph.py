@@ -338,7 +338,7 @@ class DeepGraph(object):
         benchmark the iteration process, the progress and time measurements are
         printed for each iteration step, if ``verbose`` is set to True.
         Furthermore, one may create a logfile (which can also be plot by
-        ``dg.plotting.plot_logfile``) by setting the argument ``logfile`` to a
+        ``dg.DeepGraph.plot_logfile``) by setting the argument ``logfile`` to a
         string, indicating the file name of the created logfile.
 
         6. Parallelization and Memory Control
@@ -482,7 +482,7 @@ class DeepGraph(object):
             Create a log-file named by ``logfile``. Contains the time and date
             of the method's call, the input arguments and time mesaurements for
             each iteration step. A plot of ``logfile`` can be created by
-            ``dg.plotting.plot_logfile``.
+            ``dg.DeepGraph.plot_logfile``.
 
         Returns
         -------
@@ -870,7 +870,7 @@ class DeepGraph(object):
             Create a log-file named by ``logfile``. Contains the time and date
             of the method's call, the input arguments and time mesaurements for
             each iteration step. A plot of ``logfile`` can be created by
-            ``dg.plotting.plot_logfile``.
+            ``dg.DeepGraph.plot_logfile``.
 
         Returns
         -------
