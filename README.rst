@@ -57,7 +57,7 @@ Documentation
 -------------
 
 The official documentation is hosted on readthedocs.org:
-http://deepgraph.readthedocs.org
+http://deepgraph.readthedocs.io
 
 The documentation provides a good starting point for learning how
 to use the library. Expect the docs to continue to expand as time goes on.

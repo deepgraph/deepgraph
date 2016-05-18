@@ -26,7 +26,7 @@ This module provides:
 Documentation
 -------------
 
-See http://deepgraph.readthedocs.org for a full documentation, and
+See http://deepgraph.readthedocs.io for a full documentation, and
 http://arxiv.org/abs/1604.00971 for the paper describing the theoretical
 framework. Otherwise, see the docstrings of the objects in the deepgraph
 namespace.
