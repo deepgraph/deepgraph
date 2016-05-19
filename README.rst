@@ -100,8 +100,10 @@ following BibTex entry
        author      = {Dominik Traxl AND Niklas Boers AND J\"urgen Kurths},
        title       = {Deep Graphs - a general framework to represent and analyze
                       heterogeneous complex systems across scales},
+       journal     = {arXiv preprint arXiv:1604.00971v1},
        version     = {1},
        date        = {2016-04-04},
+       year        = {2016},
        eprinttype  = {arxiv},
        eprintclass = {physics.data-an, cs.SI, physics.ao-ph, physics.soc-ph},
        eprint      = {http://arxiv.org/abs/1604.00971v1},

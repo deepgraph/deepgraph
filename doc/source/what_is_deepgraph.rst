@@ -61,7 +61,7 @@ to change very much. So if you feel like contributing in any way, shape or
 form, please feel free to contact me, report bugs, create pull requestes,
 milestones, etc. You can contact me via email: dominik.traxl@posteo.org
 
-.. attention::
+.. note::
 
    Please acknowledge and cite the use of this software and its authors when
    results are used in publications or published elsewhere. You can use the
@@ -73,8 +73,10 @@ milestones, etc. You can contact me via email: dominik.traxl@posteo.org
           author      = {Dominik Traxl AND Niklas Boers AND J\"urgen Kurths},
           title       = {Deep Graphs - a general framework to represent and analyze
                          heterogeneous complex systems across scales},
+          journal     = {arXiv preprint arXiv:1604.00971v1},
           version     = {1},
           date        = {2016-04-04},
+          year        = {2016},
           eprinttype  = {arxiv},
           eprintclass = {physics.data-an, cs.SI, physics.ao-ph, physics.soc-ph},
           eprint      = {http://arxiv.org/abs/1604.00971v1},
