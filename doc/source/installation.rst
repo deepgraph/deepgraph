@@ -38,6 +38,7 @@ Alternatively, you can install DeepGraph from source by downloading a source
 archive file (tar.gz or zip). Since DeepGraph is a pure Python package, you
 don't need a compiler to build or install it.
 
+
 Source Archive File
 -------------------
 
@@ -108,6 +109,7 @@ The easiest way to get Python and the required/optional packages is to use
 `Miniconda <http://conda.pydata.org/miniconda.html>`_), a cross-platform (Linux, Mac
 OS X, Windows) Python distribution for data analytics and scientific computing.
 
+
 Python
 ------
 
@@ -172,6 +174,7 @@ projections.
 
 PyTables
 --------
+
 `PyTables <http://www.pytables.org/>`_ is a package for managing hierarchical
 datasets and designed to efficiently and easily cope with extremely large
 amounts of data.
@@ -203,6 +206,7 @@ functions of complex networks.
 Allows you to convert from DeepGraph's network representation to NetworkX's network
 representation (see :py:meth:`return_nx_graph <.return_nx_graph>`).
 
+
 Graph-Tool
 ----------
 
@@ -231,6 +235,15 @@ The following packages are considered to provide very useful tools and methods.
 
 Scikit-Learn
 ------------
+
 `sklearn <http://scikit-learn.org/stable/>`_ is a Python module integrating
 classical machine learning algorithms in the tightly-knit world of scientific
 Python packages (numpy, scipy, matplotlib).
+
+
+Sklearn-pandas
+--------------
+
+`sklearn-pandas <https://github.com/paulgb/sklearn-pandas>`_ provides a bridge
+between Scikit-Learn's machine learning methods and pandas-style Data Frames.
+
