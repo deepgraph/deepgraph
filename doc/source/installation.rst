@@ -212,6 +212,16 @@ manipulation and statistical analysis of graphs (a.k.a. networks).
 Allows you to convert from DeepGraph's network representation to Graph-Tool's
 network representation (see :py:meth:`return_gt_graph <.return_gt_graph>`).
 
+Note for Conda users:
+Since the installation of graph_tool within a Conda environment is slightly
+problematic, I recommend installing it as a system package (see
+`instructions <https://graph-tool.skewed.de/download>`_), and then linking it
+to your environment
+
+::
+
+   $ ln -s /usr/lib/YOURSYSPYTHON/dist-packages/graph_tool /PATH/TO/YOUR/CONDA/ENV/lib/YOURENVPYTHON/site-packages/graph_tool
+
 
 Optional Packages
 =================
