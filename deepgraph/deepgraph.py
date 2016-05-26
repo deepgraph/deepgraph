@@ -3907,17 +3907,13 @@ class DeepGraph(object):
                     headwidth = kwds_quiver_0.pop('headwidth')
                 except KeyError:
                     headwidth = 1
-                try:
-                    alpha = kwds_quiver_0.pop('alpha')
-                except KeyError:
-                    alpha = .5
 
                 C = C_split_0
 
                 qu_0 = axm.quiver(
                     xs[C == 0], ys[C == 0], dx[C == 0], dy[C == 0],
                     color=color, angles='xy', scale_units='xy', scale=1,
-                    headwidth=headwidth, alpha=alpha, **kwds_quiver_0)
+                    headwidth=headwidth, **kwds_quiver_0)
 
                 qu = axm.quiver(
                     xs[C != 0], ys[C != 0], dx[C != 0], dy[C != 0], C[C != 0],
@@ -4050,10 +4046,6 @@ class DeepGraph(object):
                 qu_0_headwidth = kwds_quiver_0.pop('headwidth')
             except KeyError:
                 qu_0_headwidth = 1
-            try:
-                qu_0_alpha = kwds_quiver_0.pop('alpha')
-            except KeyError:
-                qu_0_alpha = .5
 
         else:
             e = None
@@ -4134,8 +4126,7 @@ class DeepGraph(object):
                     qu_0 = axm.quiver(
                         xs[C == 0], ys[C == 0], dx[C == 0], dy[C == 0],
                         color=color, angles='xy', scale_units='xy', scale=1,
-                        headwidth=qu_0_headwidth, alpha=qu_0_alpha,
-                        **kwds_quiver_0)
+                        headwidth=qu_0_headwidth, **kwds_quiver_0)
 
                     qu = axm.quiver(
                         xs[C != 0], ys[C != 0], dx[C != 0], dy[C != 0],
