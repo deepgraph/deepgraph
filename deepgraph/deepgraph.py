@@ -2873,7 +2873,7 @@ class DeepGraph(object):
     def plot_2d(
             self,
             x, y,
-            edges=False,
+            edges=False, nodesfirst=False,
             C=None, C_split_0=None,
             kwds_scatter=None, kwds_quiver=None, kwds_quiver_0=None,
             ax=None):
@@ -2914,6 +2914,9 @@ class DeepGraph(object):
         edges : bool, optional (default=True)
             Whether to create a quiver plot (2-D field of arrows) of the edges
             between the nodes.
+
+        nodesfirst : bool, optional (default=False)
+            If True, the nodes are drawn first, otherwise the edges are.
 
         C : array_like, optional (default=None)
             An optional array used to map colors to the arrows. Must have the
@@ -2961,14 +2964,15 @@ class DeepGraph(object):
         """
 
         return self._plot_2d(
-            is_map=False, x=x, y=y, edges=edges, C=C, C_split_0=C_split_0,
-            kwds_scatter=kwds_scatter, kwds_quiver=kwds_quiver,
-            kwds_quiver_0=kwds_quiver_0, kwds_basemap=None, ax=ax, m=None)
+            is_map=False, x=x, y=y, edges=edges, nodesfirst=nodesfirst, C=C,
+            C_split_0=C_split_0, kwds_scatter=kwds_scatter,
+            kwds_quiver=kwds_quiver, kwds_quiver_0=kwds_quiver_0,
+            kwds_basemap=None, ax=ax, m=None)
 
     def plot_2d_generator(
             self,
             x, y, by,
-            edges=False,
+            edges=False, nodesfirst=False,
             C=None, C_split_0=None,
             kwds_scatter=None, kwds_quiver=None, kwds_quiver_0=None):
         """Plot nodes and corresponding edges by groups.
@@ -3023,6 +3027,9 @@ class DeepGraph(object):
             Whether to create a quiver plot (2-D field of arrows) of the edges
             between the nodes.
 
+        nodesfirst : bool, optional (default=False)
+            If True, the nodes are drawn first, otherwise the edges are.
+
         C : array_like, optional (default=None)
             An optional array used to map colors to the arrows. Must have the
             same length es ``e``. Has no effect if ``C_split_0`` is passed as
@@ -3068,15 +3075,15 @@ class DeepGraph(object):
         """
 
         return self._plot_2d_generator(
-            is_map=False, x=x, y=y, by=by, edges=edges, C=C,
-            C_split_0=C_split_0, kwds_basemap=None,
+            is_map=False, x=x, y=y, by=by, edges=edges, nodesfirst=nodesfirst,
+            C=C, C_split_0=C_split_0, kwds_basemap=None,
             kwds_scatter=kwds_scatter, kwds_quiver=kwds_quiver,
             kwds_quiver_0=kwds_quiver_0)
 
     def plot_map(
             self,
             lon, lat,
-            edges=False,
+            edges=False, nodesfirst=False,
             C=None, C_split_0=None,
             kwds_basemap=None, kwds_scatter=None, kwds_quiver=None,
             kwds_quiver_0=None,
@@ -3121,6 +3128,9 @@ class DeepGraph(object):
         edges : bool, optional (default=True)
             Whether to create a quiver plot (2-D field of arrows) of the edges
             between the nodes.
+
+        nodesfirst : bool, optional (default=False)
+            If True, the nodes are drawn first, otherwise the edges are.
 
         C : array_like, optional (default=None)
             An optional array used to map colors to the arrows. Must have the
@@ -3172,15 +3182,15 @@ class DeepGraph(object):
         """
 
         return self._plot_2d(
-            is_map=True, x=lon, y=lat, edges=edges, C=C, C_split_0=C_split_0,
-            kwds_basemap=kwds_basemap, kwds_scatter=kwds_scatter,
-            kwds_quiver=kwds_quiver, kwds_quiver_0=kwds_quiver_0, ax=ax,
-            m=m)
+            is_map=True, x=lon, y=lat, edges=edges, nodesfirst=nodesfirst, C=C,
+            C_split_0=C_split_0, kwds_basemap=kwds_basemap,
+            kwds_scatter=kwds_scatter, kwds_quiver=kwds_quiver,
+            kwds_quiver_0=kwds_quiver_0, ax=ax, m=m)
 
     def plot_map_generator(
             self,
             lon, lat, by,
-            edges=False,
+            edges=False, nodesfirst=False,
             C=None, C_split_0=None,
             kwds_basemap=None, kwds_scatter=None, kwds_quiver=None,
             kwds_quiver_0=None):
@@ -3239,6 +3249,9 @@ class DeepGraph(object):
             Whether to create a quiver plot (2-D field of arrows) of the edges
             between the nodes.
 
+        nodesfirst : bool, optional (default=False)
+            If True, the nodes are drawn first, otherwise the edges are.
+
         C : array_like, optional (default=None)
             An optional array used to map colors to the arrows. Must have the
             same length es ``e``. Has no effect if ``C_split_0`` is passed as
@@ -3287,10 +3300,10 @@ class DeepGraph(object):
         """
 
         return self._plot_2d_generator(
-            is_map=True, x=lon, y=lat, by=by, edges=edges, C=C,
-            C_split_0=C_split_0, kwds_basemap=kwds_basemap,
-            kwds_scatter=kwds_scatter, kwds_quiver=kwds_quiver,
-            kwds_quiver_0=kwds_quiver_0)
+            is_map=True, x=lon, y=lat, by=by, edges=edges,
+            nodesfirst=nodesfirst, C=C, C_split_0=C_split_0,
+            kwds_basemap=kwds_basemap, kwds_scatter=kwds_scatter,
+            kwds_quiver=kwds_quiver, kwds_quiver_0=kwds_quiver_0)
 
     def plot_3d(
             self,
@@ -3811,11 +3824,20 @@ class DeepGraph(object):
             r = 'there are no edges'
         return r
 
-    def _plot_2d(self, is_map, x, y, edges, C, C_split_0, kwds_scatter,
-                 kwds_quiver, kwds_quiver_0, kwds_basemap, ax, m):
+    def _plot_2d(self, is_map, x, y, edges, nodesfirst, C, C_split_0,
+                 kwds_scatter, kwds_quiver, kwds_quiver_0,
+                 kwds_basemap, ax, m):
 
         if is_map:
             from mpl_toolkits.basemap import Basemap
+
+        # set order
+        if nodesfirst:
+            pc_order = 1
+            qu_order = 2
+        else:
+            pc_order = 2
+            qu_order = 1
 
         # set kwds
         if kwds_basemap is None:
@@ -3864,7 +3886,7 @@ class DeepGraph(object):
         else:
             axm = ax
 
-        pc = axm.scatter(x, y, **kwds_scatter)
+        pc = axm.scatter(x, y, zorder=pc_order, **kwds_scatter)
         obj['pc'] = pc
 
         # draw edges as arrows
@@ -3913,11 +3935,12 @@ class DeepGraph(object):
                 qu_0 = axm.quiver(
                     xs[C == 0], ys[C == 0], dx[C == 0], dy[C == 0],
                     color=color, angles='xy', scale_units='xy', scale=1,
-                    headwidth=headwidth, **kwds_quiver_0)
+                    headwidth=headwidth, zorder=qu_order, **kwds_quiver_0)
 
                 qu = axm.quiver(
                     xs[C != 0], ys[C != 0], dx[C != 0], dy[C != 0], C[C != 0],
-                    angles='xy', scale_units='xy', scale=1, **kwds_quiver)
+                    angles='xy', scale_units='xy', scale=1,
+                    zorder=qu_order, **kwds_quiver)
 
                 obj['qu_0'] = qu_0
                 obj['qu'] = qu
@@ -3925,23 +3948,31 @@ class DeepGraph(object):
             elif C is not None:
                 qu = axm.quiver(
                     xs, ys, dx, dy, C, angles='xy', scale_units='xy', scale=1,
-                    **kwds_quiver)
+                    zorder=qu_order, **kwds_quiver)
                 obj['qu'] = qu
 
             else:
                 qu = axm.quiver(
                     xs, ys, dx, dy, angles='xy', scale_units='xy', scale=1,
-                    **kwds_quiver)
+                    zorder=qu_order, **kwds_quiver)
                 obj['qu'] = qu
 
         return obj
 
-    def _plot_2d_generator(self, is_map, x, y, by, edges, C, C_split_0,
-                           kwds_basemap, kwds_scatter, kwds_quiver,
+    def _plot_2d_generator(self, is_map, x, y, by, edges, nodesfirst, C,
+                           C_split_0, kwds_basemap, kwds_scatter, kwds_quiver,
                            kwds_quiver_0):
 
         if is_map:
             from mpl_toolkits.basemap import Basemap
+
+        # set order
+        if nodesfirst:
+            pc_order = 1
+            qu_order = 2
+        else:
+            pc_order = 2
+            qu_order = 1
 
         # set kwargs
         if kwds_basemap is None:
@@ -4086,7 +4117,7 @@ class DeepGraph(object):
             # need to change colors to list, in case they're not numbers
             pc = axm.scatter(x, y, c=g.v.pc_c.values.tolist(),
                              s=g.v.pc_s.values, vmin=pc_vmin, vmax=pc_vmax,
-                             **kwds_scatter)
+                             zorder=pc_order, **kwds_scatter)
             obj['pc'] = pc
 
             # draw edges as arrows
@@ -4126,12 +4157,13 @@ class DeepGraph(object):
                     qu_0 = axm.quiver(
                         xs[C == 0], ys[C == 0], dx[C == 0], dy[C == 0],
                         color=color, angles='xy', scale_units='xy', scale=1,
-                        headwidth=qu_0_headwidth, **kwds_quiver_0)
+                        headwidth=qu_0_headwidth, zorder=qu_order,
+                        **kwds_quiver_0)
 
                     qu = axm.quiver(
                         xs[C != 0], ys[C != 0], dx[C != 0], dy[C != 0],
                         C[C != 0], angles='xy', scale_units='xy', scale=1,
-                        clim=qu_clim, **kwds_quiver)
+                        clim=qu_clim, zorder=qu_order, **kwds_quiver)
 
                     obj['qu_0'] = qu_0
                     obj['qu'] = qu
@@ -4142,14 +4174,15 @@ class DeepGraph(object):
 
                     qu = axm.quiver(
                         xs, ys, dx, dy, C, angles='xy', scale_units='xy',
-                        scale=1, clim=qu_clim, **kwds_quiver)
+                        scale=1, clim=qu_clim, zorder=qu_order,
+                        **kwds_quiver)
 
                     obj['qu'] = qu
 
                 else:
                     qu = axm.quiver(
                         xs, ys, dx, dy, angles='xy', scale_units='xy', scale=1,
-                        **kwds_quiver)
+                        zorder=qu_order, **kwds_quiver)
 
                     obj['qu'] = qu
 
