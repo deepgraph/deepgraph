@@ -56,7 +56,7 @@ Then, import and get started with::
 Documentation
 -------------
 
-The official documentation is hosted on readthedocs.org:
+The official documentation is hosted here:
 http://deepgraph.readthedocs.io
 
 The documentation provides a good starting point for learning how
