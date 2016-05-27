@@ -2873,7 +2873,7 @@ class DeepGraph(object):
     def plot_2d(
             self,
             x, y,
-            edges=False, nodesfirst=False,
+            edges=False,
             C=None, C_split_0=None,
             kwds_scatter=None, kwds_quiver=None, kwds_quiver_0=None,
             ax=None):
@@ -2915,9 +2915,6 @@ class DeepGraph(object):
             Whether to create a quiver plot (2-D field of arrows) of the edges
             between the nodes.
 
-        nodesfirst : bool, optional (default=False)
-            If True, the nodes are drawn first, otherwise the edges are.
-
         C : array_like, optional (default=None)
             An optional array used to map colors to the arrows. Must have the
             same length es ``e``. Has no effect if ``C_split_0`` is passed as
@@ -2954,6 +2951,14 @@ class DeepGraph(object):
         by passing the keyword argument `color` to ``kwds_quiver_0``. The color
         of the arrows in qu, however, are determined by ``C_split_0``.
 
+        The default drawing order is set to:
+        1. quiver_0 (zorder=1)
+        2. quiver (zorder=2)
+        3. scatter (zorder=3)
+        This order can be changed by setting the ``zorder`` in
+        ``kwds_quiver_0``, ``kwds_quiver`` and/or ``kwds_scatter``.
+        See also http://matplotlib.org/examples/pylab_examples/zorder_demo.html
+
         See also
         --------
         plot_2d_generator
@@ -2964,7 +2969,7 @@ class DeepGraph(object):
         """
 
         return self._plot_2d(
-            is_map=False, x=x, y=y, edges=edges, nodesfirst=nodesfirst, C=C,
+            is_map=False, x=x, y=y, edges=edges, C=C,
             C_split_0=C_split_0, kwds_scatter=kwds_scatter,
             kwds_quiver=kwds_quiver, kwds_quiver_0=kwds_quiver_0,
             kwds_basemap=None, ax=ax, m=None)
@@ -2972,7 +2977,7 @@ class DeepGraph(object):
     def plot_2d_generator(
             self,
             x, y, by,
-            edges=False, nodesfirst=False,
+            edges=False,
             C=None, C_split_0=None,
             kwds_scatter=None, kwds_quiver=None, kwds_quiver_0=None):
         """Plot nodes and corresponding edges by groups.
@@ -3027,9 +3032,6 @@ class DeepGraph(object):
             Whether to create a quiver plot (2-D field of arrows) of the edges
             between the nodes.
 
-        nodesfirst : bool, optional (default=False)
-            If True, the nodes are drawn first, otherwise the edges are.
-
         C : array_like, optional (default=None)
             An optional array used to map colors to the arrows. Must have the
             same length es ``e``. Has no effect if ``C_split_0`` is passed as
@@ -3064,6 +3066,14 @@ class DeepGraph(object):
         by passing the keyword argument `color` to ``kwds_quiver_0``. The color
         of the arrows in qu, however, are determined by ``C_split_0``.
 
+        The default drawing order is set to:
+        1. quiver_0 (zorder=1)
+        2. quiver (zorder=2)
+        3. scatter (zorder=3)
+        This order can be changed by setting the ``zorder`` in
+        ``kwds_quiver_0``, ``kwds_quiver`` and/or ``kwds_scatter``.
+        See also http://matplotlib.org/examples/pylab_examples/zorder_demo.html
+
         See also
         --------
         append_binning_labels_v
@@ -3075,7 +3085,7 @@ class DeepGraph(object):
         """
 
         return self._plot_2d_generator(
-            is_map=False, x=x, y=y, by=by, edges=edges, nodesfirst=nodesfirst,
+            is_map=False, x=x, y=y, by=by, edges=edges,
             C=C, C_split_0=C_split_0, kwds_basemap=None,
             kwds_scatter=kwds_scatter, kwds_quiver=kwds_quiver,
             kwds_quiver_0=kwds_quiver_0)
@@ -3083,7 +3093,7 @@ class DeepGraph(object):
     def plot_map(
             self,
             lon, lat,
-            edges=False, nodesfirst=False,
+            edges=False,
             C=None, C_split_0=None,
             kwds_basemap=None, kwds_scatter=None, kwds_quiver=None,
             kwds_quiver_0=None,
@@ -3129,9 +3139,6 @@ class DeepGraph(object):
             Whether to create a quiver plot (2-D field of arrows) of the edges
             between the nodes.
 
-        nodesfirst : bool, optional (default=False)
-            If True, the nodes are drawn first, otherwise the edges are.
-
         C : array_like, optional (default=None)
             An optional array used to map colors to the arrows. Must have the
             same length es ``e``. Has no effect if ``C_split_0`` is passed as
@@ -3172,6 +3179,14 @@ class DeepGraph(object):
         by passing the keyword argument `color` to ``kwds_quiver_0``. The color
         of the arrows in qu, however, are determined by ``C_split_0``.
 
+        The default drawing order is set to:
+        1. quiver_0 (zorder=1)
+        2. quiver (zorder=2)
+        3. scatter (zorder=3)
+        This order can be changed by setting the ``zorder`` in
+        ``kwds_quiver_0``, ``kwds_quiver`` and/or ``kwds_scatter``.
+        See also http://matplotlib.org/examples/pylab_examples/zorder_demo.html
+
         See also
         --------
         plot_map_generator
@@ -3182,7 +3197,7 @@ class DeepGraph(object):
         """
 
         return self._plot_2d(
-            is_map=True, x=lon, y=lat, edges=edges, nodesfirst=nodesfirst, C=C,
+            is_map=True, x=lon, y=lat, edges=edges, C=C,
             C_split_0=C_split_0, kwds_basemap=kwds_basemap,
             kwds_scatter=kwds_scatter, kwds_quiver=kwds_quiver,
             kwds_quiver_0=kwds_quiver_0, ax=ax, m=m)
@@ -3190,7 +3205,7 @@ class DeepGraph(object):
     def plot_map_generator(
             self,
             lon, lat, by,
-            edges=False, nodesfirst=False,
+            edges=False,
             C=None, C_split_0=None,
             kwds_basemap=None, kwds_scatter=None, kwds_quiver=None,
             kwds_quiver_0=None):
@@ -3249,9 +3264,6 @@ class DeepGraph(object):
             Whether to create a quiver plot (2-D field of arrows) of the edges
             between the nodes.
 
-        nodesfirst : bool, optional (default=False)
-            If True, the nodes are drawn first, otherwise the edges are.
-
         C : array_like, optional (default=None)
             An optional array used to map colors to the arrows. Must have the
             same length es ``e``. Has no effect if ``C_split_0`` is passed as
@@ -3289,6 +3301,14 @@ class DeepGraph(object):
         by passing the keyword argument `color` to ``kwds_quiver_0``. The color
         of the arrows in qu, however, are determined by ``C_split_0``.
 
+        The default drawing order is set to:
+        1. quiver_0 (zorder=1)
+        2. quiver (zorder=2)
+        3. scatter (zorder=3)
+        This order can be changed by setting the ``zorder`` in
+        ``kwds_quiver_0``, ``kwds_quiver`` and/or ``kwds_scatter``.
+        See also http://matplotlib.org/examples/pylab_examples/zorder_demo.html
+
         See also
         --------
         append_binning_labels_v
@@ -3301,7 +3321,7 @@ class DeepGraph(object):
 
         return self._plot_2d_generator(
             is_map=True, x=lon, y=lat, by=by, edges=edges,
-            nodesfirst=nodesfirst, C=C, C_split_0=C_split_0,
+            C=C, C_split_0=C_split_0,
             kwds_basemap=kwds_basemap, kwds_scatter=kwds_scatter,
             kwds_quiver=kwds_quiver, kwds_quiver_0=kwds_quiver_0)
 
@@ -3824,20 +3844,12 @@ class DeepGraph(object):
             r = 'there are no edges'
         return r
 
-    def _plot_2d(self, is_map, x, y, edges, nodesfirst, C, C_split_0,
+    def _plot_2d(self, is_map, x, y, edges, C, C_split_0,
                  kwds_scatter, kwds_quiver, kwds_quiver_0,
                  kwds_basemap, ax, m):
 
         if is_map:
             from mpl_toolkits.basemap import Basemap
-
-        # set order
-        if nodesfirst:
-            pc_order = 1
-            qu_order = 2
-        else:
-            pc_order = 2
-            qu_order = 1
 
         # set kwds
         if kwds_basemap is None:
@@ -3856,6 +3868,20 @@ class DeepGraph(object):
             kwds_quiver_0 = {}
         else:
             kwds_quiver_0 = kwds_quiver_0.copy()
+
+        # set draw order
+        try:
+            zorder_qu0 = kwds_quiver_0.pop('zorder')
+        except KeyError:
+            zorder_qu0 = 1
+        try:
+            zorder_qu = kwds_quiver.pop('zorder')
+        except KeyError:
+            zorder_qu = 2
+        try:
+            zorder_pc = kwds_scatter.pop('zorder')
+        except KeyError:
+            zorder_pc = 3
 
         # create dict for matplotlib objects
         obj = {}
@@ -3886,7 +3912,7 @@ class DeepGraph(object):
         else:
             axm = ax
 
-        pc = axm.scatter(x, y, zorder=pc_order, **kwds_scatter)
+        pc = axm.scatter(x, y, zorder=zorder_pc, **kwds_scatter)
         obj['pc'] = pc
 
         # draw edges as arrows
@@ -3935,12 +3961,12 @@ class DeepGraph(object):
                 qu_0 = axm.quiver(
                     xs[C == 0], ys[C == 0], dx[C == 0], dy[C == 0],
                     color=color, angles='xy', scale_units='xy', scale=1,
-                    headwidth=headwidth, zorder=qu_order, **kwds_quiver_0)
+                    headwidth=headwidth, zorder=zorder_qu0, **kwds_quiver_0)
 
                 qu = axm.quiver(
                     xs[C != 0], ys[C != 0], dx[C != 0], dy[C != 0], C[C != 0],
                     angles='xy', scale_units='xy', scale=1,
-                    zorder=qu_order, **kwds_quiver)
+                    zorder=zorder_qu, **kwds_quiver)
 
                 obj['qu_0'] = qu_0
                 obj['qu'] = qu
@@ -3948,31 +3974,23 @@ class DeepGraph(object):
             elif C is not None:
                 qu = axm.quiver(
                     xs, ys, dx, dy, C, angles='xy', scale_units='xy', scale=1,
-                    zorder=qu_order, **kwds_quiver)
+                    zorder=zorder_qu, **kwds_quiver)
                 obj['qu'] = qu
 
             else:
                 qu = axm.quiver(
                     xs, ys, dx, dy, angles='xy', scale_units='xy', scale=1,
-                    zorder=qu_order, **kwds_quiver)
+                    zorder=zorder_qu, **kwds_quiver)
                 obj['qu'] = qu
 
         return obj
 
-    def _plot_2d_generator(self, is_map, x, y, by, edges, nodesfirst, C,
+    def _plot_2d_generator(self, is_map, x, y, by, edges, C,
                            C_split_0, kwds_basemap, kwds_scatter, kwds_quiver,
                            kwds_quiver_0):
 
         if is_map:
             from mpl_toolkits.basemap import Basemap
-
-        # set order
-        if nodesfirst:
-            pc_order = 1
-            qu_order = 2
-        else:
-            pc_order = 2
-            qu_order = 1
 
         # set kwargs
         if kwds_basemap is None:
@@ -3991,6 +4009,20 @@ class DeepGraph(object):
             kwds_quiver_0 = {}
         else:
             kwds_quiver_0 = kwds_quiver_0.copy()
+
+        # set draw order
+        try:
+            zorder_qu0 = kwds_quiver_0.pop('zorder')
+        except KeyError:
+            zorder_qu0 = 1
+        try:
+            zorder_qu = kwds_quiver.pop('zorder')
+        except KeyError:
+            zorder_qu = 2
+        try:
+            zorder_pc = kwds_scatter.pop('zorder')
+        except KeyError:
+            zorder_pc = 3
 
         # assert there's no color given in quiver kwds
         if kwds_quiver is not None:
@@ -4117,7 +4149,7 @@ class DeepGraph(object):
             # need to change colors to list, in case they're not numbers
             pc = axm.scatter(x, y, c=g.v.pc_c.values.tolist(),
                              s=g.v.pc_s.values, vmin=pc_vmin, vmax=pc_vmax,
-                             zorder=pc_order, **kwds_scatter)
+                             zorder=zorder_pc, **kwds_scatter)
             obj['pc'] = pc
 
             # draw edges as arrows
@@ -4157,13 +4189,13 @@ class DeepGraph(object):
                     qu_0 = axm.quiver(
                         xs[C == 0], ys[C == 0], dx[C == 0], dy[C == 0],
                         color=color, angles='xy', scale_units='xy', scale=1,
-                        headwidth=qu_0_headwidth, zorder=qu_order,
+                        headwidth=qu_0_headwidth, zorder=zorder_qu0,
                         **kwds_quiver_0)
 
                     qu = axm.quiver(
                         xs[C != 0], ys[C != 0], dx[C != 0], dy[C != 0],
                         C[C != 0], angles='xy', scale_units='xy', scale=1,
-                        clim=qu_clim, zorder=qu_order, **kwds_quiver)
+                        clim=qu_clim, zorder=zorder_qu, **kwds_quiver)
 
                     obj['qu_0'] = qu_0
                     obj['qu'] = qu
@@ -4174,7 +4206,7 @@ class DeepGraph(object):
 
                     qu = axm.quiver(
                         xs, ys, dx, dy, C, angles='xy', scale_units='xy',
-                        scale=1, clim=qu_clim, zorder=qu_order,
+                        scale=1, clim=qu_clim, zorder=zorder_qu,
                         **kwds_quiver)
 
                     obj['qu'] = qu
@@ -4182,7 +4214,7 @@ class DeepGraph(object):
                 else:
                     qu = axm.quiver(
                         xs, ys, dx, dy, angles='xy', scale_units='xy', scale=1,
-                        zorder=qu_order, **kwds_quiver)
+                        zorder=zorder_qu, **kwds_quiver)
 
                     obj['qu'] = qu
 
