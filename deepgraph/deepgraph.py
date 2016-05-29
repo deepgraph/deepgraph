@@ -1896,30 +1896,31 @@ class DeepGraph(object):
         nx_g.add_nodes_from(vt)
 
         # select relations
-        if relations is False:
-            et = pd.DataFrame(index=self.e.index)
-        elif relations is True:
-            et = self.e
-        elif _is_array_like(relations):
-            if dropna is not 'none':
-                et = self.e[relations].dropna(how=dropna)
+        if hasattr(self, 'e'):
+            if relations is False:
+                et = pd.DataFrame(index=self.e.index)
+            elif relations is True:
+                et = self.e
+            elif _is_array_like(relations):
+                if dropna is not 'none':
+                    et = self.e[relations].dropna(how=dropna)
+                else:
+                    et = self.e[relations]
             else:
-                et = self.e[relations]
-        else:
-            if dropna is not 'none':
-                et = self.e[relations].to_frame().dropna(how=dropna)
+                if dropna is not 'none':
+                    et = self.e[relations].to_frame().dropna(how=dropna)
+                else:
+                    et = self.e[relations].to_frame()
+
+            # create nx compatible tuple, (index, index, weight_dict)
+            et = et.to_dict('index')
+            if PY2:
+                et = [(key[0], key[1], value) for key, value in et.iteritems()]
             else:
-                et = self.e[relations].to_frame()
+                et = [(key[0], key[1], value) for key, value in et.items()]
 
-        # create nx compatible tuple, (index, index, weight_dict)
-        et = et.to_dict('index')
-        if PY2:
-            et = [(key[0], key[1], value) for key, value in et.iteritems()]
-        else:
-            et = [(key[0], key[1], value) for key, value in et.items()]
-
-        # add edges
-        nx_g.add_edges_from(et)
+            # add edges
+            nx_g.add_edges_from(et)
 
         return nx_g
 
@@ -1985,7 +1986,7 @@ class DeepGraph(object):
 
         """
 
-        import graph_tool as gt  # @UnresolvedImport
+        import graph_tool as gt
 
         # propertymap dtypes
         dtdic = {
@@ -2047,48 +2048,49 @@ class DeepGraph(object):
             gt_g.vertex_properties[str(col)] = pm
 
         # select relations
-        if relations is False:
-            et = pd.DataFrame(index=self.e.index)
-        elif relations is True:
-            et = self.e
-        elif _is_array_like(relations):
-            if dropna is not 'none':
-                et = self.e[relations].dropna(how=dropna)
+        if hasattr(self, 'e'):
+            if relations is False:
+                et = pd.DataFrame(index=self.e.index)
+            elif relations is True:
+                et = self.e
+            elif _is_array_like(relations):
+                if dropna is not 'none':
+                    et = self.e[relations].dropna(how=dropna)
+                else:
+                    et = self.e[relations]
             else:
-                et = self.e[relations]
-        else:
-            if dropna is not 'none':
-                et = self.e[relations].to_frame().dropna(how=dropna)
-            else:
-                et = self.e[relations].to_frame()
+                if dropna is not 'none':
+                    et = self.e[relations].to_frame().dropna(how=dropna)
+                else:
+                    et = self.e[relations].to_frame()
 
-        # add edges
-        s = et.index.get_level_values(level=0).values
-        t = et.index.get_level_values(level=1).values
-        try:
-            ns = _dic_translator(s, inddic)
-            nt = _dic_translator(t, inddic)
-            gt_g.add_edge_list(np.column_stack((ns, nt)))
-            del ns, nt
-        except NameError:
-            gt_g.add_edge_list(np.column_stack((s, t)))
-
-        # add edge propertymaps
-        if edge_indices:
-            s = gt_g.new_edge_property('long', s)
-            t = gt_g.new_edge_property('long', t)
-            gt_g.edge_properties['s'] = s
-            gt_g.edge_properties['t'] = t
-
-        for col in et.columns:
+            # add edges
+            s = et.index.get_level_values(level=0).values
+            t = et.index.get_level_values(level=1).values
             try:
-                pm = gt_g.new_edge_property(dtdic[str(et[col].dtype)],
-                                            et[col].values)
-            except KeyError:
-                pm = gt_g.new_edge_property('object', et[col].values)
+                ns = _dic_translator(s, inddic)
+                nt = _dic_translator(t, inddic)
+                gt_g.add_edge_list(np.column_stack((ns, nt)))
+                del ns, nt
+            except NameError:
+                gt_g.add_edge_list(np.column_stack((s, t)))
 
-            # internalize
-            gt_g.edge_properties[str(col)] = pm
+            # add edge propertymaps
+            if edge_indices:
+                s = gt_g.new_edge_property('long', s)
+                t = gt_g.new_edge_property('long', t)
+                gt_g.edge_properties['s'] = s
+                gt_g.edge_properties['t'] = t
+
+            for col in et.columns:
+                try:
+                    pm = gt_g.new_edge_property(dtdic[str(et[col].dtype)],
+                                                et[col].values)
+                except KeyError:
+                    pm = gt_g.new_edge_property('object', et[col].values)
+
+                # internalize
+                gt_g.edge_properties[str(col)] = pm
 
         return gt_g
 
