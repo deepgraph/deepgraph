@@ -1968,7 +1968,7 @@ class DeepGraph(object):
 
         node_indices : bool, optional (default=False)
             If True, internalize a vertex propertymap ``i`` indicating the
-            nodes indices.
+            nodes' indices.
 
         edge_indices : bool, optional (default=False)
             If True, internalize edge propertymaps ``s`` and ``t`` indicating
@@ -2010,10 +2010,11 @@ class DeepGraph(object):
         }
 
         # get indices
-        indices = self.v.index.values
+        index = self.v.index
+        indices = index.values
         n = len(indices)
         # enumerate indices if necessary
-        if not indices.max() == len(indices) - 1:
+        if type(index) == object or indices.max() != len(indices) - 1:
             inddic = {j: i for i, j in enumerate(indices)}
 
         # create empty Graph
@@ -2021,7 +2022,7 @@ class DeepGraph(object):
 
         # select features
         if features is False:
-            vt = pd.DataFrame(index=self.v.index)
+            vt = pd.DataFrame(index=index)
         elif features is True:
             vt = self.v
         elif _is_array_like(features):
@@ -2034,8 +2035,12 @@ class DeepGraph(object):
 
         # add vertex propertymaps
         if node_indices:
-            indices = gt_g.new_vertex_property('long', indices)
-            gt_g.vertex_properties['i'] = indices
+            try:
+                pm = gt_g.new_vertex_property(dtdic[str(index.dtype)], indices)
+            except KeyError:
+                pm = gt_g.new_vertex_property('object', indices)
+            # internalize
+            gt_g.vertex_properties['i'] = pm
 
         for col in vt.columns:
             try:
@@ -2043,7 +2048,6 @@ class DeepGraph(object):
                                               vt[col].values)
             except KeyError:
                 pm = gt_g.new_vertex_property('object', vt[col].values)
-
             # internalize
             gt_g.vertex_properties[str(col)] = pm
 
@@ -2068,8 +2072,8 @@ class DeepGraph(object):
             s = et.index.get_level_values(level=0).values
             t = et.index.get_level_values(level=1).values
             try:
-                ns = _dic_translator(s, inddic)
-                nt = _dic_translator(t, inddic)
+                ns = _dic_translator(s, inddic).astype(int)
+                nt = _dic_translator(t, inddic).astype(int)
                 gt_g.add_edge_list(np.column_stack((ns, nt)))
                 del ns, nt
             except NameError:
@@ -2077,8 +2081,13 @@ class DeepGraph(object):
 
             # add edge propertymaps
             if edge_indices:
-                s = gt_g.new_edge_property('long', s)
-                t = gt_g.new_edge_property('long', t)
+                try:
+                    s = gt_g.new_edge_property(dtdic[str(s.dtype)], s)
+                    t = gt_g.new_edge_property(dtdic[str(t.dtype)], t)
+                except KeyError:
+                    s = gt_g.new_edge_property('object', s)
+                    t = gt_g.new_edge_property('object', t)
+                # internalize
                 gt_g.edge_properties['s'] = s
                 gt_g.edge_properties['t'] = t
 
@@ -2088,7 +2097,6 @@ class DeepGraph(object):
                                                 et[col].values)
                 except KeyError:
                     pm = gt_g.new_edge_property('object', et[col].values)
-
                 # internalize
                 gt_g.edge_properties[str(col)] = pm
 
