@@ -47,15 +47,19 @@ use the following BibTex entry
 
 @Article{traxl-2016-deep,
   author      = {Dominik Traxl AND Niklas Boers AND J\"urgen Kurths},
-  title       = {Deep Graphs - a general framework to represent and analyze
+  title       = {Deep Graphs - A general framework to represent and analyze
                  heterogeneous complex systems across scales},
-  journal     = {arXiv preprint arXiv:1604.00971v1},
-  version     = {1},
-  date        = {2016-04-04},
+  journal     = {Chaos},
   year        = {2016},
+  volume      = {26},
+  number      = {6},
+  eid         = {065303},
+  doi         = {http://dx.doi.org/10.1063/1.4952963},
   eprinttype  = {arxiv},
   eprintclass = {physics.data-an, cs.SI, physics.ao-ph, physics.soc-ph},
   eprint      = {http://arxiv.org/abs/1604.00971v1},
+  version     = {1},
+  date        = {2016-04-04},
   url         = {http://arxiv.org/abs/1604.00971v1}
 }
 
