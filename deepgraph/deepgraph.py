@@ -1082,8 +1082,9 @@ class DeepGraph(object):
         methods of ``gv``.
 
         For examples, see below. For an in-depth description and mathematical
-        details of graph partitioning, see [ref], in particular Sec.[] and
-        Sec.[].
+        details of graph partitioning, see
+        https://arxiv.org/pdf/1604.00971v1.pdf, in particular Sec. III A, E
+        and F.
 
         Parameters
         ----------
@@ -1231,8 +1232,9 @@ class DeepGraph(object):
         methods of ``ge``.
 
         For examples, see below. For an in-depth description and mathematical
-        details of graph partitioning, see [ref], in particular Sec.[] and
-        Sec.[].
+        details of graph partitioning, see
+        https://arxiv.org/pdf/1604.00971v1.pdf, in particular Sec. III B, E
+        and F.
 
         Parameters
         ----------
@@ -1509,8 +1511,9 @@ class DeepGraph(object):
         methods of ``gv``.
 
         For examples, see below. For an in-depth description and mathematical
-        details of graph partitioning, see [ref], in particular Sec.[] and
-        Sec.[].
+        details of graph partitioning, see
+        https://arxiv.org/pdf/1604.00971v1.pdf, in particular Sec. III C, E
+        and F.
 
         Parameters
         ----------
