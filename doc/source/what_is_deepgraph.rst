@@ -46,6 +46,11 @@ class of DeepGraph provides :ref:`interfacing methods <interfacing_methods>` to
 convert to common network representations and graph objects of popular Python
 network packages.
 
+It's also possible to represent :ref:`multilayer networks <tutorial_terror>` by
+deep graphs. We're thinking of implementing an interface to a suitable package
+dedicated to the analysis of multilayer networks.
+
+
 **Disclaimer**
 
 Since this project is fairly new, it's not unlikely you might encounter some

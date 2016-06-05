@@ -27,7 +27,9 @@ and provides methods to construct, partition and plot graphs, to interface with
 popular network packages and more.
 
 It is based on a new network representation introduced
-`here <http://arxiv.org/abs/1604.00971>`_.
+`here <http://arxiv.org/abs/1604.00971>`_. DeepGraph is also capable of
+representing
+`multilayer networks <http://deepgraph.readthedocs.io/en/latest/tutorials/terrorists.html>`_.
 
 
 Quick Start
