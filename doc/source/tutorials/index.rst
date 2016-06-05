@@ -12,6 +12,7 @@ Tutorials
 
    10min_to_deepgraph
    precipitation
+   terrorists
 
 **What Next**
 
