@@ -152,7 +152,7 @@ Preprocessing the Edges
                     sublist = sublist[:2] + sublist[-1].split()
                     part.append(sublist)
                 # edges or partitions
-                elif len(line) > 1:
+                elif not line.isspace():
                     part.append(line.split())
         # append last block
         data.append(part)
