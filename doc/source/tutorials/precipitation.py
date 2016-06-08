@@ -1,11 +1,7 @@
 
 # coding: utf-8
 
-# .. _tutorial_pcp:
-
 # # Building a DeepGraph of Extreme Precipitation
-
-# [:download:`ipython notebook <precipitation.ipynb>`] [:download:`python script <precipitation.py>`]
 
 # In the following we build a deep graph of a high-resolution dataset of precipitation measurements.
 #
@@ -22,18 +18,20 @@ import os
 import xarray
 
 # for plots
-# get_ipython().magic('matplotlib inline')
 import matplotlib.pyplot as plt
-plt.rcParams['figure.figsize'] = 8, 6
-
-# for videos
-from IPython.display import HTML
 
 # the usual
 import numpy as np
 import pandas as pd
 
 import deepgraph as dg
+
+# notebook display
+# from IPython.display import HTML
+# get_ipython().magic('matplotlib inline')
+# plt.rcParams['figure.figsize'] = 8, 6
+# pd.options.display.max_rows = 10
+# pd.set_option('expand_frame_repr', False)
 
 
 # ## Selecting and Preprocessing the Precipitation Data
@@ -61,8 +59,6 @@ os.system("wget --content-disposition --directory-prefix=tmp -i SSW_download_201
 
 
 # ### Preprocessing
-
-# Next, we need to convert the downloaded netCDF files to a pandas `DataFrame <http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html>`_, which we can then use to initiate a :py:class:`dg.DeepGraph <.DeepGraph>`
 
 # In[2]:
 
@@ -152,14 +148,10 @@ v.rename(columns={'pcp': 'r',
          inplace=True)
 
 
-# The created `DataFrame <http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html>`_ of extreme precipitation measurements looks like this
-
 # In[3]:
 
-print(v.head())
+print(v)
 
-
-# We identify each row of this table as a node of our :py:class:`DeepGraph <.DeepGraph>`
 
 # In[4]:
 
@@ -167,8 +159,6 @@ g = dg.DeepGraph(v)
 
 
 # ### Plot the Data
-
-# Let's take a look at the data by creating a video of the time-evolution of precipitation measurements. Using the :py:meth:`plot_map_generator <.plot_map_generator>` method, this is straight forward.
 
 # In[ ]:
 
@@ -215,14 +205,12 @@ os.system(cmd.format('precipitation_files/pcp'))
 # In[5]:
 
 # embed video
-HTML("""
-<video width="700" height="350" controls>
-  <source src="precipitation_files/pcp.mp4" type="video/mp4">
-</video>
-""")
+# HTML("""
+# <video width="700" height="350" controls>
+#   <source src="precipitation_files/pcp.mp4" type="video/mp4">
+# </video>
+# """)
 
-
-# [:download:`download video <precipitation_files/pcp.mp4>`]
 
 # ## Detecting SpatioTemporal Clusters of Extreme Precipitation
 
@@ -264,8 +252,6 @@ def s_grid_2d_dy(dy, sources, targets):
     return sources, targets
 
 
-# to the :py:meth:`create_edges_ft <.create_edges_ft>` method
-
 # In[8]:
 
 g.create_edges_ft(ft_feature=('time', 1),
@@ -292,12 +278,10 @@ g
 
 # In[10]:
 
-print(g.e.head())
+print(g.e)
 
 
 # **Logfile Plot**
-
-# To see how long it took to create the edges, one may use the :py:meth:`plot_logfile <.plot_logfile>` method
 
 # In[11]:
 
@@ -305,8 +289,6 @@ g.plot_logfile('create_e')
 
 
 # ### Find the Connected Components
-
-# Having linked all neighbouring nodes, the spatiotemporal clusters can be identified as the connected components of the graph. For practical reasons, :py:class:`DeepGraph <.DeepGraph>` directly implements a method to find the connected components of a graph, :py:meth:`append_cp <.append_cp>`
 
 # In[12]:
 
@@ -321,7 +303,7 @@ del g.e
 
 # In[13]:
 
-print(g.v.head())
+print(g.v)
 
 
 # Let's see how many spatiotemporal clusters ``g`` is comprised of (discarding singular components)
@@ -331,16 +313,14 @@ print(g.v.head())
 g.v.cp.max()
 
 
-# and how many nodes there are in the largest components
+# and how many nodes there are in the components
 
 # In[15]:
 
-print(g.v.cp.value_counts().head())
+print(g.v.cp.value_counts())
 
 
 # ### Partition the Nodes Into a Component Supernode Table
-
-# In order to aggregate and compute some information about the precipitiation clusters, we now partition the nodes by the type of feature ``cp``, the component membership labels of the nodes just created. This can be done with the :py:meth:`partition_nodes <.partition_nodes>` method
 
 # In[16]:
 
@@ -369,16 +349,14 @@ def area(group):
 cpv['area'] = gv.apply(area)
 
 
-# The first couple of clusters look like this
+# The clusters look like this
 
 # In[17]:
 
-print(cpv.head())
+print(cpv)
 
 
 # ### Plot the Largest Component
-
-# Let's see how the largest cluster of extreme precipitation evolves over time, again using the :py:meth:`plot_map_generator <.plot_map_generator>` method
 
 # In[ ]:
 
@@ -441,14 +419,12 @@ os.system(cmd.format('precipitation_files/cp1_ortho'))
 # In[18]:
 
 # embed video
-HTML("""
-<video width="700" height="500" controls>
-  <source src="precipitation_files/cp1_ortho.mp4" type="video/mp4">
-</video>
-""")
+# HTML("""
+# <video width="700" height="500" controls>
+#   <source src="precipitation_files/cp1_ortho.mp4" type="video/mp4">
+# </video>
+# """)
 
-
-# [:download:`download video <precipitation_files/cp1_ortho.mp4>`]
 
 # ## Detecting Families of Spatially Related Clusters
 
@@ -481,8 +457,6 @@ def time_dist(dtime_amin_s, dtime_amin_t):
     return dt
 
 
-# to the :py:meth:`create_edges <.create_edges>` method will provide the information necessary for this task
-
 # In[20]:
 
 # discard singular components
@@ -511,12 +485,12 @@ cpg
 
 # In[22]:
 
-print(cpg.e.head())
+print(cpg.e)
 
 
 # In[23]:
 
-print(cpg.e.intsec_strength.value_counts().head())
+print(cpg.e.intsec_strength.value_counts())
 
 
 # ### Hierarchically Agglomerate Clusters into Families
@@ -546,16 +520,14 @@ fdic = {j: i for i, j in enumerate(f)}
 cpv['F'] = cpv['F'].apply(lambda x: fdic[x])
 
 
-# Let's see how many clusters there are in the largest families
+# Let's see how many clusters there are in the families
 
 # In[25]:
 
-print(cpv['F'].value_counts().head())
+print(cpv['F'].value_counts())
 
 
 # ### Create a "Raster Plot" of Families
-
-# Let's plot the clusters of the largest 10 families in a raster-like boxplot, by means of the :py:meth:`plot_rects_label_numeric <.plot_rects_label_numeric>` method
 
 # In[26]:
 
@@ -593,7 +565,7 @@ gv.rename(columns={'lat_amin': 'lat',
 
 # In[28]:
 
-print(gv.head())
+print(gv)
 
 
 # #### Plot GeoLocational Information
@@ -643,7 +615,7 @@ for name, col in cols.items():
 
 # In order to create the intersection partition of geographical locations and families, we first need to append a family membership column to `v`
 
-# In[30]:
+# In[29]:
 
 # create F col
 v['F'] = np.ones(len(v), dtype=int) * -1
@@ -657,7 +629,7 @@ for F in range(len(it)):
 
 # Then we create the intersection partition
 
-# In[31]:
+# In[30]:
 
 # feature funcs
 def n_cp_nodes(cp):
@@ -677,9 +649,9 @@ fgv.rename(columns={'lat_amin': 'lat',
 
 # which looks like this
 
-# In[32]:
+# In[31]:
 
-print(fgv.head())
+print(fgv)
 
 
 # #### Plot Family Information
@@ -722,7 +694,7 @@ for F in families:
 
 # ### Geographical Locations and Components
 
-# In[38]:
+# In[32]:
 
 # feature functions, will be applied on each [g_id, cp] group of g
 feature_funcs = {'vol': [np.sum],
@@ -736,9 +708,9 @@ gcpv.rename(columns={'lat_amin': 'lat',
                      'lon_amin': 'lon'}, inplace=True)
 
 
-# In[39]:
+# In[33]:
 
-print(gcpv.head())
+print(gcpv)
 
 
 # #### Plot Component Information
@@ -755,7 +727,7 @@ for comp, ax in zip(comps, axs):
 
     # for easy filtering, we create a new DeepGraph instance for
     # each component
-    gt = dg.DeepGraph(gcpv[gcpv.index.get_level_values(1) == comp])
+    gt = dg.DeepGraph(gcpv[gcpv.index.get_level_values('cp') == comp])
 
     # configure map projection
     kwds_basemap = {'projection': 'ortho',

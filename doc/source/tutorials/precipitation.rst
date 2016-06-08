@@ -4,7 +4,7 @@
 Building a DeepGraph of Extreme Precipitation
 =============================================
 
-[:download:`ipython notebook <precipitation.ipynb>`] [:download:`python script <precipitation.py>`]
+[:download:`ipython notebook <precipitation.ipynb>`] [:download:`python script <precipitation.py>`] [:download:`data <SSW_download_2016-05-03T20_19_28_23621_2oIe06xp.inp>`]
 
 In the following we build a deep graph of a high-resolution dataset of
 precipitation measurements.
@@ -26,18 +26,20 @@ First of all, we need to import some packages
     import xarray
 
     # for plots
-    %matplotlib inline
     import matplotlib.pyplot as plt
-    plt.rcParams['figure.figsize'] = 8, 6
-
-    # for videos
-    from IPython.display import HTML
 
     # the usual
     import numpy as np
     import pandas as pd
 
     import deepgraph as dg
+
+    # notebook display
+    from IPython.display import HTML
+    %matplotlib inline
+    plt.rcParams['figure.figsize'] = 8, 6
+    pd.options.display.max_rows = 10
+    pd.set_option('expand_frame_repr', False)
 
 Selecting and Preprocessing the Precipitation Data
 --------------------------------------------------
@@ -169,17 +171,25 @@ The created `DataFrame <http://pandas.pydata.org/pandas-docs/stable/generated/pa
 
 .. code:: python
 
-    print(v.head())
+    print(v)
 
 
 .. parsed-literal::
 
-          lat      lon      dtime     r    x    y  area    vol   g_id  time
-    0  15.125 -118.125 2004-08-20  1084   28  101   743  24174   5652     0
-    1  44.875  -30.625 2004-08-20   392  378  220   545   6433  85341     0
-    2  45.125  -30.625 2004-08-20   454  378  221   543   7416  85342     0
-    3  45.375  -30.625 2004-08-20   909  378  222   540  14767  85343     0
-    4  45.625  -30.625 2004-08-20   907  378  223   538  14669  85344     0
+               lat      lon      dtime     r    x    y  area    vol   g_id  time
+    0       15.125 -118.125 2004-08-20  1084   28  101   743  24174   5652     0
+    1       44.875  -30.625 2004-08-20   392  378  220   545   6433  85341     0
+    2       45.125  -30.625 2004-08-20   454  378  221   543   7416  85342     0
+    3       45.375  -30.625 2004-08-20   909  378  222   540  14767  85343     0
+    4       45.625  -30.625 2004-08-20   907  378  223   538  14669  85344     0
+    ...        ...      ...        ...   ...  ...  ...   ...    ...    ...   ...
+    382306  26.875  -46.625 2004-09-27   503  314  148   686  10385  70380   304
+    382307  38.375  -37.125 2004-09-27   453  352  194   603   8222  79095   304
+    382308   8.125 -105.125 2004-09-27   509   80   73   762  11663  17007   304
+    382309  21.875  -42.875 2004-09-27   260  329  128   714   5595  73875   304
+    382310   6.625 -111.125 2004-09-27   192   56   67   764   4428  11790   304
+
+    [382311 rows x 10 columns]
 
 
 We identify each row of this table as a node of our :py:class:`DeepGraph <.DeepGraph>`
@@ -333,7 +343,7 @@ type
 
 .. parsed-literal::
 
-    <DeepGraph object, with n=382311 node(s) and m=567225 edge(s) at 0x7ff691a4e6a0>
+    <DeepGraph object, with n=382311 node(s) and m=567225 edge(s) at 0x7f7a4c3de160>
 
 
 
@@ -341,18 +351,26 @@ The edges we just created look like this
 
 .. code:: python
 
-    print(g.e.head())
+    print(g.e)
 
 
 .. parsed-literal::
 
-            dx  dy     dt
-    s t
-    0 1362   0   1  False
-      1432   1   0  False
-      1433   1   1  False
-      1696   1   0   True
-      1699   1   1   True
+                   dx  dy     dt
+    s      t
+    0      1362     0   1  False
+           1432     1   0  False
+           1433     1   1  False
+           1696     1   0   True
+           1699     1   1   True
+    ...            ..  ..    ...
+    382284 382291   0   1  False
+    382295 382296   0   1  False
+    382296 382299   0   1  False
+    382299 382309   0   1  False
+    382304 382306   0   1  False
+
+    [567225 rows x 3 columns]
 
 
 **Logfile Plot**
@@ -362,19 +380,6 @@ To see how long it took to create the edges, one may use the :py:meth:`plot_logf
 .. code:: python
 
     g.plot_logfile('create_e')
-
-
-
-
-.. parsed-literal::
-
-    {'ax': <matplotlib.axes._subplots.AxesSubplot at 0x7ff691cd4cc0>,
-     'cb_n': <matplotlib.colorbar.Colorbar at 0x7ff669b9b8d0>,
-     'fig': <matplotlib.figure.Figure at 0x7ff691a4f278>,
-     'pc_e': <matplotlib.collections.PathCollection at 0x7ff66afa6400>,
-     'pc_n': <matplotlib.collections.PathCollection at 0x7ff66af4bda0>}
-
-
 
 
 .. image:: precipitation_files/precipitation_38_1.png
@@ -397,17 +402,25 @@ the node table now has a component membership column appended
 
 .. code:: python
 
-    print(g.v.head())
+    print(g.v)
 
 
 .. parsed-literal::
 
-          lat      lon      dtime     r    x    y  area    vol   g_id  time    cp
-    0  15.125 -118.125 2004-08-20  1084   28  101   743  24174   5652     0   865
-    1  44.875  -30.625 2004-08-20   392  378  220   545   6433  85341     0  5079
-    2  45.125  -30.625 2004-08-20   454  378  221   543   7416  85342     0  5079
-    3  45.375  -30.625 2004-08-20   909  378  222   540  14767  85343     0  5079
-    4  45.625  -30.625 2004-08-20   907  378  223   538  14669  85344     0  5079
+               lat      lon      dtime     r    x    y  area    vol   g_id  time     cp
+    0       15.125 -118.125 2004-08-20  1084   28  101   743  24174   5652     0    865
+    1       44.875  -30.625 2004-08-20   392  378  220   545   6433  85341     0   5079
+    2       45.125  -30.625 2004-08-20   454  378  221   543   7416  85342     0   5079
+    3       45.375  -30.625 2004-08-20   909  378  222   540  14767  85343     0   5079
+    4       45.625  -30.625 2004-08-20   907  378  223   538  14669  85344     0   5079
+    ...        ...      ...        ...   ...  ...  ...   ...    ...    ...   ...    ...
+    382306  26.875  -46.625 2004-09-27   503  314  148   686  10385  70380   304    609
+    382307  38.375  -37.125 2004-09-27   453  352  194   603   8222  79095   304      0
+    382308   8.125 -105.125 2004-09-27   509   80   73   762  11663  17007   304    174
+    382309  21.875  -42.875 2004-09-27   260  329  128   714   5595  73875   304      8
+    382310   6.625 -111.125 2004-09-27   192   56   67   764   4428  11790   304  15610
+
+    [382311 rows x 11 columns]
 
 
 Let's see how many spatiotemporal clusters ``g`` is comprised of
@@ -426,20 +439,26 @@ Let's see how many spatiotemporal clusters ``g`` is comprised of
 
 
 
-and how many nodes there are in the largest components
+and how many nodes there are in the components
 
 .. code:: python
 
-    print(g.v.cp.value_counts().head())
+    print(g.v.cp.value_counts())
 
 
 .. parsed-literal::
 
-    0    64678
-    1    16460
-    2     8519
-    3     6381
-    4     3403
+    0        64678
+    1        16460
+    2         8519
+    3         6381
+    4         3403
+             ...
+    29601        2
+    27554        2
+    25507        2
+    23460        2
+    20159        2
     Name: cp, dtype: int64
 
 
@@ -474,46 +493,30 @@ In order to aggregate and compute some information about the precipitiation clus
         return group.drop_duplicates('g_id').area.sum()
     cpv['area'] = gv.apply(area)
 
-The first couple of clusters look like this
+The clusters look like this
 
 .. code:: python
 
-    print(cpv.head())
+    print(cpv)
 
 
 .. parsed-literal::
 
-        n_nodes  time_amin  time_amax   lon_mean          dtime_amin  \
+           n_nodes          dtime_amin          dtime_amax  time_amin  time_amax   lat_mean    vol_sum   lon_mean                                              g_ids  n_unique_g_ids               dt      area
     cp
-    0     64678          0        304  -63.40625 2004-08-20 00:00:00
-    1     16460         98        230  -65.12500 2004-09-01 06:00:00
-    2      8519        225        285  -44.62500 2004-09-17 03:00:00
-    3      6381         51        137  -64.12500 2004-08-26 09:00:00
-    4      3403         15         36 -111.93750 2004-08-21 21:00:00
+    0        64678 2004-08-20 00:00:00 2004-09-27 00:00:00          0        304  17.609375  627097323  -63.40625  {0, 1, 2, 6, 7, 10, 12, 13, 14, 22, 23, 24, 25...           49808 38 days 00:00:00  34781178
+    1        16460 2004-09-01 06:00:00 2004-09-17 18:00:00         98        230  17.281250  351187150  -65.12500  {65536, 65537, 65538, 65539, 65540, 65541, 655...            6629 16 days 12:00:00   4803624
+    2         8519 2004-09-17 03:00:00 2004-09-24 15:00:00        225        285  26.906250  133698579  -44.62500  {73728, 73729, 73730, 73731, 73732, 73733, 737...            3730  7 days 12:00:00   2507350
+    3         6381 2004-08-26 09:00:00 2004-09-06 03:00:00         51        137  21.062500  113782748  -64.12500  {65555, 65556, 65557, 65558, 65559, 65560, 655...            2442 10 days 18:00:00   1749673
+    4         3403 2004-08-21 21:00:00 2004-08-24 12:00:00         15         36  10.578125   66675326 -111.93750  {8141, 14654, 11805, 16363, 8142, 11806, 20490...            1294  2 days 15:00:00    978604
+    ...        ...                 ...                 ...        ...        ...        ...        ...        ...                                                ...             ...              ...       ...
+    33165        2 2004-08-23 18:00:00 2004-08-23 18:00:00         30         30  15.500000      20212 -103.87500                                     {18115, 18116}               2  0 days 00:00:00      1483
+    33166        2 2004-09-05 18:00:00 2004-09-05 18:00:00        134        134  27.250000       9366 -121.87500                                       {2688, 2687}               2  0 days 00:00:00      1368
+    33167        2 2004-08-30 15:00:00 2004-08-30 15:00:00         85         85   9.250000      43096    0.62500                                   {112116, 112117}               2  0 days 00:00:00      1519
+    33168        2 2004-09-09 03:00:00 2004-09-09 03:00:00        161        161   6.750000      24156  -13.62500                                   {100613, 100614}               2  0 days 00:00:00      1528
+    33169        2 2004-09-11 03:00:00 2004-09-11 03:00:00        177        177  15.500000      46798  -16.12500                                     {98523, 98524}               2  0 days 00:00:00      1483
 
-                dtime_amax   lat_mean    vol_sum  \
-    cp
-    0  2004-09-27 00:00:00  17.609375  627097323
-    1  2004-09-17 18:00:00  17.281250  351187150
-    2  2004-09-24 15:00:00  26.906250  133698579
-    3  2004-09-06 03:00:00  21.062500  113782748
-    4  2004-08-24 12:00:00  10.578125   66675326
-
-                                                    g_ids  n_unique_g_ids  \
-    cp
-    0   {0, 1, 2, 6, 7, 10, 12, 13, 14, 22, 23, 24, 25...           49808
-    1   {65536, 65537, 65538, 65539, 65540, 65541, 655...            6629
-    2   {73728, 73729, 73730, 73731, 73732, 73733, 737...            3730
-    3   {65555, 65556, 65557, 65558, 65559, 65560, 655...            2442
-    4   {8141, 14654, 11805, 16363, 8142, 11806, 20490...            1294
-
-                     dt      area
-    cp
-    0  38 days 00:00:00  34781178
-    1  16 days 12:00:00   4803624
-    2   7 days 12:00:00   2507350
-    3  10 days 18:00:00   1749673
-    4   2 days 15:00:00    978604
+    [33170 rows x 12 columns]
 
 
 Plot the Largest Component
@@ -666,29 +669,37 @@ be ``cpg.n``\ \*(\ ``cpg.n``-1)/2
 
 .. parsed-literal::
 
-    <DeepGraph object, with n=5000 node(s) and m=12497500 edge(s) at 0x7ff6799e1c18>
+    <DeepGraph object, with n=5000 node(s) and m=12497500 edge(s) at 0x7f7a00aec128>
 
 
 
 .. code:: python
 
-    print(cpg.e.head())
+    print(cpg.e)
 
 
 .. parsed-literal::
 
-         intsec_strength
-    s t
-    1 2         0.018499
-      3         0.002457
-      4         0.000000
-      5         0.000000
-      6         0.000000
+               intsec_strength
+    s    t
+    1    2            0.018499
+         3            0.002457
+         4            0.000000
+         5            0.000000
+         6            0.000000
+    ...                    ...
+    4997 4999         0.000000
+         5000         0.000000
+    4998 4999         0.000000
+         5000         0.000000
+    4999 5000         0.000000
+
+    [12497500 rows x 1 columns]
 
 
 .. code:: python
 
-    print(cpg.e.intsec_strength.value_counts().head())
+    print(cpg.e.intsec_strength.value_counts())
 
 
 .. parsed-literal::
@@ -698,6 +709,12 @@ be ``cpg.n``\ \*(\ ``cpg.n``-1)/2
     0.111111         488
     0.333333         481
     0.500000         462
+                  ...
+    0.012346           1
+    0.158537           1
+    0.178082           1
+    0.658537           1
+    0.018809           1
     Name: intsec_strength, dtype: int64
 
 
@@ -729,20 +746,26 @@ clusters into regionally coherent families.
     fdic = {j: i for i, j in enumerate(f)}
     cpv['F'] = cpv['F'].apply(lambda x: fdic[x])
 
-Let's see how many clusters there are in the largest families
+Let's see how many clusters there are in the families
 
 .. code:: python
 
-    print(cpv['F'].value_counts().head())
+    print(cpv['F'].value_counts())
 
 
 .. parsed-literal::
 
-    0    79
-    1    76
-    2    74
-    3    56
-    4    52
+    0      79
+    1      76
+    2      74
+    3      56
+    4      52
+           ..
+    502     1
+    498     1
+    494     1
+    490     1
+    997     1
     Name: F, dtype: int64
 
 
@@ -793,18 +816,26 @@ Geographical Locations
 
 .. code:: python
 
-    print(gv.head())
+    print(gv)
 
 
 .. parsed-literal::
 
-          n_nodes     lat      lon  cp_count  vol_sum
+            n_nodes  cp_count     lat  vol_sum      lon
     g_id
-    0           2 -10.125 -125.125         1    10142
-    1           2  -9.875 -125.125         1     8716
-    2           2  -9.625 -125.125         0     4372
-    3           2  -9.375 -125.125         2     5310
-    4           2  -9.125 -125.125         2     6409
+    0             2         1 -10.125    10142 -125.125
+    1             2         1  -9.875     8716 -125.125
+    2             2         0  -9.625     4372 -125.125
+    3             2         2  -9.375     5310 -125.125
+    4             2         2  -9.125     6409 -125.125
+    ...         ...       ...     ...      ...      ...
+    115618        2         1  48.875    14319    5.125
+    115619        1         1  49.125    10129    5.125
+    115620        2         1  49.375    12826    5.125
+    115621        2         2  49.625     9117    5.125
+    115622        2         1  49.875    12101    5.125
+
+    [115623 rows x 5 columns]
 
 
 Plot GeoLocational Information
@@ -904,18 +935,26 @@ which looks like this
 
 .. code:: python
 
-    print(fgv.head())
+    print(fgv)
 
 
 .. parsed-literal::
 
-             n_nodes  n_cp_nodes      lon     lat  vol_sum
-    F  g_id
-    -1 0           2           2 -125.125 -10.125    10142
-       1           2           2 -125.125  -9.875     8716
-       2           2           1 -125.125  -9.625     4372
-       3           2           2 -125.125  -9.375     5310
-       4           2           2 -125.125  -9.125     6409
+                n_nodes  n_cp_nodes     lat  vol_sum      lon
+    F    g_id
+    -1   0            2           2 -10.125    10142 -125.125
+         1            2           2  -9.875     8716 -125.125
+         2            2           1  -9.625     4372 -125.125
+         3            2           2  -9.375     5310 -125.125
+         4            2           2  -9.125     6409 -125.125
+    ...             ...         ...     ...      ...      ...
+     998 26685        1           1  -8.875      593  -93.625
+         26686        1           1  -8.625      411  -93.625
+         26887        1           1  -9.375      364  -93.375
+         26888        1           1  -9.125      478  -93.375
+         26889        1           1  -8.875      456  -93.375
+
+    [186903 rows x 5 columns]
 
 
 Plot Family Information
@@ -991,18 +1030,26 @@ Geographical Locations and Components
 
 .. code:: python
 
-    print(gcpv.head())
+    print(gcpv)
 
 
 .. parsed-literal::
 
-             n_nodes      lon     lat  vol_sum
-    cp g_id
-    0  0           1 -125.125 -10.125     5071
-       1           1 -125.125  -9.875     4415
-       2           2 -125.125  -9.625     4372
-       6           3 -125.125  -8.375     1026
-       7           1 -125.125  -8.125      594
+                  n_nodes     lat  vol_sum      lon
+    cp    g_id
+    0     0             1 -10.125     5071 -125.125
+          1             1  -9.875     4415 -125.125
+          2             2  -9.625     4372 -125.125
+          6             3  -8.375     1026 -125.125
+          7             1  -8.125      594 -125.125
+    ...               ...     ...      ...      ...
+    33167 112117        1   9.375    24618    0.625
+    33168 100613        1   6.625    11450  -13.625
+          100614        1   6.875    12706  -13.625
+    33169 98523         1  15.375    31057  -16.125
+          98524         1  15.625    15741  -16.125
+
+    [287301 rows x 4 columns]
 
 
 Plot Component Information
@@ -1020,7 +1067,7 @@ Plot Component Information
 
         # for easy filtering, we create a new DeepGraph instance for
         # each component
-        gt = dg.DeepGraph(gcpv[gcpv.index.get_level_values(1) == comp])
+        gt = dg.DeepGraph(gcpv[gcpv.index.get_level_values('cp') == comp])
 
         # configure map projection
         kwds_basemap = {'projection': 'ortho',
