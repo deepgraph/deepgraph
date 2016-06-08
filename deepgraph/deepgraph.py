@@ -1970,12 +1970,12 @@ class DeepGraph(object):
             has an effect if ``relations`` is str or array_like.
 
         node_indices : bool, optional (default=False)
-            If True, internalize a vertex propertymap ``i`` indicating the
-            nodes' indices.
+            If True, internalize a vertex propertymap ``i`` with the original
+            node indices.
 
         edge_indices : bool, optional (default=False)
-            If True, internalize edge propertymaps ``s`` and ``t`` indicating
-            source and target node indices of the edges, respectively.
+            If True, internalize edge propertymaps ``s`` and ``t`` with the
+            original source and target node indices of the edges, respectively.
 
         Returns
         -------
@@ -1986,6 +1986,12 @@ class DeepGraph(object):
         return_cs_graph
         return_nx_graph
         return_np_tensor
+
+        Notes
+        -----
+        If the index of ``v`` is not pd.RangeIndex(start=0,stop=len(``v``),
+        step=1), the indices will be enumerated, which is expensive for large
+        graphs.
 
         """
 
@@ -2016,8 +2022,14 @@ class DeepGraph(object):
         index = self.v.index
         indices = index.values
         n = len(indices)
+
         # enumerate indices if necessary
-        if type(index) == object or indices.max() != len(indices) - 1:
+        if type(index) is pd.RangeIndex:
+            if index._start == 0 and index._stop == n:
+                inddic = None
+            else:
+                inddic = {j: i for i, j in enumerate(indices)}
+        else:
             inddic = {j: i for i, j in enumerate(indices)}
 
         # create empty Graph
@@ -2074,12 +2086,12 @@ class DeepGraph(object):
             # add edges
             s = et.index.get_level_values(level=0).values
             t = et.index.get_level_values(level=1).values
-            try:
+            if inddic:
                 ns = _dic_translator(s, inddic).astype(int)
                 nt = _dic_translator(t, inddic).astype(int)
                 gt_g.add_edge_list(np.column_stack((ns, nt)))
                 del ns, nt
-            except NameError:
+            else:
                 gt_g.add_edge_list(np.column_stack((s, t)))
 
             # add edge propertymaps
