@@ -2,7 +2,7 @@
 10 Minutes to DeepGraph
 =======================
 
-[:download:`ipython notebook <10min_to_deepgraph.ipynb>`] [:download:`python script <10min_to_deepgraph.py>`]
+[:download:`ipython notebook <10min_to_deepgraph.ipynb>`] [:download:`python script <10min_to_deepgraph.py>`] [:download:`data <flying_balls.csv>`]
 
 This is a short introduction to DeepGraph. In the following, we
 demonstrate DeepGraph's core functionalities by a toy data-set, "flying
@@ -13,15 +13,19 @@ First of all, we need to import some packages
 .. code:: python
 
     # for plots
-    %matplotlib inline
     import matplotlib.pyplot as plt
-    plt.rcParams['figure.figsize'] = 8, 6
-    
+
     # the usual
     import numpy as np
     import pandas as pd
-    
+
     import deepgraph as dg
+
+    # notebook display
+    %matplotlib inline
+    plt.rcParams['figure.figsize'] = 8, 6
+    pd.options.display.max_rows = 10
+    pd.set_option('expand_frame_repr', False)
 
 **Loading Toy Data**
 
@@ -29,50 +33,37 @@ Then, we need data in the form of a pandas `DataFrame <http://pandas.pydata.org/
 
 .. code:: python
 
-    v = pd.read_pickle('flying_balls.pickle')
-    print(v.head())
+    v = pd.read_csv('flying_balls.csv', index_col=0)
+    print(v)
 
 
 .. parsed-literal::
 
-       time       x    y  ball_id
-    0     0  1692.0  0.0        0
-    1     0  8681.0  0.0        1
-    2     0   490.0  0.0        2
-    3     0  7439.0  0.0        3
-    4     0  4998.0  0.0        4
+          time            x          y  ball_id
+    0        0  1692.000000   0.000000        0
+    1        0  8681.000000   0.000000        1
+    2        0   490.000000   0.000000        2
+    3        0  7439.000000   0.000000        3
+    4        0  4998.000000   0.000000        4
+    ...    ...          ...        ...      ...
+    1163    45  2812.552734  16.503178       39
+    1164    46  5686.915998  14.161693       10
+    1165    46  3161.729086  19.381823       14
+    1166    46  5594.233413  57.701712       37
+    1167    47  5572.216748  20.588750       37
+
+    [1168 rows x 4 columns]
 
 
-The data consists of
-
-.. code:: python
-
-    print(len(v))
-
-
-.. parsed-literal::
-
-    1168
-
-
-space-time measurements of 50 different toy balls in two-dimensional
-space. Each space-time measurement (i.e. row of ``v``) represents a
-**node**.
+The data consists of 1168 space-time measurements of 50 different toy
+balls in two-dimensional space. Each space-time measurement (i.e. row of
+``v``) represents a **node**.
 
 Let's plot the data such that each ball has it's own color
 
 .. code:: python
 
     plt.scatter(v.x, v.y, s=v.time, c=v.ball_id)
-
-
-
-
-.. parsed-literal::
-
-    <matplotlib.collections.PathCollection at 0x7fb1ced5bc18>
-
-
 
 
 .. image:: 10min_to_deepgraph_files/10min_to_deepgraph_10_1.png
@@ -93,7 +84,7 @@ In order to create edges between these nodes, we now initiate a :py:class:`dg.De
 
 .. parsed-literal::
 
-    <DeepGraph object, with n=1168 node(s) and m=0 edge(s) at 0x7fb1cf1e1b38>
+    <DeepGraph object, with n=1168 node(s) and m=0 edge(s) at 0x7facf3b35dd8>
 
 
 
@@ -117,24 +108,32 @@ and pass it to :py:meth:`g.create_edges <.create_edges>` in order to compute the
 
 .. parsed-literal::
 
-    <DeepGraph object, with n=1168 node(s) and m=681528 edge(s) at 0x7fb1cf1e1b38>
+    <DeepGraph object, with n=1168 node(s) and m=681528 edge(s) at 0x7facf3b35dd8>
 
 
 
 .. code:: python
 
-    print(g.e.head())
+    print(g.e)
 
 
 .. parsed-literal::
 
-             dx
-    s t        
-    0 1  6989.0
-      2 -1202.0
-      3  5747.0
-      4  3306.0
-      5  2812.0
+                        dx
+    s    t
+    0    1     6989.000000
+         2    -1202.000000
+         3     5747.000000
+         4     3306.000000
+         5     2812.000000
+    ...                ...
+    1164 1166   -92.682585
+         1167  -114.699250
+    1165 1166  2432.504327
+         1167  2410.487662
+    1166 1167   -22.016665
+
+    [681528 rows x 1 columns]
 
 
 Let's say we're only interested in creating edges between nodes with a
@@ -161,24 +160,32 @@ and pass both the **connector** and **selector** to :py:meth:`g.create_edges <.c
 
 .. parsed-literal::
 
-    <DeepGraph object, with n=1168 node(s) and m=156938 edge(s) at 0x7fb1cf1e1b38>
+    <DeepGraph object, with n=1168 node(s) and m=156938 edge(s) at 0x7facf3b35dd8>
 
 
 
 .. code:: python
 
-    print(g.e.head())
+    print(g.e)
 
 
 .. parsed-literal::
 
-             dx
-    s t        
-    0 6   416.0
-      7   848.0
-      19 -973.0
-      24  437.0
-      38  778.0
+                       dx
+    s    t
+    0    6     416.000000
+         7     848.000000
+         19   -973.000000
+         24    437.000000
+         38    778.000000
+    ...               ...
+    1162 1167  -44.033330
+    1163 1165  349.176351
+    1164 1166  -92.682585
+         1167 -114.699250
+    1166 1167  -22.016665
+
+    [156938 rows x 1 columns]
 
 
 There is, however, a much more efficient way of creating edges that
@@ -203,7 +210,7 @@ In order to efficiently create edges including a selection of edges via a simple
 
 .. parsed-literal::
 
-    <DeepGraph object, with n=1168 node(s) and m=156938 edge(s) at 0x7fb1cf1e1b38>
+    <DeepGraph object, with n=1168 node(s) and m=156938 edge(s) at 0x7facf3b35dd8>
 
 
 
@@ -216,7 +223,7 @@ Let's compare the efficiency
 
 .. parsed-literal::
 
-    3 loops, best of 3: 681 ms per loop
+    3 loops, best of 3: 557 ms per loop
 
 
 .. code:: python
@@ -226,27 +233,27 @@ Let's compare the efficiency
 
 .. parsed-literal::
 
-    3 loops, best of 3: 244 ms per loop
+    3 loops, best of 3: 167 ms per loop
 
 
-The :py:meth:`create_edges_ft <.create_edges_ft>` method also accepts **connectors** and **selectors** as input. Let's connect only those measurements that are close in space and time 
+The :py:meth:`create_edges_ft <.create_edges_ft>` method also accepts **connectors** and **selectors** as input. Let's connect only those measurements that are close in space and time
 
 .. code:: python
 
     def y_dist(y_s, y_t):
         dy = y_t - y_s
         return dy
-    
+
     def time_dist(time_t, time_s):
         dt = time_t - time_s
         return dt
-    
+
     def y_dist_selector(dy, sources, targets):
         dya = np.abs(dy)
         sources = sources[dya <= 100]
         targets = targets[dya <= 100]
         return sources, targets
-    
+
     def time_dist_selector(dt, sources, targets):
         dta = np.abs(dt)
         sources = sources[dta <= 1]
@@ -265,41 +272,41 @@ The :py:meth:`create_edges_ft <.create_edges_ft>` method also accepts **connecto
 
 .. parsed-literal::
 
-    <DeepGraph object, with n=1168 node(s) and m=1899 edge(s) at 0x7fb1cf1e1b38>
+    <DeepGraph object, with n=1168 node(s) and m=1899 edge(s) at 0x7facf3b35dd8>
 
 
 
 .. code:: python
 
-    print(g.e.head())
+    print(g.e)
 
 
 .. parsed-literal::
 
              dt         dy       ft_r
-    s   t                            
+    s   t
     890 867  -1  19.311136  33.415831
     867 843  -1  17.678482  33.415831
     843 818  -1  16.045829  33.415831
     818 792  -1  14.413176  33.415831
     792 766  -1  12.780523  33.415831
+    ...      ..        ...        ...
+    244 203  -1 -10.825226  15.455612
+    203 159  -1 -12.457879  15.455612
+    159 114  -1 -14.090532  15.455612
+    114 65   -1 -15.723185  15.455612
+    65  16   -1 -17.355838  15.455612
+
+    [1899 rows x 3 columns]
 
 
 We can now plot the flying balls and the edges we just created with the :py:meth:`plot_2d <.plot_2d>` method
 
 .. code:: python
 
-    obj = g.plot_2d('x', 'y', edges=True, kwds_scatter={'c': g.v.ball_id, 's': g.v.time})
+    obj = g.plot_2d('x', 'y', edges=True,
+                    kwds_scatter={'c': g.v.ball_id, 's': g.v.time})
     obj['ax'].set_xlim(1000,3000)
-
-
-
-
-.. parsed-literal::
-
-    (1000, 3000)
-
-
 
 
 .. image:: 10min_to_deepgraph_files/10min_to_deepgraph_37_1.png
@@ -308,7 +315,7 @@ We can now plot the flying balls and the edges we just created with the :py:meth
 Graph Partitioning
 ------------------
 
-The :py:class:`DeepGraph <.DeepGraph>` class also offers methods to partition :py:meth:`nodes <.partition_nodes>`, :py:meth:`edges <.partition_edges>` and an entire :py:meth:`graph <.partition_graph>`. See the docstrings and the :ref:`other tutorial <tutorial_pcp>` for details and examples.
+The :py:class:`DeepGraph <.DeepGraph>` class also offers methods to partition :py:meth:`nodes <.partition_nodes>`, :py:meth:`edges <.partition_edges>` and an entire :py:meth:`graph <.partition_graph>`. See the docstrings and the other tutorials for details and examples.
 
 Graph Interfaces
 ----------------
@@ -318,4 +325,4 @@ Furthermore, you may inspect the docstrings of :py:meth:`return_cs_graph <.retur
 Plotting Methods
 ----------------
 
-DeepGraph also offers a number of useful Plotting methods. See :ref:`plotting methods <plotting_methods>` for details and inspect the corresponding docstrings for examples.
+DeepGraph also offers a number of useful Plotting methods. See :ref:`plotting methods <plotting_methods>` for details and have a look at the other tutorials for examples.
