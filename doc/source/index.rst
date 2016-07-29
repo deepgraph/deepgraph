@@ -1,12 +1,13 @@
 .. _contents:
 
 
-***************************
-Documentation for DeepGraph
-***************************
+***************************************************
+DeepGraph - Analyze Data with Pandas-based Networks
+***************************************************
 
     :Release: |version|
     :Date: |today|
+    :Code: `GitHub <https://github.com/deepgraph/deepgraph>`_
 
   .. image:: https://anaconda.org/deepgraph/deepgraph/badges/build.svg
      :target: https://anaconda.org/deepgraph/deepgraph/builds
