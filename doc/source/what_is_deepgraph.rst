@@ -7,8 +7,7 @@ What is DeepGraph
 
 DeepGraph is an open source `Python <https://www.python.org/>`_ implementation
 of a new network representation introduced
-`here <http://arxiv.org/abs/1604.00971>`_. Its purpose is to facilitate any
-kind of
+`here <http://arxiv.org/abs/1604.00971>`_. Its purpose is to facilitate
 `data analysis <https://en.wikipedia.org/wiki/Data_analysis>`_ by
 interpreting data in terms of
 `network theory <https://en.wikipedia.org/wiki/Network_theory>`_.
@@ -36,7 +35,9 @@ Furthermore, once a graph is constructed, DeepGraph allows you to partition its
 :py:meth:`edges <deepgraph.deepgraph.DeepGraph.partition_edges>` or the entire
 :py:meth:`graph <deepgraph.deepgraph.DeepGraph.partition_graph>` by the
 graph's properties and labels, enabling the aggregation, computation and
-allocation of information on and between arbitrary *groups* of nodes.
+allocation of information on and between arbitrary *groups* of nodes. These
+methods also let you express elaborate queries on the information contained in
+a deep graph.
 
 DeepGraph is not meant to replace or compete with already existing Python
 network libraries, such as `NetworkX <https://networkx.github.io/>`_ or
@@ -45,6 +46,10 @@ extend their capabilities with the merits of Pandas. For that matter, the core
 class of DeepGraph provides :ref:`interfacing methods <interfacing_methods>` to
 convert to common network representations and graph objects of popular Python
 network packages.
+
+Deepgraph also implements a number of useful
+`plotting methods <https://deepgraph.readthedocs.io/en/latest/api_reference.html#plotting-methods>`_,
+including drawings on geographical map projections.
 
 It's also possible to represent :ref:`multilayer networks <tutorial_terror>` by
 deep graphs. We're thinking of implementing an interface to a suitable package
