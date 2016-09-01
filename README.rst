@@ -32,6 +32,42 @@ representing
 `multilayer networks <http://deepgraph.readthedocs.io/en/latest/tutorials/terrorists.html>`_.
 
 
+Main Features
+-------------
+
+This network package is targeted specifically towards
+`Pandas <http://pandas.pydata.org/>`_ users. Utilizing one of Pandas' primary
+data structures, the
+`DataFrame <http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html>`_,
+we represent the (super)nodes of a graph by one set of tables, and their
+pairwise relations (i.e. the (super)edges of a graph) by another set of tables.
+DeepGraph's main features are
+
+- `Create edges <https://deepgraph.readthedocs.io/en/latest/api_reference.html#creating-edges>`_:
+  Methods that enable an iterative, yet
+  vectorized computation of pairwise relations (edges) between nodes using
+  arbitrary, user-defined functions on the nodes' properties. The methods
+  provide arguments to parallelize the computation and control memory consumption,
+  making them suitable for very large data-sets and adjustable to whatever
+  hardware you have at hand (from netbooks to cluster architectures).
+
+- `Partition nodes, edges or a graph <https://deepgraph.readthedocs.io/en/latest/api_reference.html#graph-partitioning>`_:
+  Methods to partition nodes,
+  edges or a graph by the graph’s properties and labels, enabling the
+  aggregation, computation and allocation of information on and between
+  arbitrary *groups* of nodes. These methods also let you express
+  elaborate queries on the information contained in a deep graph.
+
+- `Interfaces to other packages <https://deepgraph.readthedocs.io/en/latest/api_reference.html#graph-interfaces>`_:
+  Methods to convert to common
+  network representations and graph objects of popular Python network packages
+  (e.g., SciPy sparse matrices, NetworkX graphs, graph-tool graphs).
+
+- `Plotting <https://deepgraph.readthedocs.io/en/latest/api_reference.html#plotting-methods>`_:
+  A number of useful plotting methods for networks,
+  including drawings on geographical map projections.
+
+
 Quick Start
 -----------
 
