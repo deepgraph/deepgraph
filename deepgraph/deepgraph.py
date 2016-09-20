@@ -4653,6 +4653,7 @@ def _matrix_iterator(v, min_chunk_size, from_pos, to_pos, coldtypedic,
     assert from_pos < to_pos, 'to_pos must be larger than from_pos'
 
     # split in steps
+    # PERFORMANCE - use generator
     pos_array = np.arange(from_pos, to_pos, min_chunk_size)
     pos_array = np.insert(pos_array, len(pos_array), to_pos)
 
@@ -4944,6 +4945,8 @@ def _ft_iterator(self, v, min_chunk_size, from_pos, to_pos, dt_unit,
                 print("{}\t{:.3f}".format(
                     ei.shape[0], timediff.total_seconds()), file=log)
 
+    # BUG: concatenating changes dtypes of float16 and float32
+    # to float64 if there is an empty frame in ei_list!
     # concat ei_list
     e = pd.concat(ei_list)
 
