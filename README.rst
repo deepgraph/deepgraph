@@ -1,7 +1,4 @@
 
-  .. image:: https://anaconda.org/deepgraph/deepgraph/badges/build.svg
-     :target: https://anaconda.org/deepgraph/deepgraph/builds
-
   .. image:: https://anaconda.org/deepgraph/deepgraph/badges/version.svg
      :target: https://anaconda.org/deepgraph/deepgraph
 

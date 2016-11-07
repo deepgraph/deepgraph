@@ -9,9 +9,6 @@ DeepGraph - Analyze Data with Pandas-based Networks
     :Date: |today|
     :Code: `GitHub <https://github.com/deepgraph/deepgraph>`_
 
-  .. image:: https://anaconda.org/deepgraph/deepgraph/badges/build.svg
-     :target: https://anaconda.org/deepgraph/deepgraph/builds
-
   .. image:: https://anaconda.org/deepgraph/deepgraph/badges/version.svg
      :target: https://anaconda.org/deepgraph/deepgraph
 
