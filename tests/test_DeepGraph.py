@@ -10,7 +10,7 @@ import pytest
 import numpy as np
 import pandas as pd
 import pandas.util.testing as pdt
-from numpy.testing import assert_allclose
+from numpy.testing.utils import assert_allclose
 
 from deepgraph import DeepGraph
 
