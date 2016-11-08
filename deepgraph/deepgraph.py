@@ -1765,20 +1765,27 @@ class DeepGraph(object):
         from scipy.sparse import coo_matrix
 
         # get indices
-        indices = self.v.index.values
+        index = self.v.index
+        indices = index.values
         n = len(indices)
+
         # enumerate indices if necessary
-        if not indices.max() == len(indices) - 1:
+        if type(index) is pd.RangeIndex:
+            if index._start == 0 and index._stop == n:
+                inddic = None
+            else:
+                inddic = {j: i for i, j in enumerate(indices)}
+        else:
             inddic = {j: i for i, j in enumerate(indices)}
 
         # for default arguments
         if relations is False:
             s = self.e.index.get_level_values(0).values
             t = self.e.index.get_level_values(1).values
-            try:
+            if inddic:
                 s = _dic_translator(s, inddic)
                 t = _dic_translator(t, inddic)
-            except NameError:
+            else:
                 pass
 
             # create cs graph
@@ -1808,10 +1815,10 @@ class DeepGraph(object):
                     data = self.e[r]
                 s = data.index.get_level_values(0).values
                 t = data.index.get_level_values(1).values
-                try:
+                if inddic:
                     s = _dic_translator(s, inddic)
                     t = _dic_translator(t, inddic)
-                except NameError:
+                else:
                     pass
 
                 # create cs graph
