@@ -310,7 +310,7 @@ class DeepGraph(object):
         the connector functions that have not been requested by any selector
         are computed (on the final, reduced chunk of node and target indices).
 
-        5. Transferring Features
+        4. Transferring Features
 
         The argument ``transfer_features``, which takes a (list of) column
         name(s) of ``v``, makes it possible to transfer features of ``v`` to
@@ -329,7 +329,7 @@ class DeepGraph(object):
         If computation time and memory consumption are of no concern, one might
         skip the remaing paragraphs.
 
-        4. Logging
+        5. Logging
 
         Clearly, the order of the hierarchical selection as described in 3.
         influences the computation's efficiency. The complexity of a relation's
