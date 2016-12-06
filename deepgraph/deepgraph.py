@@ -35,6 +35,7 @@ else:
 import inspect
 import warnings
 from datetime import datetime
+from itertools import chain
 from collections import Counter, Iterable
 
 import numpy as np
@@ -1757,8 +1758,9 @@ class DeepGraph(object):
         See also
         --------
         return_nx_graph
+        return_nx_multigraph
         return_gt_graph
-        return_np_tensor
+        return_sparse_tensor
 
         """
 
@@ -1874,9 +1876,10 @@ class DeepGraph(object):
 
         See also
         --------
+        return_nx_multigraph
         return_cs_graph
         return_gt_graph
-        return_np_tensor
+        return_sparse_tensor
 
         """
 
@@ -1898,24 +1901,28 @@ class DeepGraph(object):
         # create nx compatible tuple, (index, weight_dict)
         vt = vt.to_dict('index')
         if PY2:
-            vt = [(key, value) for key, value in vt.iteritems()]
+            vt = ((key, value) for key, value in vt.iteritems())
         else:
-            vt = [(key, value) for key, value in vt.items()]
+            vt = ((key, value) for key, value in vt.items())
 
         # add nodes
         nx_g.add_nodes_from(vt)
 
         # select relations
         if hasattr(self, 'e'):
+
             if relations is False:
                 et = pd.DataFrame(index=self.e.index)
+
             elif relations is True:
                 et = self.e
+
             elif _is_array_like(relations):
                 if dropna is not 'none':
                     et = self.e[relations].dropna(how=dropna)
                 else:
                     et = self.e[relations]
+
             else:
                 if dropna is not 'none':
                     et = self.e[relations].to_frame().dropna(how=dropna)
@@ -1925,9 +1932,117 @@ class DeepGraph(object):
             # create nx compatible tuple, (index, index, weight_dict)
             et = et.to_dict('index')
             if PY2:
-                et = [(key[0], key[1], value) for key, value in et.iteritems()]
+                et = ((key[0], key[1], value) for key, value in et.iteritems())
             else:
-                et = [(key[0], key[1], value) for key, value in et.items()]
+                et = ((key[0], key[1], value) for key, value in et.items())
+
+            # add edges
+            nx_g.add_edges_from(et)
+
+        return nx_g
+
+    def return_nx_multigraph(self, features=False, relations=False,
+                             dropna=True):
+        """Return a ``networkx.MultiDiGraph`` representation.
+
+        Create a ``networkx.MultiDiGraph`` representation of the graph given by
+        ``v`` and ``e``. As opposed to ``return_nx_graph``, where every row of
+        ``e`` is treated as one edge, this method treats every cell of
+        ``e`` as one edge. The input argument ``features`` indicates which node
+        properties to transfer. ``relations`` indicates which edges to
+        transfer. Whether to drop edges with NA values can be controlled by
+        ``dropna``.
+
+        Needs pandas >= 0.17.0.
+
+        Parameters
+        ----------
+        features : bool, str, or array_like, optional (default=False)
+            Indicates which types of features to transfer as node attributes.
+            Can be column name(s) of ``v``, False or True. If False, create no
+            node attributes. If True, create node attributes for every column
+            in ``v``. If str or array_like, must be column name(s) of ``v``
+            indicating which types of features to transfer.
+
+        relations : bool, str, or array_like, optional (default=False)
+            Indicates which cells of ``e`` to transfer as edges. Can be False,
+            True, or a (list of) column name(s) of ``e``. If False (default),
+            all cells of ``e`` are translated to edges, but their values are
+            not transferred as edge attributes. If True, all cells of ``e`` are
+            translated, and their values are transferred as edge attributes. If
+            str or array_like, must be column name(s) of ``e``, restricting the
+            translation of cells to edges to ``e[relations]`` (values are
+            transferred as edge attributes).
+
+        dropna : bool, optional (default=True)
+            Whether to drop edges with NA values. Cells in ``e`` with NA values
+            are not translated to edges.
+
+        Returns
+        -------
+        nx_g : networkx.MultiDiGraph
+
+        See also
+        --------
+        return_nx_graph
+        return_cs_graph
+        return_gt_graph
+        return_sparse_tensor
+
+        """
+
+        import networkx as nx
+
+        # create empty MultiDiGraph
+        nx_g = nx.MultiDiGraph()
+
+        # select features
+        if features is False:
+            vt = pd.DataFrame(index=self.v.index)
+        elif features is True:
+            vt = self.v
+        elif _is_array_like(features):
+            vt = self.v[features]
+        else:
+            vt = self.v[features].to_frame()
+
+        # create nx compatible tuple, (index, weight_dict)
+        vt = vt.to_dict('index')
+        if PY2:
+            vt = ((key, value) for key, value in vt.iteritems())
+        else:
+            vt = ((key, value) for key, value in vt.items())
+
+        # add nodes
+        nx_g.add_nodes_from(vt)
+
+        # select relations
+        if hasattr(self, 'e'):
+
+            if relations is False:
+                if dropna:
+                    et = self.e.count(axis=1).to_dict()
+                    if PY2:
+                        et = ((key,)*value for key, value in et.iteritems())
+                    else:
+                        et = ((key,)*value for key, value in et.items())
+                    et = chain(*et)
+                else:
+                    ncol = len(self.e.columns)
+                    et = self.e.index
+                    et = ((key,)*ncol for key in et)
+                    et = chain(*et)
+
+            elif relations is True:
+                et = _iter_edges(self.e, dropna)
+
+            elif _is_array_like(relations):
+                et = self.e[relations]
+                et = _iter_edges(et, dropna)
+
+            else:
+                et = self.e[relations].to_frame()
+                et = _iter_edges(et, dropna)
 
             # add edges
             nx_g.add_edges_from(et)
@@ -1992,7 +2107,8 @@ class DeepGraph(object):
         --------
         return_cs_graph
         return_nx_graph
-        return_np_tensor
+        return_nx_multigraph
+        return_sparse_tensor
 
         Notes
         -----
@@ -2131,6 +2247,7 @@ class DeepGraph(object):
         --------
         return_cs_graph
         return_nx_graph
+        return_nx_multigraph
         return_gt_graph
 
         """
@@ -5237,6 +5354,16 @@ def _create_bin_edges(x, bins, log_bins, floor):
                 bin_edges[-1] = xmax
 
         return bin_edges
+
+
+def _iter_edges(e, dropna):
+    """To use as ebunch for networkx.MultiDiGraph.add_edges_from(ebunch)."""
+    for col in e:
+        et = e[col]
+        if dropna:
+            et = et.dropna()
+        for ind, val in et.iteritems():
+            yield (ind[0], ind[1], col, {col: val})
 
 
 def _dic_translator(x, dic):
