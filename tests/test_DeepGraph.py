@@ -349,6 +349,30 @@ class TestInterfaces(object):
         nxg = self.g.return_nx_graph(['color'], ['dx', 'dt'], dropna='any')
         assert nxg.number_of_edges() == 2
 
+    def test_return_nx_multigraph(self):
+
+        # only testing that return_nx_multigraph produces no errors
+        #     work in progress!
+
+        pytest.importorskip('networkx')
+        pytest.importorskip('pandas', minversion="0.17.0")
+
+        # input: features, relations, dropna
+        self.g.return_nx_multigraph(False, False, True)
+        self.g.return_nx_multigraph(False, True, False)
+        self.g.return_nx_multigraph(False, True, True)
+        self.g.return_nx_multigraph(True, False, True)
+        self.g.return_nx_multigraph('color', 'dx', True)
+        self.g.return_nx_multigraph(['color'], ['dx', 'dt'], True)
+        self.g_si.return_nx_multigraph(['color'], ['dx', 'dt'], True)
+
+        # test dropna
+        nxg = self.g.return_nx_multigraph(['color'], ['dx', 'dt'], False)
+        assert nxg.number_of_edges() == 14
+
+        nxg = self.g.return_nx_multigraph(['color'], ['dx', 'dt'], True)
+        assert nxg.number_of_edges() == 8
+
     def test_return_gt_graph(self):
 
         # only testing that return_gt_graph produces no errors

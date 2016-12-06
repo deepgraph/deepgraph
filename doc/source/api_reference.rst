@@ -55,6 +55,7 @@ Graph Interfaces
 
    DeepGraph.return_cs_graph
    DeepGraph.return_nx_graph
+   DeepGraph.return_nx_multigraph
    DeepGraph.return_gt_graph
 
 .. _plotting_methods:
