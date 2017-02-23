@@ -14,7 +14,7 @@ For further information type
 
 from __future__ import print_function, division, absolute_import
 
-# Copyright (C) 2016 by
+# Copyright (C) 2017 by
 # Dominik Traxl <dominik.traxl@posteo.org>
 # All rights reserved.
 # BSD license.
