@@ -5,7 +5,7 @@ DeepGraph is distributed with the BSD license.
 
 ::
 
-   Copyright (C) 2014-2016, DeepGraph Developers
+   Copyright (C) 2014-2017, DeepGraph Developers
    Dominik Traxl <dominik.traxl@posteo.org>
    All rights reserved.
 
