@@ -3128,7 +3128,8 @@ class DeepGraph(object):
             x, y, by,
             edges=False,
             C=None, C_split_0=None,
-            kwds_scatter=None, kwds_quiver=None, kwds_quiver_0=None):
+            kwds_scatter=None, kwds_quiver=None, kwds_quiver_0=None,
+            passable_ax=False):
         """Plot nodes and corresponding edges by groups.
 
         Create a generator of scatter plots of the nodes in ``v``, split in
@@ -3163,6 +3164,10 @@ class DeepGraph(object):
         In order to control the plotting parameters of the scatter, quiver
         and/or quiver_0 plots, one may pass keyword arguments by setting
         ``kwds_scatter``, ``kwds_quiver`` and/or ``kwds_quiver_0``.
+
+        If ``passable_ax`` is True, create a generator of functions. Each
+        function takes a matplotlib axes object as input, and returns a
+        scatter/quiver plot.
 
         Parameters
         ----------
@@ -3201,6 +3206,11 @@ class DeepGraph(object):
             kwargs to be passed to quiver (qu_0). Only has an effect if
             ``C_split_0`` has been set.
 
+        passable_ax : bool, optional (default=False)
+            If True, return a generator of functions. Each function takes a
+            matplotlib axes object as input, and returns a dict of matplotlib
+            objects.
+
         Returns
         -------
         obj : generator
@@ -3208,6 +3218,9 @@ class DeepGraph(object):
             matplotlib objects with the following keys: ['fig', 'ax', 'pc',
             'qu', 'qu_0', 'group']. Otherwise, return a generator of dicts
             with keys: ['fig', 'ax', 'pc', 'qu', 'group'].
+            If ``passable_ax`` is True, return a generator of functions. Each
+            function takes a matplotlib axes object as input, and returns a
+            dict as described above.
 
         Notes
         -----
@@ -3237,7 +3250,7 @@ class DeepGraph(object):
             is_map=False, x=x, y=y, by=by, edges=edges,
             C=C, C_split_0=C_split_0, kwds_basemap=None,
             kwds_scatter=kwds_scatter, kwds_quiver=kwds_quiver,
-            kwds_quiver_0=kwds_quiver_0)
+            kwds_quiver_0=kwds_quiver_0, passable_ax=passable_ax)
 
     def plot_map(
             self,
@@ -3272,7 +3285,7 @@ class DeepGraph(object):
         ``kwds_basemap``, ``kwds_scatter``, ``kwds_quiver`` and/or
         ``kwds_quiver_0``.
 
-        Can be used iteratively by passing ``ax``.
+        Can be used iteratively by passing ``ax`` and/or ``m``.
 
         Parameters
         ----------
@@ -3313,6 +3326,9 @@ class DeepGraph(object):
 
         ax : matplotlib axes object, optional (default=None)
             An axes instance to use.
+
+        m : Basemap object, optional (default=None)
+            A mpl_toolkits.basemap.Basemap instance to use.
 
         Returns
         -------
@@ -3357,7 +3373,7 @@ class DeepGraph(object):
             edges=False,
             C=None, C_split_0=None,
             kwds_basemap=None, kwds_scatter=None, kwds_quiver=None,
-            kwds_quiver_0=None):
+            kwds_quiver_0=None, passable_ax=False):
         """Plot nodes and corresponding edges by groups, on basemaps.
 
         Create a generator of scatter plots of the nodes in ``v``, split in
@@ -3395,6 +3411,10 @@ class DeepGraph(object):
         and/or quiver_0 plots, one may pass keyword arguments by setting
         ``kwds_basemap``, ``kwds_scatter``, ``kwds_quiver`` and/or
         ``kwds_quiver_0``.
+
+        If ``passable_ax`` is True, create a generator of functions. Each
+        function takes a matplotlib axes object (and/or a Basemap object) as
+        input, and returns a scatter/quiver plot.
 
         Parameters
         ----------
@@ -3436,6 +3456,11 @@ class DeepGraph(object):
             kwargs to be passed to quiver (qu_0). Only has an effect if
             ``C_split_0`` has been set.
 
+        passable_ax : bool, optional (default=False)
+            If True, return a generator of functions. Each function takes a
+            matplotlib axes object (and/or a Basemap object) as input, and
+            returns a dict of matplotlib objects.
+
         Returns
         -------
         obj : generator
@@ -3443,6 +3468,9 @@ class DeepGraph(object):
             matplotlib objects with the following keys: ['fig', 'ax', 'm',
             'pc', 'qu', 'qu_0', 'group']. Otherwise, return a generator of
             dicts with keys: ['fig', 'ax', 'm', 'pc', 'qu', 'group'].
+            If ``passable_ax`` is True, return a generator of functions. Each
+            function takes a matplotlib axes object (and/or a Basemap object)
+            as input, and returns a dict as described above.
 
         Notes
         -----
@@ -3472,7 +3500,8 @@ class DeepGraph(object):
             is_map=True, x=lon, y=lat, by=by, edges=edges,
             C=C, C_split_0=C_split_0,
             kwds_basemap=kwds_basemap, kwds_scatter=kwds_scatter,
-            kwds_quiver=kwds_quiver, kwds_quiver_0=kwds_quiver_0)
+            kwds_quiver=kwds_quiver, kwds_quiver_0=kwds_quiver_0,
+            passable_ax=passable_ax)
 
     def plot_3d(
             self,
@@ -4047,6 +4076,8 @@ class DeepGraph(object):
         if is_map and m is None:
             m = Basemap(ax=ax, **kwds_basemap)
             obj['m'] = m
+        elif is_map and m is not None:
+            obj['m'] = m
 
         # create PathCollection by scatter
         x_str = x
@@ -4136,7 +4167,7 @@ class DeepGraph(object):
 
     def _plot_2d_generator(self, is_map, x, y, by, edges, C,
                            C_split_0, kwds_basemap, kwds_scatter, kwds_quiver,
-                           kwds_quiver_0):
+                           kwds_quiver_0, passable_ax):
 
         if is_map:
             from mpl_toolkits.basemap import Basemap
@@ -4268,106 +4299,138 @@ class DeepGraph(object):
         gv = v.groupby(by)
         for labels, group in gv:
 
-            # store group labels in obj
-            obj = {'group': labels}
+            def obj(ax=None, m=None):
+                """Plot nodes and corresponding edges.
 
-            # filter edges by group
-            g = DeepGraph(group, e)
-            g.update_edges()
+                See ``plot_2d_generator`` or ``plot_map_generator`` for
+                details.
 
-            # create figure, axes (and basemap)
-            fig, ax = plt.subplots()
-            obj['fig'] = fig
-            obj['ax'] = ax
+                Parameters
+                ----------
+                ax : matplotlib axes object, optional (default=None)
+                    An axes instance to use.
 
-            if is_map:
-                m = Basemap(**kwds_basemap.copy())
-                obj['m'] = m
-            else:
-                ax.set_xlim(xlim)
-                ax.set_ylim(ylim)
+                m : Basemap object, optional (default=None)
+                    A mpl_toolkits.basemap.Basemap instance to use.
 
-            # create PathCollection by scatter
-            x, y = (g.v[x_str].values, g.v[y_str].values)
-            if is_map:
-                axm = m
-                x, y = m(x, y)
-            else:
-                axm = ax
+                Returns
+                -------
+                obj : dict
+                    Return a dict of matplotlib objects.
 
-            # need to change colors to list, in case they're not numbers
-            pc = axm.scatter(x, y, c=g.v.pc_c.values.tolist(),
-                             s=g.v.pc_s.values, vmin=pc_vmin, vmax=pc_vmax,
-                             zorder=zorder_pc, **kwds_scatter)
-            obj['pc'] = pc
+                """
 
-            # draw edges as arrows
-            if edges is True:
+                # store group labels in obj
+                obj = {'group': labels}
 
-                # source- and target-indices
-                s = g.e.index.get_level_values(level=0).values
-                t = g.e.index.get_level_values(level=1).values
+                # filter edges by group
+                g = DeepGraph(group, e)
+                g.update_edges()
 
-                # xy position of sources and targets, vector components
-                x, y = (g.v[x_str], g.v[y_str])
-                if is_map:
-                    xs, ys = m(x.loc[s].values, y.loc[s].values)
-                    xt, yt = m(x.loc[t].values, y.loc[t].values)
+                # create figure, axes (and basemap)
+                if ax is None:
+                    fig, ax = plt.subplots()
                 else:
-                    xs, ys = (x.loc[s].values, y.loc[s].values)
-                    xt, yt = (x.loc[t].values, y.loc[t].values)
+                    fig = ax.get_figure()
 
-                # upcast dtypes
-                xs = np.array(xs, dtype=float)
-                ys = np.array(ys, dtype=float)
-                xt = np.array(xt, dtype=float)
-                yt = np.array(yt, dtype=float)
+                obj['fig'] = fig
+                obj['ax'] = ax
 
-                dx = xt - xs
-                dy = yt - ys
-
-                # bug in basemap, changes dtypes
-                if is_map:
-                    dx = np.array(dx, dtype=float)
-                    dy = np.array(dy, dtype=float)
-
-                if C_split_0 is not None:
-
-                    C = g.e.Cqu0.values
-
-                    qu_0 = axm.quiver(
-                        xs[C == 0], ys[C == 0], dx[C == 0], dy[C == 0],
-                        color=color, angles='xy', scale_units='xy', scale=1,
-                        headwidth=qu_0_headwidth, zorder=zorder_qu0,
-                        **kwds_quiver_0)
-
-                    qu = axm.quiver(
-                        xs[C != 0], ys[C != 0], dx[C != 0], dy[C != 0],
-                        C[C != 0], angles='xy', scale_units='xy', scale=1,
-                        clim=qu_clim, zorder=zorder_qu, **kwds_quiver)
-
-                    obj['qu_0'] = qu_0
-                    obj['qu'] = qu
-
-                elif C is not None:
-
-                    C = g.e.C.values
-
-                    qu = axm.quiver(
-                        xs, ys, dx, dy, C, angles='xy', scale_units='xy',
-                        scale=1, clim=qu_clim, zorder=zorder_qu,
-                        **kwds_quiver)
-
-                    obj['qu'] = qu
-
+                if is_map and m is None:
+                    m = Basemap(ax=ax, **kwds_basemap.copy())
+                    obj['m'] = m
+                elif is_map and m is not None:
+                    obj['m'] = m
                 else:
-                    qu = axm.quiver(
-                        xs, ys, dx, dy, angles='xy', scale_units='xy', scale=1,
-                        zorder=zorder_qu, **kwds_quiver)
+                    ax.set_xlim(xlim)
+                    ax.set_ylim(ylim)
 
-                    obj['qu'] = qu
+                # create PathCollection by scatter
+                x, y = (g.v[x_str].values, g.v[y_str].values)
+                if is_map:
+                    axm = m
+                    x, y = m(x, y)
+                else:
+                    axm = ax
 
-            yield obj
+                # need to change colors to list, in case they're not numbers
+                pc = axm.scatter(x, y, c=g.v.pc_c.values.tolist(),
+                                 s=g.v.pc_s.values, vmin=pc_vmin, vmax=pc_vmax,
+                                 zorder=zorder_pc, **kwds_scatter)
+                obj['pc'] = pc
+
+                # draw edges as arrows
+                if edges is True:
+
+                    # source- and target-indices
+                    s = g.e.index.get_level_values(level=0).values
+                    t = g.e.index.get_level_values(level=1).values
+
+                    # xy position of sources and targets, vector components
+                    x, y = (g.v[x_str], g.v[y_str])
+                    if is_map:
+                        xs, ys = m(x.loc[s].values, y.loc[s].values)
+                        xt, yt = m(x.loc[t].values, y.loc[t].values)
+                    else:
+                        xs, ys = (x.loc[s].values, y.loc[s].values)
+                        xt, yt = (x.loc[t].values, y.loc[t].values)
+
+                    # upcast dtypes
+                    xs = np.array(xs, dtype=float)
+                    ys = np.array(ys, dtype=float)
+                    xt = np.array(xt, dtype=float)
+                    yt = np.array(yt, dtype=float)
+
+                    dx = xt - xs
+                    dy = yt - ys
+
+                    # bug in basemap, changes dtypes
+                    if is_map:
+                        dx = np.array(dx, dtype=float)
+                        dy = np.array(dy, dtype=float)
+
+                    if C_split_0 is not None:
+
+                        C = g.e.Cqu0.values
+
+                        qu_0 = axm.quiver(
+                            xs[C == 0], ys[C == 0], dx[C == 0], dy[C == 0],
+                            color=color, angles='xy', scale_units='xy',
+                            scale=1, headwidth=qu_0_headwidth,
+                            zorder=zorder_qu0, **kwds_quiver_0)
+
+                        qu = axm.quiver(
+                            xs[C != 0], ys[C != 0], dx[C != 0], dy[C != 0],
+                            C[C != 0], angles='xy', scale_units='xy', scale=1,
+                            clim=qu_clim, zorder=zorder_qu, **kwds_quiver)
+
+                        obj['qu_0'] = qu_0
+                        obj['qu'] = qu
+
+                    elif C is not None:
+
+                        C = g.e.C.values
+
+                        qu = axm.quiver(
+                            xs, ys, dx, dy, C, angles='xy', scale_units='xy',
+                            scale=1, clim=qu_clim, zorder=zorder_qu,
+                            **kwds_quiver)
+
+                        obj['qu'] = qu
+
+                    else:
+                        qu = axm.quiver(
+                            xs, ys, dx, dy, angles='xy', scale_units='xy',
+                            scale=1, zorder=zorder_qu, **kwds_quiver)
+
+                        obj['qu'] = qu
+
+                return obj
+
+            if passable_ax:
+                yield obj
+            else:
+                yield obj()
 
 
 class CreatorFunction(object):
