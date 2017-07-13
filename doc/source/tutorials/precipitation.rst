@@ -52,7 +52,7 @@ events, you may follow the instructions below and change the filename in
 the next box of code.
 
 -  Go to
-   http://disc.gsfc.nasa.gov/uui/datasets/GES\_DISC\_TRMM\_3B42\_V7/summary?keywords=TRMM\_3B42\_V7
+   https://disc.gsfc.nasa.gov/datasets/TRMM\_3B42\_V7/summary?keywords=TRMM\_3B42\_V7
 -  click on "Simple Subset Wizard"
 -  select the "Date Range" (and if desired a "Spatial Bounding Box")
    you're interested in
@@ -73,7 +73,7 @@ the next box of code.
 
 .. code:: python
 
-    os.system("wget --content-disposition --directory-prefix=tmp -i SSW_download_2016-05-03T20_19_28_23621_2oIe06xp.inp")
+    os.system("wget --content-disposition --directory-prefix=tmp --load-cookies ~/.urs_cookies --save-cookies ~/.urs_cookies --auth-no-challenge=on --keep-session-cookies -i SSW_download_2016-05-03T20_19_28_23621_2oIe06xp.inp")
 
 Preprocessing
 ~~~~~~~~~~~~~

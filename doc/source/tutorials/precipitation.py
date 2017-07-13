@@ -40,7 +40,7 @@ import deepgraph as dg
 
 # If you want to select your own spatiotemporal box of precipitation events, you may follow the instructions below and change the filename in the next box of code.
 
-# - Go to http://disc.gsfc.nasa.gov/uui/datasets/GES_DISC_TRMM_3B42_V7/summary?keywords=TRMM_3B42_V7
+# - Go to https://disc.gsfc.nasa.gov/datasets/TRMM_3B42_V7/summary?keywords=TRMM_3B42_V7
 # - click on "Simple Subset Wizard"
 # - select the "Date Range" (and if desired a "Spatial Bounding Box") you're interested in
 # - click on "Search for Data Sets"
@@ -55,7 +55,7 @@ import deepgraph as dg
 
 # In[ ]:
 
-os.system("wget --content-disposition --directory-prefix=tmp -i SSW_download_2016-05-03T20_19_28_23621_2oIe06xp.inp")
+os.system("wget --content-disposition --directory-prefix=tmp --load-cookies ~/.urs_cookies --save-cookies ~/.urs_cookies --auth-no-challenge=on --keep-session-cookies -i SSW_download_2016-05-03T20_19_28_23621_2oIe06xp.inp")
 
 
 # ### Preprocessing
