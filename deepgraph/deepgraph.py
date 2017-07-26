@@ -4873,10 +4873,9 @@ def _matrix_iterator(v, min_chunk_size, from_pos, to_pos, coldtypedic,
         else:
             vi = v.iloc[indices]
 
-        # enumerate indices, relabel
-        idic = {old: new for new, old in enumerate(indices)}
-        sources_k = _dic_translator(sources_k, idic)
-        targets_k = _dic_translator(targets_k, idic)
+        # create triu_indices for subset of v
+        sources_k, targets_k = _reduce_triu_indices(
+            sources_k, targets_k, indices)
 
         # return i'th selection
         ei = _select_and_return(vi, sources_k, targets_k, ft_feature,
@@ -5175,10 +5174,9 @@ def _ft_subiterator(nl, vi, ft_feature, dt_unit, coldtypedic,
         # select subset of vi
         vik = vi.iloc[indices]
 
-        # enumerate indices, relabel
-        idic = {old: new for new, old in enumerate(indices)}
-        sources_k = _dic_translator(sources_k, idic)
-        targets_k = _dic_translator(targets_k, idic)
+        # create triu_indices for subset of v
+        sources_k, targets_k = _reduce_triu_indices(
+            sources_k, targets_k, indices)
 
         # return k'th selection
         eik = _select_and_return(vik, sources_k, targets_k, ft_feature,
@@ -5486,6 +5484,14 @@ def _triu_indices(N, start, end):
     targets = np.concatenate(targets)
 
     return (sources, targets)
+
+
+def _reduce_triu_indices(sources, targets, indices):
+    n = len(indices)
+    n_pairs = len(sources)
+    start = np.searchsorted(indices, targets[0]) - 1
+    rsources, rtargets = _triu_indices(n, start, start + n_pairs)
+    return (rsources, rtargets)
 
 
 def _is_array_like(x):
