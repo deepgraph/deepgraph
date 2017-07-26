@@ -10,11 +10,9 @@ __pycache__
 .pydevproject
 .settings
 
-# ignore personal
-notes.txt
-doc_build.sh
-
 # ignore build files
+create_e
+doc_build.sh
 build/
 dist/
 DeepGraph.egg-info/
@@ -22,10 +20,6 @@ doc/build
 doc/source/generated
 doc/source/tutorials/tmp
 
-# ignore examples
-examples/
-
 # IPython Notebook Checkpoints
 .ipynb_checkpoints/
-
 
