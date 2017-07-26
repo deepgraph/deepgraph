@@ -127,6 +127,7 @@ def fail_ind_shape(dsi, sf_s, sf_t, sources, targets):
     # targets must be reduced as well
     return dsf, velo, sources, targets
 
+
 # parameter
 p_step_size = [1,2,3,4,5,10,28,100]
 p_from_pos = [0,7,14,21,27]
@@ -213,13 +214,15 @@ class TestCreateEdges(object):
         g.create_edges(connectors=[dsi, dsf])
         e_test = g.e
 
-        pdt.assert_frame_equal(e_test.sort(axis=1), e_true.sort(axis=1))
+        pdt.assert_frame_equal(e_test.sort_index(axis=1),
+                               e_true.sort_index(axis=1))
 
         g.create_edges_ft(('si', v.si.max()),
                           connectors=[dsi, dsf])
         e_test = g.e.drop('ft_r', axis=1)
 
-        pdt.assert_frame_equal(e_test.sort(axis=1), e_true.sort(axis=1))
+        pdt.assert_frame_equal(e_test.sort_index(axis=1),
+                               e_true.sort_index(axis=1))
 
     def test_connector_selector(self):
 
@@ -230,14 +233,16 @@ class TestCreateEdges(object):
                        selectors=dsi_t)
         e_test = g.e
 
-        pdt.assert_frame_equal(e_test.sort(axis=1), e_true.sort(axis=1))
+        pdt.assert_frame_equal(e_test.sort_index(axis=1),
+                               e_true.sort_index(axis=1))
 
         g.create_edges_ft(('si', v.si.max()),
                           connectors=[dsi, dsf, velo],
                           selectors=dsi_t)
         e_test = g.e.drop('ft_r', axis=1)
 
-        pdt.assert_frame_equal(e_test.sort(axis=1), e_true.sort(axis=1))
+        pdt.assert_frame_equal(e_test.sort_index(axis=1),
+                               e_true.sort_index(axis=1))
 
     def test_connector_selectors(self):
 
@@ -249,14 +254,16 @@ class TestCreateEdges(object):
                        selectors=[dsi_t, dsf_t])
         e_test = g.e
 
-        pdt.assert_frame_equal(e_test.sort(axis=1), e_true.sort(axis=1))
+        pdt.assert_frame_equal(e_test.sort_index(axis=1),
+                               e_true.sort_index(axis=1))
 
         g.create_edges_ft(('si', v.si.max()),
                           connectors=[dsi, dsf, velo],
                           selectors=[dsi_t, dsf_t])
         e_test = g.e.drop('ft_r', axis=1)
 
-        pdt.assert_frame_equal(e_test.sort(axis=1), e_true.sort(axis=1))
+        pdt.assert_frame_equal(e_test.sort_index(axis=1),
+                               e_true.sort_index(axis=1))
 
     def test_r_dep_selector(self):
 
@@ -268,14 +275,16 @@ class TestCreateEdges(object):
                        selectors=[dsi_t, dsf_velo_t])
         e_test = g.e
 
-        pdt.assert_frame_equal(e_test.sort(axis=1), e_true.sort(axis=1))
+        pdt.assert_frame_equal(e_test.sort_index(axis=1),
+                               e_true.sort_index(axis=1))
 
         g.create_edges_ft(('si', v.si.max()),
                           connectors=[dsi],
                           selectors=[dsi_t, dsf_velo_t])
         e_test = g.e.drop('ft_r', axis=1)
 
-        pdt.assert_frame_equal(e_test.sort(axis=1), e_true.sort(axis=1))
+        pdt.assert_frame_equal(e_test.sort_index(axis=1),
+                               e_true.sort_index(axis=1))
 
     def test_selector(self):
 
@@ -286,13 +295,15 @@ class TestCreateEdges(object):
         g.create_edges(selectors=[dsi_dsf_t])
         e_test = g.e
 
-        pdt.assert_frame_equal(e_test.sort(axis=1), e_true.sort(axis=1))
+        pdt.assert_frame_equal(e_test.sort_index(axis=1),
+                               e_true.sort_index(axis=1))
 
         g.create_edges_ft(('si', v.si.max()),
                           selectors=[dsi_dsf_t])
         e_test = g.e.drop('ft_r', axis=1)
 
-        pdt.assert_frame_equal(e_test.sort(axis=1), e_true.sort(axis=1))
+        pdt.assert_frame_equal(e_test.sort_index(axis=1),
+                               e_true.sort_index(axis=1))
 
     def test_transfer_feature(self):
 
@@ -306,13 +317,15 @@ class TestCreateEdges(object):
         g.create_edges(transfer_features='f')
         e_test = g.e
 
-        pdt.assert_frame_equal(e_test.sort(axis=1), e_true.sort(axis=1))
+        pdt.assert_frame_equal(e_test.sort_index(axis=1),
+                               e_true.sort_index(axis=1))
 
         g.create_edges_ft(('si', v.si.max()),
                           transfer_features='f')
         e_test = g.e.drop('ft_r', axis=1)
 
-        pdt.assert_frame_equal(e_test.sort(axis=1), e_true.sort(axis=1))
+        pdt.assert_frame_equal(e_test.sort_index(axis=1),
+                               e_true.sort_index(axis=1))
 
     def test_transfer_features(self):
 
@@ -330,13 +343,15 @@ class TestCreateEdges(object):
         g.create_edges(transfer_features=['f', 's', 'o'])
         e_test = g.e
 
-        pdt.assert_frame_equal(e_test.sort(axis=1), e_true.sort(axis=1))
+        pdt.assert_frame_equal(e_test.sort_index(axis=1),
+                               e_true.sort_index(axis=1))
 
         g.create_edges_ft(('si', v.si.max()),
                           transfer_features=['f', 's', 'o'])
         e_test = g.e.drop('ft_r', axis=1)
 
-        pdt.assert_frame_equal(e_test.sort(axis=1), e_true.sort(axis=1))
+        pdt.assert_frame_equal(e_test.sort_index(axis=1),
+                               e_true.sort_index(axis=1))
 
     def test_r_dtype_dic(self):
 
@@ -349,13 +364,15 @@ class TestCreateEdges(object):
         g.create_edges(connectors=[dsi, dsf], r_dtype_dic=r_dtype_dic)
         e_test = g.e
 
-        pdt.assert_frame_equal(e_test.sort(axis=1), e_true.sort(axis=1))
+        pdt.assert_frame_equal(e_test.sort_index(axis=1),
+                               e_true.sort_index(axis=1))
 
         g.create_edges_ft(('si', v.si.max()),
                           connectors=[dsi, dsf], r_dtype_dic=r_dtype_dic)
         e_test = g.e.drop('ft_r', axis=1)
 
-        pdt.assert_frame_equal(e_test.sort(axis=1), e_true.sort(axis=1))
+        pdt.assert_frame_equal(e_test.sort_index(axis=1),
+                               e_true.sort_index(axis=1))
 
     def test_no_transfer_r(self):
 
@@ -365,14 +382,16 @@ class TestCreateEdges(object):
         g.create_edges(connectors=[dsi, dsf, velo], no_transfer_rs='dsf')
         e_test = g.e
 
-        pdt.assert_frame_equal(e_test.sort(axis=1), e_true.sort(axis=1))
+        pdt.assert_frame_equal(e_test.sort_index(axis=1),
+                               e_true.sort_index(axis=1))
 
         g.create_edges_ft(('si', v.si.max()),
                           connectors=[dsi, dsf, velo],
                           no_transfer_rs='dsf')
         e_test = g.e.drop('ft_r', axis=1)
 
-        pdt.assert_frame_equal(e_test.sort(axis=1), e_true.sort(axis=1))
+        pdt.assert_frame_equal(e_test.sort_index(axis=1),
+                               e_true.sort_index(axis=1))
 
     def test_no_transfer_rs(self):
 
@@ -383,14 +402,16 @@ class TestCreateEdges(object):
                        no_transfer_rs=['dsf', 'velo'])
         e_test = g.e
 
-        pdt.assert_frame_equal(e_test.sort(axis=1), e_true.sort(axis=1))
+        pdt.assert_frame_equal(e_test.sort_index(axis=1),
+                               e_true.sort_index(axis=1))
 
         g.create_edges_ft(('si', v.si.max()),
                           connectors=[dsi, dsf, velo],
                           no_transfer_rs=['dsf', 'velo'])
         e_test = g.e.drop('ft_r', axis=1)
 
-        pdt.assert_frame_equal(e_test.sort(axis=1), e_true.sort(axis=1))
+        pdt.assert_frame_equal(e_test.sort_index(axis=1),
+                               e_true.sort_index(axis=1))
 
     def test_step_size(self, step_size):
 
@@ -439,14 +460,16 @@ class TestCreateEdges(object):
         g.create_edges(selectors=[dsi_dsf_t], hdf_key='v')
         e_test = g.e
 
-        pdt.assert_frame_equal(e_test.sort(axis=1), e_true.sort(axis=1))
+        pdt.assert_frame_equal(e_test.sort_index(axis=1),
+                               e_true.sort_index(axis=1))
 
         g.create_edges_ft(('si', v.si.max()),
                           selectors=[dsi_dsf_t], hdf_key='v')
         e_test = g.e.drop('ft_r', axis=1)
         vs.close()
 
-        pdt.assert_frame_equal(e_test.sort(axis=1), e_true.sort(axis=1))
+        pdt.assert_frame_equal(e_test.sort_index(axis=1),
+                               e_true.sort_index(axis=1))
 
     def test_hdf_step_size(self, tmpdir, step_size):
 
@@ -467,7 +490,8 @@ class TestCreateEdges(object):
         e_test = g.e
         vs.close()
 
-        pdt.assert_frame_equal(e_test.sort(axis=1), e_true.sort(axis=1))
+        pdt.assert_frame_equal(e_test.sort_index(axis=1),
+                               e_true.sort_index(axis=1))
 
     def test_logging(self, tmpdir):
 
@@ -484,7 +508,8 @@ class TestCreateEdges(object):
                           verbose=True, logfile=folder+'lf.txt')
         e_test = g.e.drop('ft_r', axis=1)
 
-        pdt.assert_frame_equal(e_test.sort(axis=1), e_true.sort(axis=1))
+        pdt.assert_frame_equal(e_test.sort_index(axis=1),
+                               e_true.sort_index(axis=1))
 
     def test_fail_selector_r_shape(self):
 
@@ -544,7 +569,8 @@ class TestCreateEdges(object):
         g.create_edges_ft(ft_feature=('si', 3))
         e_test = g.e.rename(columns={'ft_r': 'dsi'})
 
-        pdt.assert_frame_equal(e_test.sort(axis=1), e_true.sort(axis=1))
+        pdt.assert_frame_equal(e_test.sort_index(axis=1),
+                               e_true.sort_index(axis=1))
 
     def test_ft_sf(self):
 
@@ -554,7 +580,8 @@ class TestCreateEdges(object):
         g.create_edges_ft(ft_feature=('sf', 2.))
         e_test = g.e.rename(columns={'ft_r': 'dsf'})
 
-        pdt.assert_frame_equal(e_test.sort(axis=1), e_true.sort(axis=1))
+        pdt.assert_frame_equal(e_test.sort_index(axis=1),
+                               e_true.sort_index(axis=1))
 
     def test_ft_sdt(self):
 
@@ -565,7 +592,8 @@ class TestCreateEdges(object):
         e_test = g.e.rename(columns={'ft_r': 'dsi'})
         e_test['dsi'] = e_test.dsi.astype(int)
 
-        pdt.assert_frame_equal(e_test.sort(axis=1), e_true.sort(axis=1))
+        pdt.assert_frame_equal(e_test.sort_index(axis=1),
+                               e_true.sort_index(axis=1))
 
     def test_ft_sdt_hdf(self, tmpdir):
 
@@ -586,7 +614,8 @@ class TestCreateEdges(object):
         e_test = g.e.drop('ft_r', axis=1)
         vs.close()
 
-        pdt.assert_frame_equal(e_test.sort(axis=1), e_true.sort(axis=1))
+        pdt.assert_frame_equal(e_test.sort_index(axis=1),
+                               e_true.sort_index(axis=1))
 
     def test_ft_r_dep_connector(self):
 
@@ -598,7 +627,8 @@ class TestCreateEdges(object):
         e_test = g.e.rename(columns={'ft_r': 'dsi'})
         e_test['dsi'] = e_test.dsi.astype(int)
 
-        pdt.assert_frame_equal(e_test.sort(axis=1), e_true.sort(axis=1))
+        pdt.assert_frame_equal(e_test.sort_index(axis=1),
+                               e_true.sort_index(axis=1))
 
     def test_ft_ftt_order(self):
 
@@ -609,7 +639,8 @@ class TestCreateEdges(object):
                           selectors=[dsf_velo_t, 'ft_selector'])
         e_test = g.e.drop('ft_r', axis=1)
 
-        pdt.assert_frame_equal(e_test.sort(axis=1), e_true.sort(axis=1))
+        pdt.assert_frame_equal(e_test.sort_index(axis=1),
+                               e_true.sort_index(axis=1))
 
     def test_ft_min_chunk_size(self, min_chunk_size):
 
@@ -624,14 +655,16 @@ class TestCreateEdges(object):
         e_test = g.e.rename(columns={'ft_r': 'dmcs'})
         e_test['dmcs'] = e_test.dmcs.astype(int)
 
-        pdt.assert_frame_equal(e_test.sort(axis=1), e_true.sort(axis=1))
+        pdt.assert_frame_equal(e_test.sort_index(axis=1),
+                               e_true.sort_index(axis=1))
 
         g.create_edges_ft(ft_feature=('dtmcs', 2, 'h'),
                           min_chunk_size=min_chunk_size)
         e_test = g.e.rename(columns={'ft_r': 'dmcs'})
         e_test['dmcs'] = e_test.dmcs.astype(int)
 
-        pdt.assert_frame_equal(e_test.sort(axis=1), e_true.sort(axis=1))
+        pdt.assert_frame_equal(e_test.sort_index(axis=1),
+                               e_true.sort_index(axis=1))
 
     def test_ft_dt_min_chunk_size_hdf(self, tmpdir, min_chunk_size):
 
@@ -654,7 +687,8 @@ class TestCreateEdges(object):
         e_test = g.e.rename(columns={'ft_r': 'dmcs'})
         e_test['dmcs'] = e_test.dmcs.astype(int)
 
-        pdt.assert_frame_equal(e_test.sort(axis=1), e_true.sort(axis=1))
+        pdt.assert_frame_equal(e_test.sort_index(axis=1),
+                               e_true.sort_index(axis=1))
 
     def test_ft_from_pos(self, ft_from_pos):
 

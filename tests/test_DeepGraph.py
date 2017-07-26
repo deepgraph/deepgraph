@@ -30,6 +30,7 @@ def some_relations(ft_r,x_s,x_t,color_s,color_t,size_s,size_t):
     larger_than = size_s > size_t
     return dx, v, same_color, larger_than
 
+
 g.create_edges_ft(('time', 5), connectors=some_relations)
 g.e.rename(columns={'ft_r': 'dt'}, inplace=True)
 
@@ -120,7 +121,8 @@ class TestPartitionEdges(object):
         se_test = g.partition_edges(relations='larger_than',
                                     relation_funcs={'same_color': 'sum'})
 
-        pdt.assert_frame_equal(se_test.sort(axis=1), se_true.sort(axis=1))
+        pdt.assert_frame_equal(se_test.sort_index(axis=1),
+                               se_true.sort_index(axis=1))
 
     def test_combine_groups(self):
 
@@ -200,8 +202,10 @@ class TestPartitionGraph(object):
             feature_funcs={'time': 'max'},
             relation_funcs={'dt': 'mean'})
 
-        pdt.assert_frame_equal(sv_test.sort(axis=1), sv_true.sort(axis=1))
-        pdt.assert_frame_equal(se_test.sort(axis=1), se_true.sort(axis=1))
+        pdt.assert_frame_equal(sv_test.sort_index(axis=1),
+                               sv_true.sort_index(axis=1))
+        pdt.assert_frame_equal(se_test.sort_index(axis=1),
+                               se_true.sort_index(axis=1))
 
     def test_n_nodes_n_edges(self):
 
@@ -224,8 +228,10 @@ class TestPartitionGraph(object):
             relation_funcs={'dt': 'mean'},
             n_nodes=False, n_edges=False)
 
-        pdt.assert_frame_equal(sv_test.sort(axis=1), sv_true.sort(axis=1))
-        pdt.assert_frame_equal(se_test.sort(axis=1), se_true.sort(axis=1))
+        pdt.assert_frame_equal(sv_test.sort_index(axis=1),
+                               sv_true.sort_index(axis=1))
+        pdt.assert_frame_equal(se_test.sort_index(axis=1),
+                               se_true.sort_index(axis=1))
 
     def test_return_gve(self):
 
@@ -249,8 +255,10 @@ class TestPartitionGraph(object):
             relation_funcs={'dt': 'mean'},
             n_nodes=False, return_gve=True)
 
-        pdt.assert_frame_equal(sv_test.sort(axis=1), sv_true.sort(axis=1))
-        pdt.assert_frame_equal(se_test.sort(axis=1), se_true.sort(axis=1))
+        pdt.assert_frame_equal(sv_test.sort_index(axis=1),
+                               sv_true.sort_index(axis=1))
+        pdt.assert_frame_equal(se_test.sort_index(axis=1),
+                               se_true.sort_index(axis=1))
 
 
 class TestInterfaces(object):
