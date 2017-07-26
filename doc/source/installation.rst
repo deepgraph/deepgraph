@@ -113,7 +113,7 @@ OS X, Windows) Python distribution for data analytics and scientific computing.
 Python
 ------
 
-To use DeepGraph you need `Python <https://www.python.org/>`_ 2.7, 3.3 or
+To use DeepGraph you need `Python <https://www.python.org/>`_ 2.7, 3.4 or
 later.
 
 
@@ -216,23 +216,25 @@ manipulation and statistical analysis of graphs (a.k.a. networks).
 Allows you to convert from DeepGraph's network representation to Graph-Tool's
 network representation (see :py:meth:`return_gt_graph <.return_gt_graph>`).
 
-Note for Conda users (use the following at your own risk! It works for me, but
-might not work for you): Since the installation of graph_tool within a Conda
-environment is slightly problematic, I suggest installing it as a system
-package (see `instructions <https://graph-tool.skewed.de/download>`_), and then
-linking it to your environment
+Conda users can install graph_tool by adding the following channels to their
+~/.condarc
 
 ::
 
-   $ ln -s /usr/lib/YOURSYSPYTHON/dist-packages/graph_tool /PATH/TO/YOUR/CONDA/ENV/lib/YOURENVPYTHON/site-packages/graph_tool
+   $ conda config --add channels conda-forge
+   % conda config --add channels ostrokach-forge
 
-Additionally, if you want to use graph_tool's drawing methods from within a
-Conda environment, you need to link the system's cairo package to the
-environment
+Then, install graph-tool
 
 ::
 
-   $ ln -s /usr/lib/YOURSYSPYTHON/dist-packages/cairo /PATH/TO/YOUR/CONDA/ENV/lib/YOURENVPYTHON/site-packages/cairo
+   $ conda install graph-tool
+
+You can test your graph-tool installation by
+
+::
+
+   $ python -c "from graph_tool.all import *"
 
 
 Optional Packages
