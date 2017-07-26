@@ -222,7 +222,7 @@ Conda users can install graph_tool by adding the following channels to their
 ::
 
    $ conda config --add channels conda-forge
-   % conda config --add channels ostrokach-forge
+   $ conda config --add channels ostrokach-forge
 
 Then, install graph-tool
 
