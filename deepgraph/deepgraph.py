@@ -5451,7 +5451,7 @@ def _triu_indices(N, start, end):
     if end > N*(N-1)/2:
         end = N*(N-1)/2
 
-    cumsums = np.cumsum(range(N-1, 0, -1))
+    cumsums = np.cumsum(range(N-1, 0, -1), dtype=np.int)
     cumsums = np.insert(cumsums, 0, 0)
 
     i_s = np.searchsorted(cumsums, start, side='right') - 1
@@ -5462,26 +5462,27 @@ def _triu_indices(N, start, end):
 
     del cumsums
 
-    sources = []
-    targets = []
+    sources = np.empty(end-start, dtype=np.int)
+    targets = np.empty(end-start, dtype=np.int)
 
+    npairs = 0
     for row in range(i_s, i_e + 1):
         if i_s == i_e:
-            t = np.arange(j_s, j_e, dtype=int)
+            t = np.arange(j_s, j_e, dtype=np.int)
         elif row == i_s:
-            t = np.arange(j_s, N, dtype=int)
+            t = np.arange(j_s, N, dtype=np.int)
         elif row == i_e:
-            t = np.arange(row+1, j_e, dtype=int)
+            t = np.arange(row+1, j_e, dtype=np.int)
         else:
-            t = np.arange(row+1, N, dtype=int)
+            t = np.arange(row+1, N, dtype=np.int)
 
-        s = np.repeat(row, len(t))
+        npairs_in_row = len(t)
+        s = np.ones(npairs_in_row, dtype=np.int) * row
 
-        sources.append(s)
-        targets.append(t)
+        sources[npairs:npairs + npairs_in_row] = s
+        targets[npairs:npairs + npairs_in_row] = t
 
-    sources = np.concatenate(sources)
-    targets = np.concatenate(targets)
+        npairs += npairs_in_row
 
     return (sources, targets)
 
