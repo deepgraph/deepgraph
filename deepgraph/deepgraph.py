@@ -4841,7 +4841,7 @@ def _matrix_iterator(v, min_chunk_size, from_pos, to_pos, coldtypedic,
 
     # split in steps
     # PERFORMANCE - use generator
-    pos_array = np.arange(from_pos, to_pos, min_chunk_size)
+    pos_array = np.arange(from_pos, to_pos, min_chunk_size, dtype=np.int)
     pos_array = np.insert(pos_array, len(pos_array), to_pos)
 
     # cumulatively count the generated edges
@@ -5156,7 +5156,7 @@ def _ft_subiterator(nl, vi, ft_feature, dt_unit, coldtypedic,
                     verboseprint):
 
     # split in steps
-    pos_array = np.arange(0, pairs, max_pairs)
+    pos_array = np.arange(0, pairs, max_pairs, dtype=np.int)
     pos_array = np.insert(pos_array, len(pos_array), pairs)
 
     # iterate through node indices
