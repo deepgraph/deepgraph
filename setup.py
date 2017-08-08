@@ -1,4 +1,30 @@
-from setuptools import setup, find_packages
+import sys
+from setuptools import setup, find_packages, Extension
+
+if '--use-cython' in sys.argv:
+    USE_CYTHON = True
+    sys.argv.remove('--use-cython')
+else:
+    USE_CYTHON = False
+
+ext = '.pyx' if USE_CYTHON else '.c'
+# cppext = '' if USE_CYTHON else 'pp'
+
+extensions = [
+    Extension(
+        "deepgraph._triu_indices",
+        ["deepgraph/_triu_indices" + ext],
+        # language='c++',
+    ),
+    Extension(
+        "deepgraph._find_selected_indices",
+        ["deepgraph/_find_selected_indices" + ext],
+    )
+]
+
+if USE_CYTHON:
+    from Cython.Build import cythonize
+    extensions = cythonize(extensions)
 
 setup(
     name="DeepGraph",
@@ -25,9 +51,16 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Cython',
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Scientific/Engineering :: Information Analysis',
         'Topic :: Scientific/Engineering :: Mathematics',
         'Topic :: Scientific/Engineering :: Physics'],
-    package_data={'deepgraph': ['../tests/*.py', '../LICENSE.txt']},
+    ext_modules=extensions,
+    package_data={'deepgraph': ['../tests/*.py',
+                                '../LICENSE.txt',
+                                './*.pyx',
+                                './*.c',
+                                './*.cpp',
+                                ]},
 )
