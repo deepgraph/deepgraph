@@ -72,8 +72,8 @@ from __future__ import print_function, division, absolute_import
 # All rights reserved.
 # BSD license.
 
-from .deepgraph import DeepGraph
-from . import functions
+from deepgraph.deepgraph import DeepGraph
+from deepgraph import functions
 
 __all__ = ['DeepGraph', 'functions']
 __version__ = '0.1.0'
