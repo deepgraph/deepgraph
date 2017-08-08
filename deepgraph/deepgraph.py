@@ -28,6 +28,8 @@ else:
 del sys
 
 if PY2:
+    from itertools import izip
+    zip = izip
     range = xrange
 else:
     basestring = str
@@ -174,7 +176,7 @@ class DeepGraph(object):
             transfer_features=None,
             r_dtype_dic=None,
             no_transfer_rs=None,
-            step_size=1e7,
+            step_size=int(1e7),
             from_pos=0, to_pos=None, hdf_key=None,
             verbose=False, logfile=None):
         """Create an edge table ``e`` linking the nodes in ``v``.
@@ -609,7 +611,7 @@ class DeepGraph(object):
             transfer_features=None,
             r_dtype_dic=None,
             no_transfer_rs=None,
-            min_chunk_size=1000, max_pairs=1e7,
+            min_chunk_size=1000, max_pairs=int(1e7),
             from_pos=0, to_pos=None, hdf_key=None,
             verbose=False, logfile=None):
         """Create (ft) an edge table ``e`` linking the nodes in ``v``.
@@ -4839,18 +4841,14 @@ def _matrix_iterator(v, min_chunk_size, from_pos, to_pos, coldtypedic,
 
     assert from_pos < to_pos, 'to_pos must be larger than from_pos'
 
-    # split in steps
-    # PERFORMANCE - use generator
-    pos_array = np.arange(from_pos, to_pos, min_chunk_size, dtype=np.int)
-    pos_array = np.insert(pos_array, len(pos_array), to_pos)
-
     # cumulatively count the generated edges
     cum_edges = 0
 
     # iterate through matrix
+    c = 0
     ei_list = []
-
-    for i in range(len(pos_array) - 1):
+    pos_array, n_steps = _pos_array(from_pos, to_pos, min_chunk_size)
+    for from_pos, to_pos in pos_array:
 
         # measure time per iteration
         starttime = datetime.now()
@@ -4859,10 +4857,11 @@ def _matrix_iterator(v, min_chunk_size, from_pos, to_pos, coldtypedic,
         verboseprint(
             '# =====================================================')
         verboseprint("Iteration {} of {} ({:.2f}%)".format(
-            i+1, len(pos_array)-1, float(i+1)/(len(pos_array)-1)*100))
+            c+1, n_steps, float(c+1)/n_steps*100))
+        c += 1
 
         # construct node indices
-        sources_k, targets_k = _triu_indices(N, pos_array[i], pos_array[i+1])
+        sources_k, targets_k = _triu_indices(N, from_pos, to_pos)
 
         # unique indices of sources' & targets' union
         indices = np.union1d(np.unique(sources_k), np.unique(targets_k))
@@ -4880,7 +4879,6 @@ def _matrix_iterator(v, min_chunk_size, from_pos, to_pos, coldtypedic,
         # return i'th selection
         ei = _select_and_return(vi, sources_k, targets_k, ft_feature,
                                 dt_unit, transfer_features, coldtypedic)
-
         ei_list.append(ei)
 
         # print
@@ -4888,8 +4886,7 @@ def _matrix_iterator(v, min_chunk_size, from_pos, to_pos, coldtypedic,
         timediff = datetime.now() - starttime
         verboseprint(' nr of edges:', [ei.shape[0]],
                      ', cum nr of edges:', [cum_edges])
-        verboseprint(' pos_interval:',
-                     [int(pos_array[i]), int(pos_array[i+1])])
+        verboseprint(' pos_interval:', [from_pos, to_pos])
         verboseprint(' nr of pairs (total):', [int(N*(N-1)/2)])
         verboseprint(' copied rs: {}'.format(ei.columns.values))
         verboseprint(' computation time:', '\ts =',
@@ -5155,18 +5152,17 @@ def _ft_subiterator(nl, vi, ft_feature, dt_unit, coldtypedic,
                     transfer_features, pairs, max_pairs,
                     verboseprint):
 
-    # split in steps
-    pos_array = np.arange(0, pairs, max_pairs, dtype=np.int)
-    pos_array = np.insert(pos_array, len(pos_array), pairs)
-
     # iterate through node indices
+    c = 0
     eik_list = []
-    for k in range(len(pos_array) - 1):
+    pos_array, n_steps = _pos_array(0, pairs, max_pairs)
+    for from_pos, to_pos in pos_array:
 
-        verboseprint('subiteration {} of {}'.format(k+1, len(pos_array)-1))
+        verboseprint('subiteration {} of {}'.format(c+1, n_steps))
+        c += 1
 
         # # construct node indices
-        sources_k, targets_k = _triu_indices(nl, pos_array[k], pos_array[k+1])
+        sources_k, targets_k = _triu_indices(nl, from_pos, to_pos)
 
         # unique indices of sources' & targets' union
         indices = np.union1d(np.unique(sources_k), np.unique(targets_k))
@@ -5213,7 +5209,7 @@ def _ft_create_ei(self, vi, ft_feature, dt_unit, coldtypedic,
 
         nd = nl - ns
         # number of pairs
-        pairs = int((ns*(ns-1))/2 + nd*ns)
+        pairs = (ns*(ns-1))//2 + nd*ns
 
         if nl == 1:
 
@@ -5271,7 +5267,7 @@ def _ft_create_ei(self, vi, ft_feature, dt_unit, coldtypedic,
         nd = 0
 
         # number of pairs
-        pairs = int((nl*(nl-1))/2)
+        pairs = (nl*(nl-1))//2
 
         if pairs > max_pairs:
 
@@ -5364,6 +5360,20 @@ def _ft_selector(ft_r, ftt, sources, targets):
     return sources, targets
 
 
+def _pos_array(from_pos, to_pos, step_size):
+    # make sure all arguments are type(int)
+    from_pos = int(from_pos)
+    to_pos = int(to_pos)
+    step_size = int(step_size)
+    # create range generators
+    a = range(from_pos, to_pos, step_size)
+    b = range(from_pos + step_size, to_pos, step_size)
+    b = chain(b, [to_pos])
+    # number of steps
+    n_steps = len(a)
+    return zip(a, b), n_steps
+
+
 def _aggregate_super_table(funcs=None, size=False, gt=None):
 
     # aggregate values
@@ -5448,8 +5458,11 @@ def _triu_indices(N, start, end):
 
     """
 
-    if end > N*(N-1)/2:
-        end = N*(N-1)/2
+    if end > N*(N-1)//2:
+        end = N*(N-1)//2
+
+    if start >= end:
+        return (np.zeros(0, dtype=np.int), np.zeros(0, dtype=np.int))
 
     cumsums = np.cumsum(range(N-1, 0, -1), dtype=np.int)
     cumsums = np.insert(cumsums, 0, 0)
