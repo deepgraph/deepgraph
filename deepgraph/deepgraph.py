@@ -4882,9 +4882,9 @@ def _matrix_iterator(v, min_chunk_size, from_pos, to_pos, coldtypedic,
         ei_list.append(ei)
 
         # print
-        cum_edges += ei.shape[0]
+        cum_edges += _count_edges(ei)
         timediff = datetime.now() - starttime
-        verboseprint(' nr of edges:', [ei.shape[0]],
+        verboseprint(' nr of edges:', [_count_edges(ei)],
                      ', cum nr of edges:', [cum_edges])
         verboseprint(' pos_interval:', [from_pos, to_pos])
         verboseprint(' nr of pairs (total):', [int(N*(N-1)/2)])
@@ -4899,10 +4899,13 @@ def _matrix_iterator(v, min_chunk_size, from_pos, to_pos, coldtypedic,
             with open(logfile, 'a') as log:
                 print("0\t{}\t".format(len(sources_k)), end='', file=log)
                 print("{}\t{:.3f}".format(
-                    ei.shape[0], timediff.total_seconds()), file=log)
+                    _count_edges(ei), timediff.total_seconds()), file=log)
 
     # concat eik_list
-    e = pd.concat(ei_list)
+    e = pd.concat(ei_list, ignore_index=True, copy=False)
+
+    # set indices
+    e.set_index(['s', 't'], inplace=True)
 
     return e
 
@@ -5004,18 +5007,18 @@ def _ft_iterator(self, v, min_chunk_size, from_pos, to_pos, dt_unit,
                 self, vi, ft_feature, dt_unit, coldtypedic, transfer_features,
                 max_pairs, verboseprint, logfile, symmetry='trapez')
 
-            ei_list.append(ei)
+            ei_list.extend(ei)
 
-            cum_edges += ei.shape[0]
+            cum_edges += _count_edges(ei)
             verboseprint(' processed sources:', [ns])
             verboseprint(' mapped with targets:', [len(vi)-1])
             verboseprint(' pos interval:', [i, i+ns])
             verboseprint(' nr of nodes (total):', [N])
             verboseprint(' ft_feature of last source:',
                          [vi.at[vi.iloc[ns-1].name, ftf]])
-            verboseprint(' nr of edges:', [ei.shape[0]],
+            verboseprint(' nr of edges:', [_count_edges(ei)],
                          ', cum nr of edges:', [cum_edges])
-            verboseprint(' copied rs: {}'.format(ei.columns.values))
+            verboseprint(' copied rs: {}'.format(_copied_rs(ei)))
 
             i += ns
 
@@ -5066,18 +5069,18 @@ def _ft_iterator(self, v, min_chunk_size, from_pos, to_pos, dt_unit,
                     transfer_features, max_pairs, verboseprint, logfile,
                     symmetry='trapez')
 
-                ei_list.append(ei)
+                ei_list.extend(ei)
 
-                cum_edges += ei.shape[0]
+                cum_edges += _count_edges(ei)
                 verboseprint(' processed sources:', [ns])
                 verboseprint(' mapped with targets:', [upto-i-1])
                 verboseprint(' pos interval:', [i, i+ns])
                 verboseprint(' nr of nodes (total):', [N])
                 verboseprint(' ft_feature of last source:',
                              [vi.at[vi.iloc[ns-1].name, ftf]])
-                verboseprint(' nr of edges:', [ei.shape[0]],
+                verboseprint(' nr of edges:', [_count_edges(ei)],
                              ', cum nr of edges:', [cum_edges])
-                verboseprint(' copied rs: {}'.format(ei.columns.values))
+                verboseprint(' copied rs: {}'.format(_copied_rs(ei)))
 
                 i += ns
 
@@ -5098,9 +5101,9 @@ def _ft_iterator(self, v, min_chunk_size, from_pos, to_pos, dt_unit,
                     transfer_features, max_pairs, verboseprint, logfile,
                     symmetry='triangle')
 
-                ei_list.append(ei)
+                ei_list.extend(ei)
 
-                cum_edges += ei.shape[0]
+                cum_edges += _count_edges(ei)
                 verboseprint('# LAST', [len(vi)],
                              'EVENTS PROCESSED (END OF TABLE)')
                 verboseprint(
@@ -5111,9 +5114,9 @@ def _ft_iterator(self, v, min_chunk_size, from_pos, to_pos, dt_unit,
                 verboseprint(' nr of nodes (total):', [N])
                 verboseprint(' ft_feature of last source:',
                              [vi.at[vi.iloc[-1].name, ftf]])
-                verboseprint(' nr of edges:', [ei.shape[0]],
+                verboseprint(' nr of edges:', [_count_edges(ei)],
                              ', cum nr of edges:', [cum_edges])
-                verboseprint(' copied rs: {}'.format(ei.columns.values))
+                verboseprint(' copied rs: {}'.format(_copied_rs(ei)))
 
                 i += ns
 
@@ -5126,12 +5129,15 @@ def _ft_iterator(self, v, min_chunk_size, from_pos, to_pos, dt_unit,
         if logfile:
             with open(logfile, 'a') as log:
                 print("{}\t{:.3f}".format(
-                    ei.shape[0], timediff.total_seconds()), file=log)
+                    _count_edges(ei), timediff.total_seconds()), file=log)
 
     # BUG: concatenating changes dtypes of float16 and float32
     # to float64 if there is an empty frame in ei_list!
     # concat ei_list
-    e = pd.concat(ei_list)
+    e = pd.concat(ei_list, ignore_index=True, copy=False)
+
+    # set indices
+    e.set_index(['s', 't'], inplace=True)
 
     # delete excessive sources (only return sources up to to_pos)
     # PERFORMANCE (look for better solution, not 'isin'...)
@@ -5180,10 +5186,7 @@ def _ft_subiterator(nl, vi, ft_feature, dt_unit, coldtypedic,
 
         eik_list.append(eik)
 
-    # concat eik_list
-    ei = pd.concat(eik_list)
-
-    return ei
+    return eik_list
 
 
 def _ft_create_ei(self, vi, ft_feature, dt_unit, coldtypedic,
@@ -5222,9 +5225,8 @@ def _ft_create_ei(self, vi, ft_feature, dt_unit, coldtypedic,
             verboseprint(' nr of pairs: [{}]'.format(pairs))
             ei = pd.DataFrame({col: pd.Series(data=[], dtype=dtype) for
                                col, dtype in coldtypedic.items()})
-            ei.set_index(['s', 't'], inplace=True)
 
-            return ei, ns
+            return [ei], ns
 
         else:
             if pairs > max_pairs:
@@ -5239,6 +5241,8 @@ def _ft_create_ei(self, vi, ft_feature, dt_unit, coldtypedic,
                 if logfile:
                     with open(logfile, 'a') as log:
                         print("1\t{}\t".format(pairs), end='', file=log)
+
+                return ei, ns
 
             else:
                 # construct node indices
@@ -5255,7 +5259,7 @@ def _ft_create_ei(self, vi, ft_feature, dt_unit, coldtypedic,
                     with open(logfile, 'a') as log:
                         print("0\t{}\t".format(len(sources)), end='', file=log)
 
-            return ei, ns
+                return [ei], ns
 
     elif symmetry == 'triangle':
         # dimensions of the square
@@ -5283,6 +5287,8 @@ def _ft_create_ei(self, vi, ft_feature, dt_unit, coldtypedic,
                 with open(logfile, 'a') as log:
                     print("1\t{}\t".format(pairs), end='', file=log)
 
+            return ei, ns
+
         else:
             # construct node indices
             sources, targets = np.triu_indices(nl, k=1)
@@ -5298,7 +5304,7 @@ def _ft_create_ei(self, vi, ft_feature, dt_unit, coldtypedic,
                 with open(logfile, 'a') as log:
                     print("0\t{}\t".format(len(sources)), end='', file=log)
 
-        return ei, ns
+            return [ei], ns
 
 
 def _select_and_return(vi, sources, targets, ft_feature, dt_unit,
@@ -5340,9 +5346,6 @@ def _select_and_return(vi, sources, targets, ft_feature, dt_unit,
         ei = pd.DataFrame({col: pd.Series(data=data[col], dtype=dtype) for
                            col, dtype in coldtypedic.items()})
 
-    # set indices
-    ei.set_index(['s', 't'], inplace=True)
-
     # reset stored_relations
     CreatorFunction.reset('stored_relations')
 
@@ -5372,6 +5375,23 @@ def _pos_array(from_pos, to_pos, step_size):
     # number of steps
     n_steps = len(a)
     return zip(a, b), n_steps
+
+
+def _count_edges(ei):
+    if type(ei) is list:
+        c = 0
+        for eik in ei:
+            c += eik.shape[0]
+    else:
+        c = ei.shape[0]
+    return c
+
+
+def _copied_rs(ei):
+    if type(ei) is list:
+        return ei[0].columns.values
+    else:
+        return ei.columns.values
 
 
 def _aggregate_super_table(funcs=None, size=False, gt=None):
