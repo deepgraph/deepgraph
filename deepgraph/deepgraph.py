@@ -42,6 +42,12 @@ from collections import Counter, Iterable
 
 import numpy as np
 import pandas as pd
+
+from deepgraph._find_selected_indices import _find_selected_indices
+from deepgraph._triu_indices import (_triu_indices,
+                                     _reduce_triu_indices,
+                                     _union_of_indices)
+
 try:
     import matplotlib.pyplot as plt
 except ImportError:
@@ -4658,8 +4664,8 @@ class Selector(CreatorFunction):
 
         # positional indices of selected pairs in the former indices
         if not len(ovdic['sources']) == len(sources):
-            index = self.find_oldind_indices(
-                ovdic['sources'], ovdic['targets'], sources, targets)
+            index = _find_selected_indices(
+                sources, targets, ovdic['sources'], ovdic['targets'])
         else:
             index = np.arange(len(sources))
 
@@ -4678,35 +4684,6 @@ class Selector(CreatorFunction):
         for connector in CreatorFunction.c_instances:
             if r in connector.output_rs:
                 connector.map(vi, sources, targets, dt_unit, ft_feature)
-
-    @staticmethod
-    def find_oldind_indices(old_ev_s, old_ev_t, new_ev_s, new_ev_t):
-
-        oldind = np.column_stack((old_ev_s, old_ev_t))
-        newind = np.column_stack((new_ev_s, new_ev_t))
-
-        df = pd.DataFrame(oldind)
-        df = pd.concat((df, pd.DataFrame(newind)))
-
-        # potential future BUG: relies on how pd sorts groups !
-        df['ind'] = df.groupby([0, 1]).grouper.group_info[0]
-
-        df = df.ind.value_counts()
-        df = df[df > 1]
-
-        index = np.sort(df.index.values)
-
-        return index
-
-#     def sfind_oldind_indices(self, sources, targets):
-#
-#         oldind = np.vstack((sources, targets))
-#         newind = np.asarray(self.output[-2:])
-#
-#         index = [np.where((oldind[0,:] == newind[0,col]) & (oldind[1,:] \
-#                 == newind[1,col]))[0][0] for col in range(newind.shape[1])]
-#
-#         return index
 
 
 def _initiate_create_edges(verbose, v, ft_feature, connectors, selectors,
@@ -4864,17 +4841,17 @@ def _matrix_iterator(v, min_chunk_size, from_pos, to_pos, coldtypedic,
         sources_k, targets_k = _triu_indices(N, from_pos, to_pos)
 
         # unique indices of sources' & targets' union
-        indices = np.union1d(np.unique(sources_k), np.unique(targets_k))
+        indices = _union_of_indices(N, sources_k, targets_k)
+
+        # create triu_indices for subset of v
+        sources_k, targets_k = _reduce_triu_indices(
+            sources_k, targets_k, indices)
 
         # select subset of v
         if v_is_hdf:
             vi = v.select(hdf_key, where=indices, columns=rf)
         else:
             vi = v.iloc[indices]
-
-        # create triu_indices for subset of v
-        sources_k, targets_k = _reduce_triu_indices(
-            sources_k, targets_k, indices)
 
         # return i'th selection
         ei = _select_and_return(vi, sources_k, targets_k, ft_feature,
@@ -5171,14 +5148,14 @@ def _ft_subiterator(nl, vi, ft_feature, dt_unit, coldtypedic,
         sources_k, targets_k = _triu_indices(nl, from_pos, to_pos)
 
         # unique indices of sources' & targets' union
-        indices = np.union1d(np.unique(sources_k), np.unique(targets_k))
-
-        # select subset of vi
-        vik = vi.iloc[indices]
+        indices = _union_of_indices(nl, sources_k, targets_k)
 
         # create triu_indices for subset of v
         sources_k, targets_k = _reduce_triu_indices(
             sources_k, targets_k, indices)
+
+        # select subset of vi
+        vik = vi.iloc[indices]
 
         # return k'th selection
         eik = _select_and_return(vik, sources_k, targets_k, ft_feature,
@@ -5292,6 +5269,8 @@ def _ft_create_ei(self, vi, ft_feature, dt_unit, coldtypedic,
         else:
             # construct node indices
             sources, targets = np.triu_indices(nl, k=1)
+            sources = sources.astype(np.uint64)
+            targets = targets.astype(np.uint64)
 
             verboseprint(
                 '# =====================================================')
@@ -5462,70 +5441,6 @@ def _dic_translator(x, dic):
     for i in range(len(x)):
         x[i] = dic[x[i]]
     return x
-
-
-def _triu_indices(N, start, end):
-    """Upper-triangle indices from start to end.
-
-    Return the indices for the upper-triangle of an (N, N) array with a
-    diagonal offset of k=1, from start to end position (excluded).
-
-    Equivalent to (np.triu_indices(N, k=1)[0][start:end], np.triu_indices(N,
-    k=1)[1][start:end]), without the overhead memory consumption of creating
-    the entire range of indices first.
-
-    See ``np.triu_indices`` for details.
-
-    """
-
-    if end > N*(N-1)//2:
-        end = N*(N-1)//2
-
-    if start >= end:
-        return (np.zeros(0, dtype=np.int), np.zeros(0, dtype=np.int))
-
-    cumsums = np.cumsum(range(N-1, 0, -1), dtype=np.int)
-    cumsums = np.insert(cumsums, 0, 0)
-
-    i_s = np.searchsorted(cumsums, start, side='right') - 1
-    j_s = start - cumsums[i_s] + i_s + 1
-
-    i_e = np.searchsorted(cumsums, end, side='right') - 1
-    j_e = end - cumsums[i_e] + i_e + 1
-
-    del cumsums
-
-    sources = np.empty(end-start, dtype=np.int)
-    targets = np.empty(end-start, dtype=np.int)
-
-    npairs = 0
-    for row in range(i_s, i_e + 1):
-        if i_s == i_e:
-            t = np.arange(j_s, j_e, dtype=np.int)
-        elif row == i_s:
-            t = np.arange(j_s, N, dtype=np.int)
-        elif row == i_e:
-            t = np.arange(row+1, j_e, dtype=np.int)
-        else:
-            t = np.arange(row+1, N, dtype=np.int)
-
-        npairs_in_row = len(t)
-        s = np.ones(npairs_in_row, dtype=np.int) * row
-
-        sources[npairs:npairs + npairs_in_row] = s
-        targets[npairs:npairs + npairs_in_row] = t
-
-        npairs += npairs_in_row
-
-    return (sources, targets)
-
-
-def _reduce_triu_indices(sources, targets, indices):
-    n = len(indices)
-    n_pairs = len(sources)
-    start = np.searchsorted(indices, targets[0]) - 1
-    rsources, rtargets = _triu_indices(n, start, start + n_pairs)
-    return (rsources, rtargets)
 
 
 def _is_array_like(x):
