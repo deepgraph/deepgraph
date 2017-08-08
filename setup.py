@@ -1,5 +1,6 @@
 import sys
 from setuptools import setup, find_packages, Extension
+import numpy as np
 
 if '--use-cython' in sys.argv:
     USE_CYTHON = True
@@ -14,11 +15,13 @@ extensions = [
     Extension(
         "deepgraph._triu_indices",
         ["deepgraph/_triu_indices" + ext],
+        include_dirs=[np.get_include()],
         # language='c++',
     ),
     Extension(
         "deepgraph._find_selected_indices",
         ["deepgraph/_find_selected_indices" + ext],
+        include_dirs=[np.get_include()]
     )
 ]
 
