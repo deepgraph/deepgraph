@@ -439,7 +439,7 @@ class TestTriuIndices(object):
 
     def test_random(self):
 
-        from deepgraph.deepgraph import _triu_indices
+        from deepgraph._triu_indices import _triu_indices
 
         N = np.random.randint(900, 1100)
         n = N*(N-1)/2
@@ -459,7 +459,7 @@ class TestTriuIndices(object):
 
     def test_border_cases(self):
 
-        from deepgraph.deepgraph import _triu_indices
+        from deepgraph._triu_indices import _triu_indices
 
         Ns = [2, 5, 1004, 1523]
         starts = [0, 0, 0, 9, 9, 9, 9]
