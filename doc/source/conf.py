@@ -60,7 +60,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'DeepGraph'
-copyright = u'2016, Dominik Traxl'
+copyright = u'2017, Dominik Traxl'
 author = u'Dominik Traxl'
 
 # The version info for the project you're documenting, acts as replacement for
