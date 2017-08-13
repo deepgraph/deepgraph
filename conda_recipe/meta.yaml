@@ -1,17 +1,22 @@
+{% set name = "DeepGraph" %}
+{% set version = "0.2.0" %}
+{% set sha256 = "50b0079141777ec7b8809a3207f78c860cbed86867d5add3f7a31a8840f0bd81" %}
+
 package:
-  name: deepgraph
-  version: "0.2.0"
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  # fn: {{ name }}-{{ version }}.tar.gz
+  # url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  # sha256: {{ sha256 }}
+  # git_url: https://github.com/deepgraph/deepgraph.git
+  # git_rev: master  # {{ version }}
+  # path: ../dist/{{ name }}-{{ version }}
+  url: ../dist/{{ name }}-{{ version }}.tar.gz
 
 build:
   number: 0
-
-source:
-  # fn: DeepGraph-0.2.0.tar.gz
-  # url: https://pypi.python.org/packages/source/D/DeepGraph/DeepGraph-0.2.0.tar.gz
-  # md5: 48f75bccb12b5ce365a9cad522e59edb
-  # git_url: https://github.com/deepgraph/deepgraph.git
-  # git_rev: master  # 0.2.0
-  path: ../dist/DeepGraph-0.2.0
 
 requirements:
   build:
@@ -35,25 +40,25 @@ test:
     - pandas
     - scipy
     - networkx
-    # - tables
   imports:
     - deepgraph
     - pytest
   commands:
-    # - pip install tables
     - conda install -y -p $PREFIX -c anaconda pytables
     - conda install -y -p $PREFIX graph-tool  # needs conda-forge and ostrokach channels
-    # - conda install -y -f --use-local deepgraph  # seems hackish, but works..
-    # - cd ../work/tests  # seems hackish, but works..
     - cd $PREFIX/../tests/
     - py.test -v
 
 about:
-  summary: >
+  home: https://github.com/deepgraph/deepgraph
+  license: BSD 3-Clause
+  license_family: BSD
+  license_file: LICENSE.txt
+  summary: 'Analyze Data with Pandas-based Networks.'
+  description: |
     DeepGraph is a scalable, general-purpose data analysis package. It
     implements a network representation based on pandas DataFrames and
     provides methods to construct, partition and plot graphs, to interface
     with popular network packages and more.
-  home: https://github.com/deepgraph/deepgraph
-  license: BSD
+  doc_url: https://deepgraph.readthedocs.io/
 
