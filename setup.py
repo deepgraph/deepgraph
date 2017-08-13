@@ -37,11 +37,8 @@ setup(
     author_email="dominik.traxl@posteo.org",
     url='https://github.com/deepgraph/deepgraph/',
     download_url='https://github.com/deepgraph/deepgraph/tarball/v0.2.0',
-    description=("DeepGraph is a scalable, general-purpose data analysis "
-                 "package. It implements a network representation based on "
-                 "pandas DataFrames and provides methods to construct, "
-                 "partition and plot graphs, to interface with popular "
-                 "network packages and more."),
+    description=("Analyze Data with Pandas-based Networks."),
+    long_description=open('README.rst').read(),
     install_requires=['numpy>=1.6',
                       'pandas>=0.17.0'],
     license="BSD",

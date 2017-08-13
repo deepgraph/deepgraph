@@ -28,15 +28,14 @@ install with
 
 ::
 
-   $ conda install -c https://conda.anaconda.org/deepgraph deepgraph
+   $ conda install -c conda-forge deepgraph
 
 
 Installing from Source
 ======================
 
 Alternatively, you can install DeepGraph from source by downloading a source
-archive file (tar.gz or zip). Since DeepGraph is a pure Python package, you
-don't need a compiler to build or install it.
+archive file (tar.gz or zip).
 
 
 Source Archive File
@@ -49,7 +48,9 @@ Source Archive File
   2. Unpack and change directory to the source directory (it should have the
      files README.rst and setup.py).
 
-  3. Run :samp:`python setup.py install` to build and install
+  3. Run :samp:`python setup.py install` to build and install.
+     As a developer, you may want to install using cython:
+     :samp:`python setup.py install --use-cython`.
 
   4. (Optional) Run :samp:`py.test` to execute the tests if you have
      `pytest <https://pypi.python.org/pypi/pytest>`_ installed.
@@ -64,7 +65,9 @@ GitHub
 
   2. Change directory to :samp:`deepgraph`
 
-  3. Run :samp:`python setup.py install` to build and install
+  3. Run :samp:`python setup.py install` to build and install.
+     As a developer, you may want to install using cython:
+     :samp:`python setup.py install --use-cython`.
 
   4. (Optional) Run :samp:`py.test` to execute the tests if you have
      `pytest <https://pypi.python.org/pypi/pytest>`_ installed.

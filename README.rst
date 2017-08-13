@@ -1,17 +1,5 @@
 
-  .. image:: https://anaconda.org/deepgraph/deepgraph/badges/version.svg
-     :target: https://anaconda.org/deepgraph/deepgraph
-
-  .. image:: https://anaconda.org/deepgraph/deepgraph/badges/installer/conda.svg
-     :target: https://conda.anaconda.org/deepgraph
-
-  .. image:: https://readthedocs.org/projects/deepgraph/badge/?version=latest
-     :target: http://deepgraph.readthedocs.org/en/latest/?badge=latest
-     :alt: Documentation Status
-
-  .. image:: https://badge.fury.io/py/deepgraph.svg
-     :target: https://badge.fury.io/py/deepgraph
-
+|Anaconda Version| |Anaconda Downloads| |Documentation| |PyPi|
 
 DeepGraph
 =========
@@ -80,7 +68,7 @@ install with
 
 ::
 
-   $ conda install -c https://conda.anaconda.org/deepgraph deepgraph
+   $ conda install -c conda-forge deepgraph
 
 Then, import and get started with::
 
@@ -100,14 +88,6 @@ to use the library. Expect the docs to continue to expand as time goes on.
 
 Development
 -----------
-
-Since this project is fairly new, it's not unlikely you might encounter some
-bugs here and there. Although the core functionalities are covered pretty well
-by test scripts, particularly the plotting methods could use some more testing.
-
-Furthermore, at this point, you can expect rather frequent updates to the
-package as well as the documentation. So please make sure to check for updates
-every once in a while.
 
 So far the package has only been developed by me, a fact that I would like
 to change very much. So if you feel like contributing in any way, shape or
@@ -156,3 +136,19 @@ Distributed with a `BSD license <LICENSE.txt>`_::
 
     Copyright (C) 2017 DeepGraph Developers
     Dominik Traxl <dominik.traxl@posteo.org>
+
+
+.. |Anaconda Version| image:: https://anaconda.org/conda-forge/deepgraph/badges/version.svg
+   :target: https://anaconda.org/conda-forge/deepgraph
+
+.. |Anaconda Downloads| image:: https://anaconda.org/conda-forge/deepgraph/badges/downloads.svg
+   :target: https://anaconda.org/conda-forge/deepgraph
+
+.. |Anaconda Install| image:: https://anaconda.org/conda-forge/deepgraph/badges/installer/conda.svg
+   :target: https://anaconda.org/conda-forge/deepgraph
+
+.. |Documentation| image:: https://readthedocs.org/projects/deepgraph/badge/?version=latest
+    :target: http://deepgraph.readthedocs.io/en/latest/?badge=latest
+
+.. |PyPi| image:: https://badge.fury.io/py/DeepGraph.svg
+    :target: https://badge.fury.io/py/DeepGraph

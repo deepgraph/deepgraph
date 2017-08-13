@@ -55,22 +55,6 @@ It's also possible to represent :ref:`multilayer networks <tutorial_terror>` by
 deep graphs. We're thinking of implementing an interface to a suitable package
 dedicated to the analysis of multilayer networks.
 
-
-**Disclaimer**
-
-Since this project is fairly new, it's not unlikely you might encounter some
-bugs here and there. Although the core functionalities are covered pretty well
-by test scripts, particularly the plotting methods could use some more testing.
-
-Furthermore, at this point, you can expect rather frequent updates to the
-package as well as the documentation. So please make sure to check for updates
-every once in a while.
-
-So far the package has only been developed by me, a fact that I would like
-to change very much. So if you feel like contributing in any way, shape or
-form, please feel free to contact me, report bugs, create pull requestes,
-milestones, etc. You can contact me via email: dominik.traxl@posteo.org
-
 .. note::
 
    Please acknowledge and cite the use of this software and its authors when
@@ -102,6 +86,15 @@ milestones, etc. You can contact me via email: dominik.traxl@posteo.org
   - :ref:`Installation of DeepGraph <installation>`
   - :ref:`DeepGraph's Tutorials <tutorials>`
   - :ref:`API Reference <api_reference>`
+
+**Want to share feedback, or contribute?**
+
+So far the package has only been developed by :ref:`me <contact>`, a fact that
+I would like to change very much. So if you feel like contributing in any way,
+shape or form, please feel free to contact me, report bugs, create pull
+requestes, milestones, etc. You can contact me via email:
+dominik.traxl@posteo.org
+
 
 .. note::
 
