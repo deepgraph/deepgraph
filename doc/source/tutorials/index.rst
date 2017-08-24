@@ -11,6 +11,7 @@ Tutorials
    :maxdepth: 2
 
    10min_to_deepgraph
+   pairwise_correlations
    precipitation
    terrorists
 
