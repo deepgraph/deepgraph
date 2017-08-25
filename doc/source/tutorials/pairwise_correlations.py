@@ -13,7 +13,6 @@ from multiprocessing import Pool
 
 # the usual
 import numpy as np
-from numpy.random import RandomState
 import pandas as pd
 
 import deepgraph as dg
@@ -24,16 +23,14 @@ import deepgraph as dg
 # In[2]:
 
 # create observations
+from numpy.random import RandomState
 prng = RandomState(0)
 n_samples = int(5e3)
 n_features = int(1e2)
+X = prng.randint(100, size=(n_samples, n_features)).astype(np.float64)
 
-X = np.zeros((n_samples, n_features), dtype=np.float64)
-for i in range(X.shape[0]):
-    X[i] = prng.randint(0, 100, size=n_features)
-    
 # whiten variables for fast parallel computation later on
-X = ((X.T - X.mean(axis=1)) / X.std(axis=1)).T
+X = (X - X.mean(axis=1, keepdims=True)) / X.std(axis=1, keepdims=True)
 
 # save in binary format
 np.save('samples', X)

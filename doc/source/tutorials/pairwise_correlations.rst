@@ -24,7 +24,6 @@ First of all, we need to import some packages
 
     # the usual
     import numpy as np
-    from numpy.random import RandomState
     import pandas as pd
 
     import deepgraph as dg
@@ -38,16 +37,14 @@ variable.
 .. code:: python
 
     # create observations
+    from numpy.random import RandomState
     prng = RandomState(0)
     n_samples = int(5e3)
     n_features = int(1e2)
-
-    X = np.zeros((n_samples, n_features), dtype=np.float64)
-    for i in range(X.shape[0]):
-        X[i] = prng.randint(0, 100, size=n_features)
+    X = prng.randint(100, size=(n_samples, n_features)).astype(np.float64)
 
     # whiten variables for fast parallel computation later on
-    X = ((X.T - X.mean(axis=1)) / X.std(axis=1)).T
+    X = (X - X.mean(axis=1, keepdims=True)) / X.std(axis=1, keepdims=True)
 
     # save in binary format
     np.save('samples', X)
@@ -209,42 +206,32 @@ And finally, let's see where most of the computation time is spent.
 
 .. parsed-literal::
 
-             252629 function calls (247853 primitive calls) in 6.007 seconds
+             252632 function calls (247856 primitive calls) in 6.961 seconds
 
        Ordered by: internal time
-       List reduced from 526 to 20 due to restriction <20>
+       List reduced from 528 to 20 due to restriction <20>
 
        ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-          250    3.196    0.013    3.202    0.013 memmap.py:334(__getitem__)
-          125    1.195    0.010    1.195    0.010 {built-in method numpy.core.multiarray.c_einsum}
-            2    0.361    0.181    0.361    0.181 {method 'get_labels' of 'pandas._libs.hashtable.Int64HashTable' objects}
-          125    0.148    0.001    4.584    0.037 deepgraph.py:4553(map)
-          250    0.113    0.000    0.122    0.000 internals.py:4473(_stack_arrays)
-            4    0.102    0.025    0.102    0.025 {built-in method numpy.core.multiarray.concatenate}
-          129    0.085    0.001    0.085    0.001 {method 'take' of 'numpy.ndarray' objects}
-          125    0.084    0.001    4.996    0.040 deepgraph.py:5289(_select_and_return)
-            2    0.074    0.037    0.190    0.095 algorithms.py:429(safe_sort)
+          250    3.990    0.016    3.997    0.016 memmap.py:334(__getitem__)
+          125    1.216    0.010    1.216    0.010 {built-in method numpy.core.multiarray.c_einsum}
+          125    0.328    0.003    5.582    0.045 deepgraph.py:4553(map)
+            2    0.302    0.151    0.302    0.151 {method 'get_labels' of 'pandas._libs.hashtable.Int64HashTable' objects}
+          250    0.114    0.000    0.124    0.000 internals.py:4473(_stack_arrays)
+          125    0.086    0.001    6.017    0.048 deepgraph.py:5289(_select_and_return)
+            4    0.084    0.021    0.084    0.021 {built-in method numpy.core.multiarray.concatenate}
+          129    0.083    0.001    0.083    0.001 {method 'take' of 'numpy.ndarray' objects}
+            2    0.066    0.033    0.180    0.090 algorithms.py:429(safe_sort)
+          126    0.047    0.000    0.047    0.000 api.py:93(_sanitize_and_check)
+           52    0.044    0.001    0.044    0.001 _weakrefset.py:36(__init__)
           125    0.042    0.000    0.042    0.000 {deepgraph._triu_indices._reduce_triu_indices}
-            2    0.040    0.020    0.040    0.020 function_base.py:4684(delete)
-          125    0.040    0.000    0.040    0.000 {built-in method deepgraph._triu_indices._triu_indices}
-          126    0.039    0.000    0.039    0.000 api.py:93(_sanitize_and_check)
+          125    0.042    0.000    0.042    0.000 {built-in method deepgraph._triu_indices._triu_indices}
+            2    0.039    0.020    0.039    0.020 function_base.py:4684(delete)
             2    0.032    0.016    0.032    0.016 {built-in method numpy.core.multiarray.putmask}
-            4    0.029    0.007    0.029    0.007 {built-in method pandas._libs.algos.ensure_int16}
-          125    0.020    0.000    4.417    0.035 <ipython-input-3-ddd5575c35f5>:12(corr)
-    49804/49196    0.015    0.000    0.043    0.000 {built-in method builtins.isinstance}
-            1    0.014    0.014    6.007    6.007 deepgraph.py:178(create_edges)
-            1    0.014    0.014    5.965    5.965 deepgraph.py:4783(_matrix_iterator)
-            2    0.011    0.006    0.563    0.281 algorithms.py:527(factorize)
-
-
-
-
-
-
-.. parsed-literal::
-
-    <pstats.Stats at 0x7fc79c237ba8>
-
+            4    0.026    0.006    0.026    0.006 {built-in method pandas._libs.algos.ensure_int16}
+          125    0.021    0.000    5.234    0.042 <ipython-input-3-ddd5575c35f5>:12(corr)
+    49804/49196    0.015    0.000    0.074    0.000 {built-in method builtins.isinstance}
+            1    0.015    0.015    6.893    6.893 deepgraph.py:4783(_matrix_iterator)
+            1    0.013    0.013    6.961    6.961 deepgraph.py:178(create_edges)
 
 
 As you can see, most of the time is spent by getting the requested
