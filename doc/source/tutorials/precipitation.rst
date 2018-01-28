@@ -69,6 +69,7 @@ the next box of code.
    "SSW\_download\_2016-05-03T20\_19\_28\_23621\_2oIe06xp.inp". Note
    which directory the downloaded file is saved to, and in your Unix
    shell, set your current working directory to that directory.
+- Register an account to get authentication credentials using these instructions: https://disc.gsfc.nasa.gov/information/howto/5761bc6a5ad5a18811681bae?keywords=wget 
 -  get the files via
 
 .. code:: python
