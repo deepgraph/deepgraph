@@ -51,6 +51,7 @@ import deepgraph as dg
 # - click on "View Subset Results"
 # - right click on the "Get list of URLs for this subset in a file" link, and choose "Save Link As..."
 # - the downloaded file will have a name similar to "SSW_download_2016-05-03T20_19_28_23621_2oIe06xp.inp". Note which directory the downloaded file is saved to, and in your Unix shell, set your current working directory to that directory.
+# - Register an account to get authentication credentials using these instructions: https://disc.gsfc.nasa.gov/information/howto/5761bc6a5ad5a18811681bae?keywords=wget
 # - get the files via
 
 # In[ ]:
