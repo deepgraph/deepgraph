@@ -34,11 +34,21 @@ if PY2:
 else:
     basestring = str
 
+import os
 import inspect
 import warnings
 from datetime import datetime
 from itertools import chain
 from collections import Counter, Iterable
+
+try:
+    import matplotlib as mpl
+    display = "DISPLAY" in os.environ
+    if not display:
+        mpl.use('Agg')
+    import matplotlib.pyplot as plt
+except ImportError:
+    pass
 
 import numpy as np
 import pandas as pd
@@ -47,11 +57,6 @@ from deepgraph._find_selected_indices import _find_selected_indices
 from deepgraph._triu_indices import (_triu_indices,
                                      _reduce_triu_indices,
                                      _union_of_indices)
-
-try:
-    import matplotlib.pyplot as plt
-except ImportError:
-    pass
 
 # get rid of false positive SettingWithCopyWarnings, see
 # http://stackoverflow.com/questions/20625582/how-to-deal-with-this-pandas-warning
