@@ -31,12 +31,12 @@ if USE_CYTHON:
 
 setup(
     name="DeepGraph",
-    version='0.2.0',
+    version='0.2.1',
     packages=find_packages(),
     author="Dominik Traxl",
     author_email="dominik.traxl@posteo.org",
     url='https://github.com/deepgraph/deepgraph/',
-    download_url='https://github.com/deepgraph/deepgraph/tarball/v0.2.0',
+    download_url='https://github.com/deepgraph/deepgraph/tarball/v0.2.1',
     description=("Analyze Data with Pandas-based Networks."),
     long_description=open('README.rst').read(),
     install_requires=['numpy>=1.6',
