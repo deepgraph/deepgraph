@@ -10,7 +10,6 @@
 # In[1]:
 
 # data i/o
-import os
 import subprocess
 import zipfile
 
@@ -34,7 +33,6 @@ import deepgraph as dg
 # In[2]:
 
 # zip file containing node attributes
-os.makedirs("tmp", exists_ok=True)
 get_nodes_zip = ("wget -O tmp/terrorist_nodes.zip "
                  "https://sites.google.com/site/sfeverton18/"
                  "research/appendix-1/Noordin%20Subset%20%28ORA%29.zip?"
@@ -69,7 +67,7 @@ v.rename(columns={'index': 'V_N'}, inplace=True)
 # swap columns
 cols = list(v)
 cols[1], cols[10] = cols[10], cols[1]
-v = v[cols]
+v = v.ix[:,cols]
 
 # get rid of the attribute columns for demonstrational purposes,
 # will be inserted again later
