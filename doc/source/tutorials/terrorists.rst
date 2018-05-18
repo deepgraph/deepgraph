@@ -81,7 +81,7 @@ Preprocessing the Nodes
 .. code:: python
 
     # zip file containing node attributes
-    os.makedirs("tmp", exists_ok=True)
+    os.makedirs("tmp", exist_ok=True)
     get_nodes_zip = ("wget -O tmp/terrorist_nodes.zip "
                      "https://sites.google.com/site/sfeverton18/"
                      "research/appendix-1/Noordin%20Subset%20%28ORA%29.zip?"
