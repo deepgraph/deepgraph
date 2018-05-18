@@ -57,6 +57,7 @@ First of all, we need to import some packages
 .. code:: python
 
     # data i/o
+    import os
     import subprocess
     import zipfile
 
@@ -80,6 +81,7 @@ Preprocessing the Nodes
 .. code:: python
 
     # zip file containing node attributes
+    os.makedirs("tmp", exists_ok=True)
     get_nodes_zip = ("wget -O tmp/terrorist_nodes.zip "
                      "https://sites.google.com/site/sfeverton18/"
                      "research/appendix-1/Noordin%20Subset%20%28ORA%29.zip?"
@@ -114,7 +116,7 @@ Preprocessing the Nodes
     # swap columns
     cols = list(v)
     cols[1], cols[10] = cols[10], cols[1]
-    v = v.ix[:,cols]
+    v = v[cols]
 
     # get rid of the attribute columns for demonstrational purposes,
     # will be inserted again later
