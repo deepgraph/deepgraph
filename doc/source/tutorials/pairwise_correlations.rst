@@ -92,6 +92,7 @@ Now we can compute the pair-wise correlations using DeepGraph's :py:meth:`create
 
     # computation
     if __name__ == '__main__':
+        os.makedirs("tmp/correlations", exist_ok=True)
         indices = np.arange(0, n_processes - 1)
         p = Pool()
         for _ in p.imap_unordered(create_ei, indices):

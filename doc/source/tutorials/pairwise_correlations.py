@@ -68,7 +68,7 @@ def create_ei(i):
     g = dg.DeepGraph(v)
 
     # create edges
-    g.create_edges(connectors=corr, step_size=step_size, 
+    g.create_edges(connectors=corr, step_size=step_size,
                    from_pos=from_pos, to_pos=to_pos)
 
     # store edge table
@@ -76,11 +76,12 @@ def create_ei(i):
 
 # computation
 if __name__ == '__main__':
+    os.makedirs("tmp/correlations", exist_ok=True)
     indices = np.arange(0, n_processes - 1)
     p = Pool()
     for _ in p.imap_unordered(create_ei, indices):
         pass
-    
+
 
 
 # Let's collect the computed correlation values and store them in an hdf file.
@@ -119,4 +120,4 @@ p = get_ipython().magic('prun -r g.create_edges(connectors=corr, step_size=step_
 p.print_stats(20)
 
 
-# As you can see, most of the time is spent by getting the requested samples in the corr-function, followed by computing the correlation values themselves. 
+# As you can see, most of the time is spent by getting the requested samples in the corr-function, followed by computing the correlation values themselves.
