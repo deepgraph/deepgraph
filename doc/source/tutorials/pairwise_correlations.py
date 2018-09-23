@@ -5,6 +5,7 @@
 
 # In[1]:
 
+
 # data i/o
 import os
 
@@ -18,16 +19,20 @@ import pandas as pd
 import deepgraph as dg
 
 
-# Let's create a set variables and store it as a 2d-matrix ``X`` (``shape=(n_samples, n_features)``) on disc. To speed up the computation of the Pearson correlation coefficients later on, we whiten each variable.
+# Let's create a set of variables and store it as a 2d-matrix ``X`` (``shape=(n_features, n_samples)``) on disc. To speed up the computation of the correlation coefficients later on, we whiten each variable.
 
 # In[2]:
+
 
 # create observations
 from numpy.random import RandomState
 prng = RandomState(0)
-n_samples = int(5e3)
-n_features = int(1e2)
-X = prng.randint(100, size=(n_samples, n_features)).astype(np.float64)
+n_features = int(5e3)
+n_samples = int(1e2)
+X = prng.randint(100, size=(n_features, n_samples)).astype(np.float64)
+
+# uncomment the next line to compute ranked variables for Spearman's correlation coefficients
+# X = X.argsort(axis=1).argsort(axis=1)
 
 # whiten variables for fast parallel computation later on
 X = (X - X.mean(axis=1, keepdims=True)) / X.std(axis=1, keepdims=True)
@@ -37,6 +42,7 @@ np.save('samples', X)
 
 
 # In[3]:
+
 
 # parameters (change these to control RAM usage)
 step_size = 1e5
@@ -50,13 +56,13 @@ v = pd.DataFrame({'index': range(X.shape[0])})
 
 # connector function to compute pairwise pearson correlations
 def corr(index_s, index_t):
-    samples_s = X[index_s]
-    samples_t = X[index_t]
-    corr = np.einsum('ij,ij->i', samples_s, samples_t) / n_features
+    features_s = X[index_s]
+    features_t = X[index_t]
+    corr = np.einsum('ij,ij->i', features_s, features_t) / n_samples
     return corr
 
 # index array for parallelization
-pos_array = np.array(np.linspace(0, n_samples*(n_samples-1)//2, n_processes), dtype=int)
+pos_array = np.array(np.linspace(0, n_features*(n_features-1)//2, n_processes), dtype=int)
 
 # parallel computation
 def create_ei(i):
@@ -88,6 +94,7 @@ if __name__ == '__main__':
 
 # In[4]:
 
+
 # store correlation values
 files = os.listdir('tmp/correlations/')
 files.sort()
@@ -102,6 +109,7 @@ store.close()
 
 # In[5]:
 
+
 # load correlation table
 e = pd.read_hdf('e.h5')
 print(e)
@@ -111,13 +119,15 @@ print(e)
 
 # In[6]:
 
+
 g = dg.DeepGraph(v)
-p = get_ipython().magic('prun -r g.create_edges(connectors=corr, step_size=step_size)')
+p = get_ipython().run_line_magic('prun', '-r g.create_edges(connectors=corr, step_size=step_size)')
 
 
 # In[7]:
 
+
 p.print_stats(20)
 
 
-# As you can see, most of the time is spent by getting the requested samples in the corr-function, followed by computing the correlation values themselves.
+# As you can see, most of the time is spent by getting the requested features in the corr-function, followed by computing the correlation values themselves.
