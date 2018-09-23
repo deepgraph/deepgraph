@@ -14,7 +14,7 @@ Using DeepGraph's :py:meth:`create_edges <.create_edges>` method, you can comput
 
 First of all, we need to import some packages
 
-.. code:: ipython3
+.. code:: python
 
     # data i/o
     import os
@@ -33,7 +33,7 @@ Let's create a set of variables and store it as a 2d-matrix ``X``
 (``shape=(n_features, n_samples)``) on disc. To speed up the computation
 of the correlation coefficients later on, we whiten each variable.
 
-.. code:: ipython3
+.. code:: python
 
     # create observations
     from numpy.random import RandomState
@@ -57,7 +57,7 @@ of the correlation coefficients later on, we whiten each variable.
 
 Now we can compute the pair-wise correlations using DeepGraph's :py:meth:`create_edges <.create_edges>` method. Note that the node table :py:attr:`v <.DeepGraph.v>` only stores references to the mem-mapped array containing the samples.
 
-.. code:: ipython3
+.. code:: python
 
     # parameters (change these to control RAM usage)
     step_size = 1e5
@@ -107,7 +107,7 @@ Now we can compute the pair-wise correlations using DeepGraph's :py:meth:`create
 Let's collect the computed correlation values and store them in an hdf
 file.
 
-.. code:: ipython3
+.. code:: python
 
     # store correlation values
     files = os.listdir('tmp/correlations/')
@@ -121,7 +121,7 @@ file.
 
 Let's have a quick look at the correlations.
 
-.. code:: ipython3
+.. code:: python
 
     # load correlation table
     e = pd.read_hdf('e.h5')
@@ -199,13 +199,13 @@ Let's have a quick look at the correlations.
 
 And finally, let's see where most of the computation time is spent.
 
-.. code:: ipython3
+.. code:: python
 
     g = dg.DeepGraph(v)
     p = %prun -r g.create_edges(connectors=corr, step_size=step_size)
 
 
-.. code:: ipython3
+.. code:: python
 
     p.print_stats(20)
 
