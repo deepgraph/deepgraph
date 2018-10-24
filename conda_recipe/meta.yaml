@@ -30,9 +30,8 @@ requirements:
     - pandas
 
 test:
-  files:
-    - ../tests/test_DeepGraph.py
-    - ../tests/test_CreateEdges.py
+  source_files:
+    - tests/**
   requires:
     - deepgraph
     - pytest
@@ -46,7 +45,6 @@ test:
   commands:
     - conda install -y -p $PREFIX -c anaconda pytables
     - conda install -y -p $PREFIX graph-tool  # needs conda-forge and ostrokach channels
-    - cd $PREFIX/../tests/
     - py.test -v
 
 about:
