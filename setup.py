@@ -31,12 +31,12 @@ if USE_CYTHON:
 
 setup(
     name="DeepGraph",
-    version='0.2.1',
+    version='0.2.2',
     packages=find_packages(),
     author="Dominik Traxl",
     author_email="dominik.traxl@posteo.org",
     url='https://github.com/deepgraph/deepgraph/',
-    download_url='https://github.com/deepgraph/deepgraph/tarball/v0.2.1',
+    download_url='https://github.com/deepgraph/deepgraph/tarball/v0.2.2',
     description=("Analyze Data with Pandas-based Networks."),
     long_description=open('README.rst').read(),
     install_requires=['numpy>=1.6',
@@ -51,6 +51,7 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Programming Language :: Cython',
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Scientific/Engineering :: Information Analysis',

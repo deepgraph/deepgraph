@@ -76,9 +76,9 @@ from deepgraph.deepgraph import DeepGraph
 from deepgraph import functions
 
 __all__ = ['DeepGraph', 'functions']
-__version__ = '0.2.1'
+__version__ = '0.2.2'
 __author__ = "Dominik Traxl <dominik.traxl@posteo.org>"
-__copyright__ = "Copyright 2014-2018 Dominik Traxl"
+__copyright__ = "Copyright 2014-2019 Dominik Traxl"
 __license__ = "BSD"
 __URL__ = "https://github.com/deepgraph/deepgraph/"
 __bibtex__ = """@Article{traxl-2016-deep,
