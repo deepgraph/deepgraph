@@ -20,6 +20,7 @@ from __future__ import print_function, division, absolute_import
 # BSD license.
 
 # py2/3 compatibility
+import inspect
 import sys
 if sys.version_info[0] < 3:
     PY2 = True
@@ -29,17 +30,21 @@ del sys
 
 if PY2:
     from itertools import izip
+    from collections import Iterable
     zip = izip
     range = xrange
+    argspec = inspect.getargspec
+
 else:
+    from collections.abc import Iterable
     basestring = str
+    argspec = inspect.getfullargspec
 
 import os
-import inspect
 import warnings
 from datetime import datetime
 from itertools import chain
-from collections import Counter, Iterable
+from collections import Counter
 
 try:
     import matplotlib as mpl
@@ -4472,7 +4477,7 @@ class CreatorFunction(object):
         self.name = fct.__name__
 
         # find all input arguments
-        input_args = inspect.getargspec(fct).args
+        input_args = argspec(fct).args
 
         self.input_features = [x for x in input_args if
                                x.endswith('_s') or
@@ -5323,12 +5328,16 @@ def _select_and_return(vi, sources, targets, ft_feature, dt_unit,
         data[tf + '_t'] = vi.loc[targets, tf].values
 
     # create ei
+    ei = pd.DataFrame({col: data[col] for col in coldtypedic})
+
+    # dtypes
     if PY2:
-        ei = pd.DataFrame({col: pd.Series(data=data[col], dtype=dtype) for
-                           col, dtype in coldtypedic.iteritems()})
+        cdd = {key: value for key, value in coldtypedic.iteritems()
+               if value is not None}
     else:
-        ei = pd.DataFrame({col: pd.Series(data=data[col], dtype=dtype) for
-                           col, dtype in coldtypedic.items()})
+        cdd = {key: value for key, value in coldtypedic.items()
+               if value is not None}
+    ei = ei.astype(cdd)
 
     # reset stored_relations
     CreatorFunction.reset('stored_relations')
