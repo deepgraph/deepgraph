@@ -166,15 +166,16 @@ class DeepGraph(object):
 
         # assert v input, set as class attribute
         if v is not None:
-            assert isinstance(v, pd.DataFrame) or isinstance(v, pd.HDFStore), (
-                "v has to be <type 'pd.DataFrame'> "
-                "or <type 'pd.HDFStore'>, not {}".format(type(v)))
+            # assert (isinstance(v, pd.DataFrame) or
+            #         isinstance(v, pd.HDFStore)), (
+            #     "v has to be <type 'pd.DataFrame'> "
+            #     "or <type 'pd.HDFStore'>, not {}".format(type(v)))
             self.v = v
 
         # assert e input, set as class attribute
         if e is not None:
-            assert isinstance(e, pd.DataFrame), (
-                "e has to be <type 'pd.DataFrame'>, not {}".format(type(e)))
+            # assert isinstance(e, pd.DataFrame), (
+            #     "e has to be <type 'pd.DataFrame'>, not {}".format(type(e)))
             self.e = e
 
     def __repr__(self):
