@@ -47,6 +47,11 @@ from itertools import chain
 from collections import Counter
 
 try:
+    import dask.dataframe as dd
+except ImportError:
+    pass
+
+try:
     import matplotlib as mpl
     display = "DISPLAY" in os.environ
     if not display:
@@ -1212,8 +1217,10 @@ class DeepGraph(object):
         gv = self.v.groupby(features)
         sv = _aggregate_super_table(funcs=feature_funcs, size=n_nodes, gt=gv)
         if n_nodes:
-            sv.rename(columns={'size': 'n_nodes'}, inplace=True)
-
+            try:
+                sv.rename(columns={'size': 'n_nodes'}, inplace=True)
+            except TypeError:
+                sv = sv.rename(columns={'size': 'n_nodes'})
         if return_gv:
             return sv, gv
         else:
@@ -1792,7 +1799,7 @@ class DeepGraph(object):
 
         # enumerate indices if necessary
         if type(index) is pd.RangeIndex:
-            if index._start == 0 and index._stop == n:
+            if index.start == 0 and index.stop == n:
                 inddic = None
             else:
                 inddic = {j: i for i, j in enumerate(indices)}
@@ -5411,7 +5418,10 @@ def _aggregate_super_table(funcs=None, size=False, gt=None):
 
         t.append(tt)
 
-    t = pd.concat(t, axis=1)
+    try:
+        t = pd.concat(t, axis=1)
+    except TypeError:
+        t = dd.concat(t, axis=1)
 
     return t
 
@@ -5430,7 +5440,7 @@ def _create_bin_edges(x, bins, log_bins, floor):
         else:
             log_xmin = np.log10(xmin)
             log_xmax = np.log10(xmax)
-            bins = np.ceil((log_xmax - log_xmin) * bins)
+            bins = int(np.ceil((log_xmax - log_xmin) * bins))
             if floor is False:
                 bin_edges = np.logspace(log_xmin, log_xmax, bins)
             else:
