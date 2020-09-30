@@ -4,7 +4,7 @@ from __future__ import division
 # cython: profile=False
 # filename: _triu_indices.pyx
 
-# Copyright (C) 2017 by
+# Copyright (C) 2017-2020 by
 # Dominik Traxl <dominik.traxl@posteo.org>
 # All rights reserved.
 # BSD license.
@@ -118,7 +118,7 @@ cpdef tuple _triu_indices(unsigned long long N,
 def _reduce_triu_indices(np.ndarray[DTYPE_t, ndim=1] sources,
                          np.ndarray[DTYPE_t, ndim=1] targets,
                          np.ndarray[DTYPE_t, ndim=1] indices):
-    
+
     if len(sources) == 0:
         return (np.zeros(0, dtype=DTYPE), np.zeros(0, dtype=DTYPE))
 
@@ -126,7 +126,7 @@ def _reduce_triu_indices(np.ndarray[DTYPE_t, ndim=1] sources,
     cdef unsigned long long start = 0
     cdef np.ndarray[DTYPE_t, ndim=1] rsources
     cdef np.ndarray[DTYPE_t, ndim=1] rtargets
-    
+
     n = len(indices)
     n_pairs = len(sources)
     f_target = targets[0]
@@ -134,9 +134,9 @@ def _reduce_triu_indices(np.ndarray[DTYPE_t, ndim=1] sources,
         if indices[i] == f_target:
             start = i - 1
             break
-        
+
     rsources, rtargets = _triu_indices(n, start, start + n_pairs)
-    
+
     return (rsources, rtargets)
 
 
@@ -145,7 +145,7 @@ def _reduce_triu_indices(np.ndarray[DTYPE_t, ndim=1] sources,
 def _union_of_indices(unsigned long long N,
                       np.ndarray[DTYPE_t, ndim=1] sources,
                       np.ndarray[DTYPE_t, ndim=1] targets):
-    
+
     if len(sources) == 0:
         return np.zeros(0, dtype=DTYPE)
 

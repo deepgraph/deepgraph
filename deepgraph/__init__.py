@@ -67,7 +67,7 @@ use the following BibTex entry
 
 from __future__ import print_function, division, absolute_import
 
-# Copyright (C) 2017 by
+# Copyright (C) 2017-2020 by
 # Dominik Traxl <dominik.traxl@posteo.org>
 # All rights reserved.
 # BSD license.
@@ -78,7 +78,7 @@ from deepgraph import functions
 __all__ = ['DeepGraph', 'functions']
 __version__ = '0.2.2'
 __author__ = "Dominik Traxl <dominik.traxl@posteo.org>"
-__copyright__ = "Copyright 2014-2019 Dominik Traxl"
+__copyright__ = "Copyright 2017-2020 Dominik Traxl"
 __license__ = "BSD"
 __URL__ = "https://github.com/deepgraph/deepgraph/"
 __bibtex__ = """@Article{traxl-2016-deep,

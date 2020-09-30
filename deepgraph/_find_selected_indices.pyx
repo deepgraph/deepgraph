@@ -4,7 +4,7 @@ from __future__ import division
 # cython: profile=False
 # filename: _find_selected_indices.pyx
 
-# Copyright (C) 2017 by
+# Copyright (C) 2017-2020 by
 # Dominik Traxl <dominik.traxl@posteo.org>
 # All rights reserved.
 # BSD license.

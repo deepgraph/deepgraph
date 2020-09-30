@@ -1,6 +1,6 @@
 """Test create_edges and create_edges_ft."""
 
-# Copyright (C) 2017 by
+# Copyright (C) 2017-2020 by
 # Dominik Traxl <dominik.traxl@posteo.org>
 # All rights reserved.
 # BSD license.

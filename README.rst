@@ -134,7 +134,7 @@ Licence
 
 Distributed with a `BSD license <LICENSE.txt>`_::
 
-    Copyright (C) 2017 DeepGraph Developers
+    Copyright (C) 2017-2020 DeepGraph Developers
     Dominik Traxl <dominik.traxl@posteo.org>
 
 
