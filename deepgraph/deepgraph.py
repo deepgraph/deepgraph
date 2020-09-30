@@ -1944,13 +1944,13 @@ class DeepGraph(object):
                 et = self.e
 
             elif _is_array_like(relations):
-                if dropna is not 'none':
+                if dropna != 'none':
                     et = self.e[relations].dropna(how=dropna)
                 else:
                     et = self.e[relations]
 
             else:
-                if dropna is not 'none':
+                if dropna != 'none':
                     et = self.e[relations].to_frame().dropna(how=dropna)
                 else:
                     et = self.e[relations].to_frame()
@@ -2174,7 +2174,7 @@ class DeepGraph(object):
 
         # enumerate indices if necessary
         if type(index) is pd.RangeIndex:
-            if index._start == 0 and index._stop == n:
+            if index.start == 0 and index.stop == n:
                 inddic = None
             else:
                 inddic = {j: i for i, j in enumerate(indices)}
@@ -2222,12 +2222,12 @@ class DeepGraph(object):
             elif relations is True:
                 et = self.e
             elif _is_array_like(relations):
-                if dropna is not 'none':
+                if dropna != 'none':
                     et = self.e[relations].dropna(how=dropna)
                 else:
                     et = self.e[relations]
             else:
-                if dropna is not 'none':
+                if dropna != 'none':
                     et = self.e[relations].to_frame().dropna(how=dropna)
                 else:
                     et = self.e[relations].to_frame()
