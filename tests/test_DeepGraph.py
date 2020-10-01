@@ -9,8 +9,8 @@ import pytest
 
 import numpy as np
 import pandas as pd
-import pandas.util.testing as pdt
-from numpy.testing.utils import assert_allclose
+from pandas.testing import assert_frame_equal
+from numpy.testing import assert_allclose
 
 from deepgraph import DeepGraph
 
@@ -48,7 +48,7 @@ class TestPartitionNodes(object):
 
         sv_test = g.partition_nodes('color')
 
-        pdt.assert_frame_equal(sv_test, sv_true)
+        assert_frame_equal(sv_test, sv_true)
 
     def test_feature_funcs(self):
 
@@ -57,7 +57,7 @@ class TestPartitionNodes(object):
         sv_test = g.partition_nodes(
             'color', {'time': lambda x: list(x)})
 
-        pdt.assert_frame_equal(sv_test, sv_true)
+        assert_frame_equal(sv_test, sv_true)
 
     def test_n_nodes(self):
 
@@ -66,7 +66,7 @@ class TestPartitionNodes(object):
         sv_test = g.partition_nodes(
             'color', {'time': lambda x: list(x)}, n_nodes=False)
 
-        pdt.assert_frame_equal(sv_test, sv_true)
+        assert_frame_equal(sv_test, sv_true)
 
     def test_return_gv(self):
 
@@ -74,7 +74,7 @@ class TestPartitionNodes(object):
 
         sv_test, _ = g.partition_nodes('color', return_gv=True)
 
-        pdt.assert_frame_equal(sv_test, sv_true)
+        assert_frame_equal(sv_test, sv_true)
 
     def test_features(self):
 
@@ -85,7 +85,7 @@ class TestPartitionNodes(object):
 
         sv_test = g.partition_nodes(['color', 'size'])
 
-        pdt.assert_frame_equal(sv_test, sv_true)
+        assert_frame_equal(sv_test, sv_true)
 
 
 class TestPartitionEdges(object):
@@ -98,7 +98,7 @@ class TestPartitionEdges(object):
 
         se_test = g.partition_edges('larger_than')
 
-        pdt.assert_frame_equal(se_test, se_true)
+        assert_frame_equal(se_test, se_true)
 
     def test_relations(self):
 
@@ -109,20 +109,20 @@ class TestPartitionEdges(object):
 
         se_test = g.partition_edges(relations=['larger_than', 'same_color'])
 
-        pdt.assert_frame_equal(se_test, se_true)
+        assert_frame_equal(se_test, se_true)
 
     def test_relation_func(self):
 
         se_true = pd.DataFrame({'larger_than': [False, True],
                                 'n_edges': [5,2],
-                                'same_color': [3.,0.]})
+                                'same_color': [3,0]})
         se_true.set_index('larger_than', inplace=True)
 
         se_test = g.partition_edges(relations='larger_than',
                                     relation_funcs={'same_color': 'sum'})
 
-        pdt.assert_frame_equal(se_test.sort_index(axis=1),
-                               se_true.sort_index(axis=1))
+        assert_frame_equal(se_test.sort_index(axis=1),
+                           se_true.sort_index(axis=1))
 
     def test_combine_groups(self):
 
@@ -137,19 +137,19 @@ class TestPartitionEdges(object):
                                     source_features='color',
                                     target_features='size')
 
-        pdt.assert_frame_equal(se_test, se_true)
+        assert_frame_equal(se_test, se_true)
 
     def test_n_edges(self):
 
         se_true = pd.DataFrame({'larger_than': [False, True],
-                                'same_color': [3.,0.]})
+                                'same_color': [3,0]})
         se_true.set_index('larger_than', inplace=True)
 
         se_test = g.partition_edges(relations='larger_than',
                                     relation_funcs={'same_color': 'sum'},
                                     n_edges=False)
 
-        pdt.assert_frame_equal(se_test, se_true)
+        assert_frame_equal(se_test, se_true)
 
     def test_return_ge(self):
 
@@ -159,7 +159,7 @@ class TestPartitionEdges(object):
 
         se_test, _ = g.partition_edges('larger_than', return_ge=True)
 
-        pdt.assert_frame_equal(se_test, se_true)
+        assert_frame_equal(se_test, se_true)
 
 
 class TestPartitionGraph(object):
@@ -177,8 +177,8 @@ class TestPartitionGraph(object):
 
         sv_test, se_test = g.partition_graph('color')
 
-        pdt.assert_frame_equal(sv_test, sv_true)
-        pdt.assert_frame_equal(se_test, se_true)
+        assert_frame_equal(sv_test, sv_true)
+        assert_frame_equal(se_test, se_true)
 
     def test_features_agg(self):
 
@@ -202,10 +202,10 @@ class TestPartitionGraph(object):
             feature_funcs={'time': 'max'},
             relation_funcs={'dt': 'mean'})
 
-        pdt.assert_frame_equal(sv_test.sort_index(axis=1),
-                               sv_true.sort_index(axis=1))
-        pdt.assert_frame_equal(se_test.sort_index(axis=1),
-                               se_true.sort_index(axis=1))
+        assert_frame_equal(sv_test.sort_index(axis=1),
+                           sv_true.sort_index(axis=1))
+        assert_frame_equal(se_test.sort_index(axis=1),
+                           se_true.sort_index(axis=1))
 
     def test_n_nodes_n_edges(self):
 
@@ -228,10 +228,10 @@ class TestPartitionGraph(object):
             relation_funcs={'dt': 'mean'},
             n_nodes=False, n_edges=False)
 
-        pdt.assert_frame_equal(sv_test.sort_index(axis=1),
-                               sv_true.sort_index(axis=1))
-        pdt.assert_frame_equal(se_test.sort_index(axis=1),
-                               se_true.sort_index(axis=1))
+        assert_frame_equal(sv_test.sort_index(axis=1),
+                           sv_true.sort_index(axis=1))
+        assert_frame_equal(se_test.sort_index(axis=1),
+                           se_true.sort_index(axis=1))
 
     def test_return_gve(self):
 
@@ -255,10 +255,10 @@ class TestPartitionGraph(object):
             relation_funcs={'dt': 'mean'},
             n_nodes=False, return_gve=True)
 
-        pdt.assert_frame_equal(sv_test.sort_index(axis=1),
-                               sv_true.sort_index(axis=1))
-        pdt.assert_frame_equal(se_test.sort_index(axis=1),
-                               se_true.sort_index(axis=1))
+        assert_frame_equal(sv_test.sort_index(axis=1),
+                           sv_true.sort_index(axis=1))
+        assert_frame_equal(se_test.sort_index(axis=1),
+                           se_true.sort_index(axis=1))
 
 
 class TestInterfaces(object):
