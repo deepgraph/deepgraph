@@ -56,30 +56,32 @@ deep graphs. We're thinking of implementing an interface to a suitable package
 dedicated to the analysis of multilayer networks.
 
 .. note::
+    Please acknowledge the authors and cite the use of this software when results
+    are used in publications or published elsewhere. Various citation formats are
+    available here:
+    https://aip.scitation.org/action/showCitFormats?type=show&doi=10.1063%2F1.4952963
 
-   Please acknowledge and cite the use of this software and its authors when
-   results are used in publications or published elsewhere. You can use the
-   following BibTex entry
+    For your convenience, you can find the BibTex entry below:
 
     ::
 
-        @Article{traxl-2016-deep,
-          author      = {Dominik Traxl AND Niklas Boers AND J\"urgen Kurths},
-          title       = {Deep Graphs - A general framework to represent and analyze
-                         heterogeneous complex systems across scales},
-          journal     = {Chaos},
-          year        = {2016},
-          volume      = {26},
-          number      = {6},
-          eid         = {065303},
-          doi         = {http://dx.doi.org/10.1063/1.4952963},
-          eprinttype  = {arxiv},
-          eprintclass = {physics.data-an, cs.SI, physics.ao-ph, physics.soc-ph},
-          eprint      = {http://arxiv.org/abs/1604.00971v1},
-          version     = {1},
-          date        = {2016-04-04},
-          url         = {http://arxiv.org/abs/1604.00971v1}
-        }
+       @Article{traxl-2016-deep,
+           author      = {Dominik Traxl AND Niklas Boers AND J\"urgen Kurths},
+           title       = {Deep Graphs - A general framework to represent and analyze
+                          heterogeneous complex systems across scales},
+           journal     = {Chaos},
+           year        = {2016},
+           volume      = {26},
+           number      = {6},
+           eid         = {065303},
+           doi         = {http://dx.doi.org/10.1063/1.4952963},
+           eprinttype  = {arxiv},
+           eprintclass = {physics.data-an, cs.SI, physics.ao-ph, physics.soc-ph},
+           eprint      = {http://arxiv.org/abs/1604.00971v1},
+           version     = {1},
+           date        = {2016-04-04},
+           url         = {http://arxiv.org/abs/1604.00971v1}
+       }
 
 **To get started, have a look at**
 

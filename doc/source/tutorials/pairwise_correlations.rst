@@ -6,6 +6,34 @@ Computing Very Large Correlation Matrices in Parallel
 
 [:download:`ipython notebook <pairwise_correlations.ipynb>`] [:download:`python script <pairwise_correlations.py>`]
 
+.. note::
+    Please acknowledge the authors and cite the use of this software when results
+    are used in publications or published elsewhere. Various citation formats are
+    available here:
+    https://aip.scitation.org/action/showCitFormats?type=show&doi=10.1063%2F1.4952963
+
+    For your convenience, you can find the BibTex entry below:
+
+    ::
+
+       @Article{traxl-2016-deep,
+           author      = {Dominik Traxl AND Niklas Boers AND J\"urgen Kurths},
+           title       = {Deep Graphs - A general framework to represent and analyze
+                          heterogeneous complex systems across scales},
+           journal     = {Chaos},
+           year        = {2016},
+           volume      = {26},
+           number      = {6},
+           eid         = {065303},
+           doi         = {http://dx.doi.org/10.1063/1.4952963},
+           eprinttype  = {arxiv},
+           eprintclass = {physics.data-an, cs.SI, physics.ao-ph, physics.soc-ph},
+           eprint      = {http://arxiv.org/abs/1604.00971v1},
+           version     = {1},
+           date        = {2016-04-04},
+           url         = {http://arxiv.org/abs/1604.00971v1}
+       }
+
 In this short tutorial, we'll demonstrate how DeepGraph can be used to efficiently compute very large correlation matrices in parallel, with full control over RAM usage.
 
 Assume you have a set of ``n_samples`` samples, each comprised of ``n_features`` features and you want to compute the `Pearson correlation coefficients <https://en.wikipedia.org/wiki/Pearson_correlation_coefficient>`_ between all pairs of features (for the `Spearman's rank correlation coefficients <https://en.wikipedia.org/wiki/Spearman's_rank_correlation_coefficient>`_, see the *Note*-box below). If your data is small enough, you may use `scipy.stats.pearsonr <https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.pearsonr.html#scipy.stats.pearsonr>`_ or `numpy.corrcoef <https://docs.scipy.org/doc/numpy/reference/generated/numpy.corrcoef.html>`_, but for large data, neither of these methods is feasible. Scipy's pearsonr  would be very slow, since you'd have to compute pair-wise correlations in a double loop, and numpy's corrcoef would most likely blow your RAM.
