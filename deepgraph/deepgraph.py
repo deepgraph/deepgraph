@@ -3843,7 +3843,7 @@ class DeepGraph(object):
         x : array_like
             The data from which a frequency distribution is plot.
 
-        bins : int or array_lke, optional (default=10)
+        bins : int or array_like, optional (default=10)
             If ``bins`` is an int, it determines the number of bins to create.
             If ``log_bins`` is True, this number determines the (approximate)
             number of bins to create for each magnitude. For linear bins, it is
