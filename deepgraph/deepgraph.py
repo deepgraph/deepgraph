@@ -11,69 +11,47 @@ For further information type
 >>> help(dg.DeepGraph)
 
 """
+import inspect
 
-from __future__ import print_function, division, absolute_import
-
-# Copyright (C) 2017-2020 by
+# Copyright (C) 2017-2023 by
 # Dominik Traxl <dominik.traxl@posteo.org>
 # All rights reserved.
 # BSD license.
 
-# py2/3 compatibility
-import inspect
-import sys
-if sys.version_info[0] < 3:
-    PY2 = True
-else:
-    PY2 = False
-del sys
-
-if PY2:
-    from itertools import izip
-    from collections import Iterable
-    zip = izip
-    range = xrange
-    argspec = inspect.getargspec
-
-else:
-    from collections.abc import Iterable
-    basestring = str
-    argspec = inspect.getfullargspec
 
 import os
-import warnings
 from datetime import datetime
 from itertools import chain
-from collections import Counter
 
-try:
-    import dask.dataframe as dd
-except ImportError:
-    pass
+from deepgraph.iterators_and_indexers import (
+    _matrix_iterator,
+    _ft_iterator,
+    _iter_edges,
+    _initiate_create_edges,
+    _aggregate_super_table,
+)
+from deepgraph.utils import _is_array_like, _dic_translator, _create_bin_edges, _flatten
 
 try:
     import matplotlib as mpl
+
     display = "DISPLAY" in os.environ
     if not display:
-        mpl.use('Agg')
+        mpl.use("Agg")
     import matplotlib.pyplot as plt
 except ImportError:
-    pass
+    mpl = None
+    plt = None
 
 import numpy as np
 import pandas as pd
-
-from deepgraph._find_selected_indices import _find_selected_indices
-from deepgraph._triu_indices import (_triu_indices,
-                                     _reduce_triu_indices,
-                                     _union_of_indices)
 
 # get rid of false positive SettingWithCopyWarnings, see
 # http://stackoverflow.com/questions/20625582/how-to-deal-with-this-pandas-warning
 pd.options.mode.chained_assignment = None
 
 
-class DeepGraph(object):
+class DeepGraph:
     """The core class of DeepGraph (dg).
 
     This class encapsulates the graph representation as ``pandas.DataFrame``
@@ -156,9 +134,7 @@ class DeepGraph(object):
 
     """
 
-    def __init__(self, v=None, e=None, supernode_labels_by=None,
-                 superedge_labels_by=None):
-
+    def __init__(self, v=None, e=None, supernode_labels_by=None, superedge_labels_by=None):
         # create supernode labels by common features
         if supernode_labels_by is not None:
             for key, value in supernode_labels_by.items():
@@ -192,15 +168,19 @@ class DeepGraph(object):
         return msg.format(type(self).__name__, self.n, self.m, id(self))
 
     def create_edges(
-            self,
-            connectors=None,
-            selectors=None,
-            transfer_features=None,
-            r_dtype_dic=None,
-            no_transfer_rs=None,
-            step_size=int(1e7),
-            from_pos=0, to_pos=None, hdf_key=None,
-            verbose=False, logfile=None):
+        self,
+        connectors=None,
+        selectors=None,
+        transfer_features=None,
+        r_dtype_dic=None,
+        no_transfer_rs=None,
+        step_size=int(1e7),
+        from_pos=0,
+        to_pos=None,
+        hdf_key=None,
+        verbose=False,
+        logfile=None,
+    ):
         """Create an edge table ``e`` linking the nodes in ``v``.
 
         This method enables an iterative computation of pairwise relations
@@ -568,21 +548,19 @@ class DeepGraph(object):
         # logging
         if logfile:
             _, _, _, argvalues = inspect.getargvalues(inspect.currentframe())
-            with open(logfile, 'w') as log:
-                print('# LOG FILE', file=log)
-                print('# function call on: {}'.format(
-                    datetime.now()), file=log)
-                print('#', file=log)
-                print('# Parameters', file=log)
-                print('# ----------', file=log)
+            with open(logfile, "w") as log:
+                print("# LOG FILE", file=log)
+                print("# function call on: {}".format(datetime.now()), file=log)
+                print("#", file=log)
+                print("# Parameters", file=log)
+                print("# ----------", file=log)
                 for arg, value in argvalues.items():
-                    print('# ', (arg, value), end='', file=log)
-                    print('', file=log)
-                print('#', file=log)
-                print('# Iterations', file=log)
-                print('# ----------', file=log)
-                print("# max_pairs exceeded(1) | nr.of pairs | nr.of edges | "
-                      "comp.time(s)\n", file=log)
+                    print("# ", (arg, value), end="", file=log)
+                    print("", file=log)
+                print("#", file=log)
+                print("# Iterations", file=log)
+                print("# ----------", file=log)
+                print("# max_pairs exceeded(1) | nr.of pairs | nr.of edges | " "comp.time(s)\n", file=log)
 
         # measure performance
         start_generation = datetime.now()
@@ -603,39 +581,48 @@ class DeepGraph(object):
         # hdf_key
         if isinstance(v, pd.HDFStore) and hdf_key is None:
             assert len(v.keys()) == 1, (
-                'hdf store has multiple nodes, hdf_key corresponding to the '
-                ' node table has to be passed.')
+                "hdf store has multiple nodes, hdf_key corresponding to the " " node table has to be passed."
+            )
             hdf_key = self.v.keys()[0]
 
         # initialize
         coldtypedic, verboseprint = _initiate_create_edges(
-            verbose, v, ft_feature, connectors, selectors,
-            r_dtype_dic, transfer_features, no_transfer_rs, hdf_key)
+            verbose, v, ft_feature, connectors, selectors, r_dtype_dic, transfer_features, no_transfer_rs, hdf_key
+        )
 
         # iteratively create link data frame (matrix iterator)
         self.e = _matrix_iterator(
-            v, min_chunk_size, from_pos, to_pos, coldtypedic,
-            transfer_features, verboseprint, logfile, hdf_key)
+            v, min_chunk_size, from_pos, to_pos, coldtypedic, transfer_features, verboseprint, logfile, hdf_key
+        )
 
         # performance
         deltat = datetime.now() - start_generation
-        verboseprint('')
-        verboseprint('computation time of function call:',
-                     '\ts =', int(deltat.total_seconds()),
-                     '\tms =', str(deltat.microseconds / 1000.)[:6],
-                     '\n')
+        verboseprint("")
+        verboseprint(
+            "computation time of function call:",
+            "\ts =",
+            int(deltat.total_seconds()),
+            "\tms =",
+            str(deltat.microseconds / 1000.0)[:6],
+            "\n",
+        )
 
     def create_edges_ft(
-            self,
-            ft_feature,
-            connectors=None,
-            selectors=None,
-            transfer_features=None,
-            r_dtype_dic=None,
-            no_transfer_rs=None,
-            min_chunk_size=1000, max_pairs=int(1e7),
-            from_pos=0, to_pos=None, hdf_key=None,
-            verbose=False, logfile=None):
+        self,
+        ft_feature,
+        connectors=None,
+        selectors=None,
+        transfer_features=None,
+        r_dtype_dic=None,
+        no_transfer_rs=None,
+        min_chunk_size=1000,
+        max_pairs=int(1e7),
+        from_pos=0,
+        to_pos=None,
+        hdf_key=None,
+        verbose=False,
+        logfile=None,
+    ):
         """Create (ft) an edge table ``e`` linking the nodes in ``v``.
 
         This method implements the same functionalities as ``create_edges``,
@@ -1009,21 +996,19 @@ class DeepGraph(object):
         # logging
         if logfile:
             _, _, _, argvalues = inspect.getargvalues(inspect.currentframe())
-            with open(logfile, 'w') as log:
-                print('# LOG FILE', file=log)
-                print('# function call on: {}'.format(
-                    datetime.now()), file=log)
-                print('#', file=log)
-                print('# Parameters', file=log)
-                print('# ----------', file=log)
+            with open(logfile, "w") as log:
+                print("# LOG FILE", file=log)
+                print("# function call on: {}".format(datetime.now()), file=log)
+                print("#", file=log)
+                print("# Parameters", file=log)
+                print("# ----------", file=log)
                 for arg, value in argvalues.items():
-                    print('# ', (arg, value), end='', file=log)
-                    print('', file=log)
-                print('#', file=log)
-                print('# Iterations', file=log)
-                print('# ----------', file=log)
-                print("# max_pairs exceeded(1) | nr.of pairs | nr.of edges | "
-                      "comp.time(s)\n", file=log)
+                    print("# ", (arg, value), end="", file=log)
+                    print("", file=log)
+                print("#", file=log)
+                print("# Iterations", file=log)
+                print("# ----------", file=log)
+                print("# max_pairs exceeded(1) | nr.of pairs | nr.of edges | " "comp.time(s)\n", file=log)
 
         # measure performance
         start_generation = datetime.now()
@@ -1034,24 +1019,19 @@ class DeepGraph(object):
         # hdf key
         if isinstance(v, pd.HDFStore) and hdf_key is None:
             assert len(v.keys()) == 1, (
-                'hdf store has multiple nodes, hdf_key corresponding to the '
-                'node table has to be passed.')
+                "hdf store has multiple nodes, hdf_key corresponding to the " "node table has to be passed."
+            )
             hdf_key = self.v.keys()[0]
 
         # datetime?
         if isinstance(v, pd.HDFStore):
-            is_datetime = isinstance(
-                pd.Index(v.select_column(hdf_key, ft_feature[0], stop=0)),
-                pd.DatetimeIndex)
+            is_datetime = isinstance(pd.Index(v.select_column(hdf_key, ft_feature[0], stop=0)), pd.DatetimeIndex)
         else:
-            is_datetime = isinstance(pd.Index(v.iloc[0:0][ft_feature[0]]),
-                                     pd.DatetimeIndex)
+            is_datetime = isinstance(pd.Index(v.iloc[0:0][ft_feature[0]]), pd.DatetimeIndex)
 
         # for datetime fast track features, split ft_feature
         if is_datetime:
-            assert len(ft_feature) == 3, (
-                'for a datetime-like fast track feature, '
-                'the unit has to specified')
+            assert len(ft_feature) == 3, "for a datetime-like fast track feature, " "the unit has to specified"
             dt_unit = ft_feature[-1]
             ft_feature = ft_feature[:2]
         else:
@@ -1065,30 +1045,43 @@ class DeepGraph(object):
 
         # assert that v is sorted by the fast track feature
         if isinstance(v, pd.DataFrame):
-            assert pd.Index(v[ft_feature[0]]).is_monotonic, (
-                'The node table is not sorted by the fast track feature.')
+            assert pd.Index(v[ft_feature[0]]).is_monotonic, "The node table is not sorted by the fast track feature."
 
         # initialize
         coldtypedic, verboseprint = _initiate_create_edges(
-            verbose, v, ft_feature, connectors, selectors,
-            r_dtype_dic, transfer_features, no_transfer_rs, hdf_key)
+            verbose, v, ft_feature, connectors, selectors, r_dtype_dic, transfer_features, no_transfer_rs, hdf_key
+        )
 
         # iteratively create link data frame (fast track iterator)
         self.e = _ft_iterator(
-            self, v, min_chunk_size, from_pos, to_pos, dt_unit, ft_feature,
-            coldtypedic, transfer_features, max_pairs, verboseprint, logfile,
-            hdf_key)
+            self,
+            v,
+            min_chunk_size,
+            from_pos,
+            to_pos,
+            dt_unit,
+            ft_feature,
+            coldtypedic,
+            transfer_features,
+            max_pairs,
+            verboseprint,
+            logfile,
+            hdf_key,
+        )
 
         # performance
         deltat = datetime.now() - start_generation
-        verboseprint('')
-        verboseprint('computation time of function call:',
-                     '\ts =', int(deltat.total_seconds()),
-                     '\tms =', str(deltat.microseconds / 1000.)[:6],
-                     '\n')
+        verboseprint("")
+        verboseprint(
+            "computation time of function call:",
+            "\ts =",
+            int(deltat.total_seconds()),
+            "\tms =",
+            str(deltat.microseconds / 1000.0)[:6],
+            "\n",
+        )
 
-    def partition_nodes(self, features, feature_funcs=None, n_nodes=True,
-                        return_gv=False):
+    def partition_nodes(self, features, feature_funcs=None, n_nodes=True, return_gv=False):
         """Return a supernode DataFrame ``sv``.
 
         This is essentially a wrapper around the pandas groupby method: ``sv``
@@ -1218,17 +1211,23 @@ class DeepGraph(object):
         sv = _aggregate_super_table(funcs=feature_funcs, size=n_nodes, gt=gv)
         if n_nodes:
             try:
-                sv.rename(columns={'size': 'n_nodes'}, inplace=True)
+                sv.rename(columns={"size": "n_nodes"}, inplace=True)
             except TypeError:
-                sv = sv.rename(columns={'size': 'n_nodes'})
+                sv = sv.rename(columns={"size": "n_nodes"})
         if return_gv:
             return sv, gv
         else:
             return sv
 
-    def partition_edges(self, relations=None, source_features=None,
-                        target_features=None, relation_funcs=None,
-                        n_edges=True, return_ge=False):
+    def partition_edges(
+        self,
+        relations=None,
+        source_features=None,
+        target_features=None,
+        relation_funcs=None,
+        n_edges=True,
+        return_ge=False,
+    ):
         """Return a superedge DataFrame ``se``.
 
         This method allows you to partition the edges in ``e`` by their types
@@ -1471,10 +1470,10 @@ class DeepGraph(object):
                 source_features = [source_features]
             cols_s = []
             for sf_col in source_features:
-                cols_s.append(sf_col + '_s')
-                if sf_col + '_s' not in self.e.columns:
+                cols_s.append(sf_col + "_s")
+                if sf_col + "_s" not in self.e.columns:
                     s = self.e.index.get_level_values(0)
-                    self.e.loc[:, sf_col + '_s'] = self.v.loc[s, sf_col].values
+                    self.e.loc[:, sf_col + "_s"] = self.v.loc[s, sf_col].values
         else:
             cols_s = []
 
@@ -1483,10 +1482,10 @@ class DeepGraph(object):
                 target_features = [target_features]
             cols_t = []
             for tf_col in target_features:
-                cols_t.append(tf_col + '_t')
-                if tf_col + '_t' not in self.e.columns:
+                cols_t.append(tf_col + "_t")
+                if tf_col + "_t" not in self.e.columns:
                     s = self.e.index.get_level_values(1)
-                    self.e.loc[:, tf_col + '_t'] = self.v.loc[s, tf_col].values
+                    self.e.loc[:, tf_col + "_t"] = self.v.loc[s, tf_col].values
         else:
             cols_t = []
 
@@ -1496,17 +1495,16 @@ class DeepGraph(object):
         se = _aggregate_super_table(funcs=relation_funcs, size=n_edges, gt=ge)
 
         if n_edges:
-            se = se.rename(columns={'size': 'n_edges'})
+            se = se.rename(columns={"size": "n_edges"})
 
         if return_ge:
             return se, ge
         else:
             return se
 
-    def partition_graph(self, features,
-                        feature_funcs=None, relation_funcs=None,
-                        n_nodes=True, n_edges=True,
-                        return_gve=False):
+    def partition_graph(
+        self, features, feature_funcs=None, relation_funcs=None, n_nodes=True, n_edges=True, return_gve=False
+    ):
         """Return supergraph DataFrames ``sv`` and ``se``.
 
         This method allows partitioning of the  graph represented by ``v`` and
@@ -1716,7 +1714,7 @@ class DeepGraph(object):
         gv = self.v.groupby(features)
         sv = _aggregate_super_table(funcs=feature_funcs, size=n_nodes, gt=gv)
         if n_nodes:
-            sv.rename(columns={'size': 'n_nodes'}, inplace=True)
+            sv.rename(columns={"size": "n_nodes"}, inplace=True)
 
         # transfer feature columns to g.e, for fast groupby
         cols_s = []
@@ -1724,19 +1722,19 @@ class DeepGraph(object):
         if not _is_array_like(features):
             features = [features]
         for col in features:
-            cols_s.append(col + '_s')
-            cols_t.append(col + '_t')
-            if col + '_s' not in self.e.columns:
+            cols_s.append(col + "_s")
+            cols_t.append(col + "_t")
+            if col + "_s" not in self.e.columns:
                 s = self.e.index.get_level_values(0)
-                self.e.loc[:, col + '_s'] = self.v.loc[s, col].values
-            if col + '_t' not in self.e.columns:
+                self.e.loc[:, col + "_s"] = self.v.loc[s, col].values
+            if col + "_t" not in self.e.columns:
                 t = self.e.index.get_level_values(1)
-                self.e.loc[:, col + '_t'] = self.v.loc[t, col].values
+                self.e.loc[:, col + "_t"] = self.v.loc[t, col].values
 
         ge = self.e.groupby(cols_s + cols_t)
         se = _aggregate_super_table(funcs=relation_funcs, size=n_edges, gt=ge)
         if n_edges:
-            se = se.rename(columns={'size': 'n_edges'})
+            se = se.rename(columns={"size": "n_edges"})
 
         if return_gve:
             return sv, se, gv, ge
@@ -1786,7 +1784,6 @@ class DeepGraph(object):
         return_nx_graph
         return_nx_multigraph
         return_gt_graph
-        return_sparse_tensor
 
         """
 
@@ -1817,8 +1814,7 @@ class DeepGraph(object):
                 pass
 
             # create cs graph
-            cs_g = coo_matrix((np.ones(len(s), dtype=bool), (s, t)),
-                              shape=(n, n), dtype=bool)
+            cs_g = coo_matrix((np.ones(len(s), dtype=bool), (s, t)), shape=(n, n), dtype=bool)
 
         else:
             if relations is True:
@@ -1826,8 +1822,7 @@ class DeepGraph(object):
 
             # check that relations and dropna have the same shape
             if _is_array_like(relations) and _is_array_like(dropna):
-                assert len(relations) == len(dropna), (
-                    'dropna and relations have different shapes!')
+                assert len(relations) == len(dropna), "dropna and relations have different shapes!"
 
             if not _is_array_like(relations):
                 relations = [relations]
@@ -1850,8 +1845,7 @@ class DeepGraph(object):
                     pass
 
                 # create cs graph
-                cs_g[r] = coo_matrix((data.values, (s, t)), shape=(n, n),
-                                     dtype=data.dtype)
+                cs_g[r] = coo_matrix((data.values, (s, t)), shape=(n, n), dtype=data.dtype)
 
             # if there is only one csgraph
             if len(cs_g) == 1:
@@ -1859,7 +1853,7 @@ class DeepGraph(object):
 
         return cs_g
 
-    def return_nx_graph(self, features=False, relations=False, dropna='none'):
+    def return_nx_graph(self, features=False, relations=False, dropna="none"):
         """Return a ``networkx.DiGraph`` representation.
 
         Create a ``networkx.DiGraph`` representation of the graph given by
@@ -1905,7 +1899,6 @@ class DeepGraph(object):
         return_nx_multigraph
         return_cs_graph
         return_gt_graph
-        return_sparse_tensor
 
         """
 
@@ -1925,18 +1918,14 @@ class DeepGraph(object):
             vt = self.v[features].to_frame()
 
         # create nx compatible tuple, (index, weight_dict)
-        vt = vt.to_dict('index')
-        if PY2:
-            vt = ((key, value) for key, value in vt.iteritems())
-        else:
-            vt = ((key, value) for key, value in vt.items())
+        vt = vt.to_dict("index")
+        vt = ((key, value) for key, value in vt.items())
 
         # add nodes
         nx_g.add_nodes_from(vt)
 
         # select relations
-        if hasattr(self, 'e'):
-
+        if hasattr(self, "e"):
             if relations is False:
                 et = pd.DataFrame(index=self.e.index)
 
@@ -1944,31 +1933,27 @@ class DeepGraph(object):
                 et = self.e
 
             elif _is_array_like(relations):
-                if dropna != 'none':
+                if dropna != "none":
                     et = self.e[relations].dropna(how=dropna)
                 else:
                     et = self.e[relations]
 
             else:
-                if dropna != 'none':
+                if dropna != "none":
                     et = self.e[relations].to_frame().dropna(how=dropna)
                 else:
                     et = self.e[relations].to_frame()
 
             # create nx compatible tuple, (index, index, weight_dict)
-            et = et.to_dict('index')
-            if PY2:
-                et = ((key[0], key[1], value) for key, value in et.iteritems())
-            else:
-                et = ((key[0], key[1], value) for key, value in et.items())
+            et = et.to_dict("index")
+            et = ((key[0], key[1], value) for key, value in et.items())
 
             # add edges
             nx_g.add_edges_from(et)
 
         return nx_g
 
-    def return_nx_multigraph(self, features=False, relations=False,
-                             dropna=True):
+    def return_nx_multigraph(self, features=False, relations=False, dropna=True):
         """Return a ``networkx.MultiDiGraph`` representation.
 
         Create a ``networkx.MultiDiGraph`` representation of the graph given by
@@ -2013,7 +1998,6 @@ class DeepGraph(object):
         return_nx_graph
         return_cs_graph
         return_gt_graph
-        return_sparse_tensor
 
         """
 
@@ -2033,30 +2017,23 @@ class DeepGraph(object):
             vt = self.v[features].to_frame()
 
         # create nx compatible tuple, (index, weight_dict)
-        vt = vt.to_dict('index')
-        if PY2:
-            vt = ((key, value) for key, value in vt.iteritems())
-        else:
-            vt = ((key, value) for key, value in vt.items())
+        vt = vt.to_dict("index")
+        vt = ((key, value) for key, value in vt.items())
 
         # add nodes
         nx_g.add_nodes_from(vt)
 
         # select relations
-        if hasattr(self, 'e'):
-
+        if hasattr(self, "e"):
             if relations is False:
                 if dropna:
                     et = self.e.count(axis=1).to_dict()
-                    if PY2:
-                        et = ((key,)*value for key, value in et.iteritems())
-                    else:
-                        et = ((key,)*value for key, value in et.items())
+                    et = ((key,) * value for key, value in et.items())
                     et = chain(*et)
                 else:
                     ncol = len(self.e.columns)
                     et = self.e.index
-                    et = ((key,)*ncol for key in et)
+                    et = ((key,) * ncol for key in et)
                     et = chain(*et)
 
             elif relations is True:
@@ -2075,8 +2052,7 @@ class DeepGraph(object):
 
         return nx_g
 
-    def return_gt_graph(self, features=False, relations=False, dropna='none',
-                        node_indices=False, edge_indices=False):
+    def return_gt_graph(self, features=False, relations=False, dropna="none", node_indices=False, edge_indices=False):
         """Return a ``graph_tool.Graph`` representation.
 
         Create a ``graph_tool.Graph`` (directed) representation of the graph
@@ -2134,7 +2110,6 @@ class DeepGraph(object):
         return_cs_graph
         return_nx_graph
         return_nx_multigraph
-        return_sparse_tensor
 
         Notes
         -----
@@ -2148,23 +2123,23 @@ class DeepGraph(object):
 
         # propertymap dtypes
         dtdic = {
-            'bool': 'bool',
+            "bool": "bool",
             # int16_t: 'short',
-            'uint8': 'int16_t',
-            'int8': 'int16_t',
-            'int16': 'int16_t',
+            "uint8": "int16_t",
+            "int8": "int16_t",
+            "int16": "int16_t",
             # int32_t: 'int',
-            'uint16': 'int32_t',
-            'int32': 'int32_t',
+            "uint16": "int32_t",
+            "int32": "int32_t",
             # int64_t: 'long',
-            'uint32': 'int64_t',
-            'int64': 'int64_t',
-            'uint64': 'int64_t',
+            "uint32": "int64_t",
+            "int64": "int64_t",
+            "uint64": "int64_t",
             # double: 'float',
-            'float16': 'double',
-            'float32': 'double',
-            'float64': 'double',
-            'float128': 'double',
+            "float16": "double",
+            "float32": "double",
+            "float64": "double",
+            "float128": "double",
         }
 
         # get indices
@@ -2202,32 +2177,31 @@ class DeepGraph(object):
             try:
                 pm = gt_g.new_vertex_property(dtdic[str(index.dtype)], indices)
             except KeyError:
-                pm = gt_g.new_vertex_property('object', indices)
+                pm = gt_g.new_vertex_property("object", indices)
             # internalize
-            gt_g.vertex_properties['i'] = pm
+            gt_g.vertex_properties["i"] = pm
 
         for col in vt.columns:
             try:
-                pm = gt_g.new_vertex_property(dtdic[str(vt[col].dtype)],
-                                              vt[col].values)
+                pm = gt_g.new_vertex_property(dtdic[str(vt[col].dtype)], vt[col].values)
             except KeyError:
-                pm = gt_g.new_vertex_property('object', vt[col].values)
+                pm = gt_g.new_vertex_property("object", vt[col].values)
             # internalize
             gt_g.vertex_properties[str(col)] = pm
 
         # select relations
-        if hasattr(self, 'e'):
+        if hasattr(self, "e"):
             if relations is False:
                 et = pd.DataFrame(index=self.e.index)
             elif relations is True:
                 et = self.e
             elif _is_array_like(relations):
-                if dropna != 'none':
+                if dropna != "none":
                     et = self.e[relations].dropna(how=dropna)
                 else:
                     et = self.e[relations]
             else:
-                if dropna != 'none':
+                if dropna != "none":
                     et = self.e[relations].to_frame().dropna(how=dropna)
                 else:
                     et = self.e[relations].to_frame()
@@ -2249,343 +2223,25 @@ class DeepGraph(object):
                     s = gt_g.new_edge_property(dtdic[str(s.dtype)], s)
                     t = gt_g.new_edge_property(dtdic[str(t.dtype)], t)
                 except KeyError:
-                    s = gt_g.new_edge_property('object', s)
-                    t = gt_g.new_edge_property('object', t)
+                    s = gt_g.new_edge_property("object", s)
+                    t = gt_g.new_edge_property("object", t)
                 # internalize
-                gt_g.edge_properties['s'] = s
-                gt_g.edge_properties['t'] = t
+                gt_g.edge_properties["s"] = s
+                gt_g.edge_properties["t"] = t
 
             for col in et.columns:
                 try:
-                    pm = gt_g.new_edge_property(dtdic[str(et[col].dtype)],
-                                                et[col].values)
+                    pm = gt_g.new_edge_property(dtdic[str(et[col].dtype)], et[col].values)
                 except KeyError:
-                    pm = gt_g.new_edge_property('object', et[col].values)
+                    pm = gt_g.new_edge_property("object", et[col].values)
                 # internalize
                 gt_g.edge_properties[str(col)] = pm
 
         return gt_g
 
-    def return_sparse_tensor(self, relations, dropna=True):
-        """Work in progress!
-
-        See also
-        --------
-        return_cs_graph
-        return_nx_graph
-        return_nx_multigraph
-        return_gt_graph
-
-        """
-
-    def return_motif_graph(self, thresholds=None,
-                           feature_funcs=None, relation_funcs=None,
-                           n_nodes=True, n_edges=False,
-                           verbose=True):
-        """Work in progress!
-
-        This methods is not working at the moment!
-
-        Return a motif graph `mv` & `me`.
-
-        Parameters
-        ----------
-        thresholds : array_like
-
-        feature_funcs : dict, optional (default=None)
-            The keys must be `v` column names, the values must be
-            either a function, or a list of functions, working when
-            passed a `pandas.DataFrame` or when passed to
-            `pandas.DataFrame.apply`.
-
-        relation_funcs : dict, optional (default=None)
-            The keys must be `e` column names, the values must be
-            either a function, or a list of functions, working when
-            passed a `pandas.DataFrame` or when passed to
-            `pandas.DataFrame.apply`.
-
-        n_nodes : bool, optional (default=True)
-            Whether to add a `n_nodes` column to `ct`, indicating the
-            number of nodes in each connected component.
-
-        n_edges : bool, optional (default=False)
-            Whether to add a `edges` column to `ct`, indicating the
-            number of edges in each connected component.
-
-        verbose : bool, optional (default=True)
-            Whether to print information about the progress.
-
-        Returns
-        -------
-        ct : pd.DataFrame
-            Return the component table `ct`.
-
-        Notes
-        -----
-
-
-        Examples
-        --------
-
-        """
-
-        from graph_tool.stats import label_self_loops  # @UnresolvedImport
-
-        # verboseprint
-        verboseprint = print if verbose else lambda *a, **k: None  # @UnusedVariable @IgnorePep8
-
-        # set v
-        v = self.v
-
-        # set e
-        eo = self.e
-
-        # temporal thresholds
-        if thresholds is None:
-            thresholds = np.array(np.unique(v.time.diff())[:-1], dtype=int)
-
-        # assert e <-> thresholds[-1]
-        # assert v is sorted by time
-        assert (v.time.values ==
-                v.sort('time').time.values).all(), (
-                    'The node table is not sorted by time.')
-
-        # singular motifs
-        v['cp_s'] = v.index.values
-
-        # ====================================================================
-        #  CREATE CP COLUMNS AS MOTIF LABELS IN DT
-        # ====================================================================
-
-        verboseprint('appending motif labels to v...')
-        for i, thresh in enumerate(thresholds):
-
-            # measure performance
-            start = datetime.now()
-
-            # column name of motif corresponding to thresh
-            cpnj = 'cp_{0}'.format(thresholds[i])
-
-            # filter edge table
-            e = eo.copy()
-            e = eo[eo.dt_r <= thresh]
-
-            # append cp column
-            g = DeepGraph(v, e)
-            g.append_cp(col_name=cpnj)
-
-            if i == 0:
-
-                # set unique motif labels
-                v[cpnj] += v.cp_s.max() + 1
-
-                # motif nodes
-                index = np.unique(np.concatenate((v['cp_s'].values,
-                                                  v[cpnj].values)))
-                mt = pd.DataFrame(index=index)
-
-                # motif edges
-                mlt = v.loc[:, 'cp_s':cpnj]
-                mlt.set_index(['cp_s', cpnj], inplace=True)
-
-                g = DeepGraph(mt, mlt)
-                gg = g.return_gt_graph(False)
-
-                # append in degree of motifs
-                mt['in_deg'] = gg.degree_property_map('in').a
-
-                # index of motifs that did not change
-                index = mt[mt.in_deg == 1].index.values
-                t = mlt.index.get_level_values(1)
-                mltt = mlt[t.isin(index)]
-                s = mltt.index.get_level_values(0).values
-                t = mltt.index.get_level_values(1).values
-
-                # replace indices of unchanging motifs
-                v[cpnj].replace(t, s, inplace=True)
-
-            else:
-
-                # set unique motif labels
-                cpni = 'cp_{0}'.format(thresholds[i-1])
-                v[cpnj] += v[cpni].max() + 1
-
-                # motif nodes
-                index = np.unique(np.concatenate((v[cpni].values,
-                                                  v[cpnj].values)))
-                mt = pd.DataFrame(index=index)
-
-                # motif edges
-                mlt = v.loc[:, cpni:cpnj]
-                mlt.drop_duplicates(inplace=True)
-                mlt.set_index([cpni, cpnj], inplace=True)
-
-                g = DeepGraph(mt, mlt)
-                gg = g.return_gt_graph(False)
-
-                # append in degree of motifs
-                mt['in_deg'] = gg.degree_property_map('in').a
-
-                # index of motifs that did not change
-                index = mt[mt.in_deg == 1].index.values
-                t = mlt.index.get_level_values(1)
-                mltt = mlt[t.isin(index)]
-                s = mltt.index.get_level_values(0).values
-                t = mltt.index.get_level_values(1).values
-
-                # replace indices of unchanging motifs
-                v[cpnj].replace(t, s, inplace=True)
-
-                # relabel indices of changing motifs
-                t = mt[mt.in_deg > 1].index.values
-                tn = np.arange(v[cpni].max() + 1, v[cpni].max() + 1 + len(t))
-                index = t != tn
-                v[cpnj].replace(t[index], tn[index], inplace=True)
-
-            # performance
-            end = datetime.now()
-            time = end - start
-            verboseprint(
-                'created [{}/{}] columns; computation time: [{}]'.format(
-                    i+1, len(thresholds), time))
-
-        # ====================================================================
-        #  CREATE MOTIF LINK TABLE
-        # ====================================================================
-
-        verboseprint('creating motif edge table...')
-        mltt = v.loc[:, 'cp_s':'cp_{}'.format(thresholds[0])]
-        mltt['tt_s'] = -1
-        mltt['tt_t'] = thresholds[1] - 1
-        mlt = [mltt]
-
-        for i in range(len(thresholds)-1):
-            cpni = 'cp_{0}'.format(thresholds[i])
-            cpnj = 'cp_{0}'.format(thresholds[i+1])
-            # verboseprint(
-            #     'edgeed [%d] of [%d] columns' % (i+1, len(thresholds)-1))
-            mltt = v.loc[:, cpni:cpnj]
-            mltt.drop_duplicates(inplace=True)
-            mltt['tt_s'] = thresholds[i]
-            try:
-                mltt['tt_s'] = thresholds[i+2] - 1
-            except IndexError:
-                mltt['tt_t'] = thresholds[i+1]
-            mlt.append(mltt)
-
-        mlt = np.concatenate(mlt)
-        mlt = pd.DataFrame(mlt)
-        mlt.rename(
-            columns={0: 's', 1: 't', 2: 'tt_s', 3: 'tt_t'}, inplace=True)
-        mlt.set_index(['s', 't'], inplace=True)
-
-        # ====================================================================
-        #  CREATE MOTIF TABLE
-        # ====================================================================
-
-        verboseprint('creating motif table...')
-        mt = pd.DataFrame(index=np.arange(v.iloc[:, -1].max()+1))
-
-        # ====================================================================
-        #  APPEND TT_MIN AND TT_MAX FOR EVERY MOTIF
-        # ====================================================================
-
-        # append self-loop indicator to mlt
-        g = DeepGraph(mt, mlt)
-        gg = g.return_gt_graph(propertymaps=False)
-        mlt['sl'] = label_self_loops(gg, mark_only=True).a
-
-        # ====================================================================
-        # append tt_min/tt_max to mt by self loop edges
-
-        # filter mlt by self loops
-        mltt = mlt[mlt.sl == 1]
-        s = mltt.index.get_level_values(0)
-        mltt.set_index(s, inplace=True)
-        gmltt = mltt.groupby(s)
-
-        # append tt_min/tt_max
-        mt['tt_min'] = gmltt.tt_s.min()
-        mt['tt_max'] = gmltt.tt_t.max()
-
-        # ====================================================================
-        # append tt_min/tt_max to mt by non self loop edges
-
-        # filter mlt by non self loops
-        mlt = mlt[mlt.sl == 0]
-        mlt.drop('sl', axis=1, inplace=True)
-
-        # source and target indices
-        s = mlt.index.get_level_values(0)
-        t = mlt.index.get_level_values(1)
-
-        # indices of missing values
-        idx = mt[mt.tt_min.isnull()].index
-
-        # sources
-        mltt = mlt.set_index(s)
-        mt.loc[idx, 'tt_min'] = mltt[s.isin(idx)].tt_s
-
-        # targets
-        mltt = mlt.set_index(t)
-        mltt['t'] = t
-        mltt.drop_duplicates(subset='t', inplace=True)
-        mt.loc[idx, 'tt_max'] = mltt[mltt.index.isin(idx)].tt_t
-
-        # ====================================================================
-        # append tt_min/tt_max to mt of first and last motifs
-
-        # fill nans of non self loop cp_s motifs
-        idx = mt[mt.tt_max.isnull()].index
-        mt.loc[idx, 'tt_max'] = thresholds[0] - 1
-
-        # fill nans of (non self loops) cp_last motifs
-        idx = mt[mt.tt_min.isnull()].index
-        mt.loc[idx, 'tt_min'] = thresholds[-1]
-
-        # ====================================================================
-        #  USER DEFINED FUNCTIONS ON DT AND LT
-        # ====================================================================
-
-        verboseprint('appending user defined columns to mt...')
-        g = DeepGraph(v, eo)
-        ct = [g.return_ct(feature_funcs, relation_funcs,
-                          n_nodes, n_edges,
-                          cp_col_name='cp_s')]
-
-        # performance! motifs with self loops calculated multiple times
-        for i, thresh in enumerate(thresholds):
-
-            # measure performance
-            start = datetime.now()
-
-            ctt = g.return_ct(feature_funcs, relation_funcs,
-                              n_nodes, n_edges,
-                              cp_col_name='cp_{}'.format(thresh))
-            ct.append(ctt)
-
-            # performance
-            end = datetime.now()
-            time = end - start
-            verboseprint('iterated through [{}/{}] thresholds; '
-                         'computation time: [{}]'.format(
-                             i+1, len(thresholds), time))
-
-        ct = pd.concat(ct)
-        ct = ct.reset_index().drop_duplicates(
-            subset='index').set_index('index')
-
-        # concat to mt
-        mt = pd.concat((mt, ct), axis=1)
-
-        # sort mlt by index
-        mlt.sort_index(inplace=True)
-
-        return mt, mlt
-
-    def append_cp(self, directed=False, connection='weak',
-                  col_name='cp', label_by_size=True,
-                  consolidate_singles=False):
+    def append_cp(
+        self, directed=False, connection="weak", col_name="cp", label_by_size=True, consolidate_singles=False
+    ):
         """Append a component membership column to ``v``.
 
         Append a column to ``v`` indicating the component membership of each
@@ -2635,8 +2291,7 @@ class DeepGraph(object):
         cs_g = self.return_cs_graph()
 
         # find components
-        labels = connected_components(cs_g, directed=directed,
-                                      connection=connection)[1]
+        labels = connected_components(cs_g, directed=directed, connection=connection)[1]
 
         # append cp column to v
         self.v[col_name] = labels
@@ -2647,7 +2302,7 @@ class DeepGraph(object):
 
             # if there are singular components
             f1cp = len(cp_counts) - np.searchsorted(cp_counts.values[::-1], 2)
-            rndic = {j: i+1 for i, j in enumerate(cp_counts.index[:f1cp])}
+            rndic = {j: i + 1 for i, j in enumerate(cp_counts.index[:f1cp])}
             rndic.update({i: 0 for i in cp_counts.index[f1cp:]})
 
             # relabel cp column
@@ -2661,9 +2316,7 @@ class DeepGraph(object):
             # relabel cp column
             self.v[col_name] = self.v[col_name].apply(lambda x: rndic[x])
 
-    def append_binning_labels_v(self, col, col_name, bins=10,
-                                log_bins=False, floor=False,
-                                return_bin_edges=False):
+    def append_binning_labels_v(self, col, col_name, bins=10, log_bins=False, floor=False, return_bin_edges=False):
         """Append a column with binning labels of the values in ``v[col]``.
 
         Append a column ``col_name`` to ``v`` with the indices of the bins to
@@ -2804,23 +2457,20 @@ class DeepGraph(object):
         if return_bin_edges:
             return bin_edges
 
-    def append_datetime_categories_v(self, col='time', timeofday=None,
-                                     met_season=None):
-        """Work in progress!
+    def append_datetime_categories_v(self, col="time", timeofday=None, met_season=None):
+        """Append datetime categories to ``v``.
 
-        Append datetime categories to ``v`` or ``e``.
-
-        write.
+        Appends a "time of the day" and/or a meteorological season to ``v``,
+        based on a given datetime column ``col``.
 
         Parameters
         ----------
-        col_name : str, optional (default='time')
-
-        which : str, optional (default='v')
+        col : str, optional (default='time')
+            A column of ``v`` comprised of datetimes.
 
         timeofday : str, optional (default=None)
             If given, the time of the day is appended as a column with the
-            label ``timeofday`` to ``which``. The time of the day is defined
+            label ``timeofday`` to ``v``. The time of the day is defined
             as::
 
                 [00:06[ = 0 (night)
@@ -2832,7 +2482,7 @@ class DeepGraph(object):
             If given, the modern mid-latitude meteorological season, see
             http://en.wikipedia.org/wiki/Season#Modern_mid-latitude_meteorological
             is appended as a column with the label
-            `met_season` to `v`. The season is defined as:
+            ``met_season`` to ``v``. The season is defined as:
 
                 [12:03[ = 0
                 [03:06[ = 1
@@ -2842,7 +2492,7 @@ class DeepGraph(object):
         Returns
         -------
         v : pd.DataFrame
-            appends an extra column to ``v`` with datetime properties.
+            appends extra column(s) to ``v`` with datetime properties.
 
         """
 
@@ -2856,6 +2506,7 @@ class DeepGraph(object):
                     return 2
                 elif hour >= 18 and hour <= 24:
                     return 3
+
             hour = datetimes.apply(lambda x: x.hour)
             timeofday = hour.apply(categorize).values
             return timeofday
@@ -2870,17 +2521,18 @@ class DeepGraph(object):
                     return 2
                 elif month >= 9 and month < 12:
                     return 3
+
             month = datetimes.apply(lambda x: x.month)
             season = month.apply(season).values
             return season
 
         if timeofday:
             self.v[timeofday] = _timeofday(self.v[col])
-            self.v[timeofday] = self.v[timeofday].astype('uint8')
+            self.v[timeofday] = self.v[timeofday].astype("uint8")
 
         if met_season:
             self.v[met_season] = _met_season(self.v[col])
-            self.v[met_season] = self.v[met_season].astype('uint8')
+            self.v[met_season] = self.v[met_season].astype("uint8")
 
     def update_edges(self):
         """After removing nodes in ``v``, update ``e``.
@@ -2896,11 +2548,10 @@ class DeepGraph(object):
         """
 
         # reduce edge table
-        if hasattr(self, 'e'):
+        if hasattr(self, "e"):
             s = self.e.index.get_level_values(0)
             t = self.e.index.get_level_values(1)
-            self.e = self.e.loc[(s.isin(self.v.index)) &
-                                (t.isin(self.v.index))]
+            self.e = self.e.loc[(s.isin(self.v.index)) & (t.isin(self.v.index))]
 
     def filter_by_interval_v(self, col, interval, endpoint=True):
         """Keep only nodes in ``v`` with features of type ``col`` in
@@ -2935,14 +2586,12 @@ class DeepGraph(object):
 
         # reduce node table
         if endpoint:
-            self.v = self.v[(self.v[col] >= interval[0]) &
-                            (self.v[col] <= interval[1])]
+            self.v = self.v[(self.v[col] >= interval[0]) & (self.v[col] <= interval[1])]
         else:
-            self.v = self.v[(self.v[col] >= interval[0]) &
-                            (self.v[col] < interval[1])]
+            self.v = self.v[(self.v[col] >= interval[0]) & (self.v[col] < interval[1])]
 
         # reduce edge table
-        if hasattr(self, 'e'):
+        if hasattr(self, "e"):
             self.update_edges()
 
     def filter_by_interval_e(self, col, interval, endpoint=True):
@@ -2973,13 +2622,11 @@ class DeepGraph(object):
 
         """
 
-        # reduce node table
+        # reduce edge table
         if endpoint:
-            self.e = self.e[(self.e[col] >= interval[0]) &
-                            (self.e[col] <= interval[1])]
+            self.e = self.e[(self.e[col] >= interval[0]) & (self.e[col] <= interval[1])]
         else:
-            self.e = self.e[(self.e[col] >= interval[0]) &
-                            (self.e[col] < interval[1])]
+            self.e = self.e[(self.e[col] >= interval[0]) & (self.e[col] < interval[1])]
 
     def filter_by_values_v(self, col, values):
         """Keep only nodes in ``v`` with features of type ``col`` in
@@ -3014,7 +2661,7 @@ class DeepGraph(object):
         self.v = self.v[(self.v[col].isin(values))]
 
         # reduce edge table
-        if hasattr(self, 'e'):
+        if hasattr(self, "e"):
             self.update_edges()
 
     def filter_by_values_e(self, col, values):
@@ -3046,12 +2693,17 @@ class DeepGraph(object):
         self.e = self.e[(self.e[col].isin(values))]
 
     def plot_2d(
-            self,
-            x, y,
-            edges=False,
-            C=None, C_split_0=None,
-            kwds_scatter=None, kwds_quiver=None, kwds_quiver_0=None,
-            ax=None):
+        self,
+        x,
+        y,
+        edges=False,
+        C=None,
+        C_split_0=None,
+        kwds_scatter=None,
+        kwds_quiver=None,
+        kwds_quiver_0=None,
+        ax=None,
+    ):
         """Plot nodes and corresponding edges in 2 dimensions.
 
         Create a scatter plot of the nodes in ``v``, and optionally a quiver
@@ -3144,18 +2796,33 @@ class DeepGraph(object):
         """
 
         return self._plot_2d(
-            is_map=False, x=x, y=y, edges=edges, C=C,
-            C_split_0=C_split_0, kwds_scatter=kwds_scatter,
-            kwds_quiver=kwds_quiver, kwds_quiver_0=kwds_quiver_0,
-            kwds_basemap=None, ax=ax, m=None)
+            is_map=False,
+            x=x,
+            y=y,
+            edges=edges,
+            C=C,
+            C_split_0=C_split_0,
+            kwds_scatter=kwds_scatter,
+            kwds_quiver=kwds_quiver,
+            kwds_quiver_0=kwds_quiver_0,
+            kwds_basemap=None,
+            ax=ax,
+            m=None,
+        )
 
     def plot_2d_generator(
-            self,
-            x, y, by,
-            edges=False,
-            C=None, C_split_0=None,
-            kwds_scatter=None, kwds_quiver=None, kwds_quiver_0=None,
-            passable_ax=False):
+        self,
+        x,
+        y,
+        by,
+        edges=False,
+        C=None,
+        C_split_0=None,
+        kwds_scatter=None,
+        kwds_quiver=None,
+        kwds_quiver_0=None,
+        passable_ax=False,
+    ):
         """Plot nodes and corresponding edges by groups.
 
         Create a generator of scatter plots of the nodes in ``v``, split in
@@ -3273,19 +2940,34 @@ class DeepGraph(object):
         """
 
         return self._plot_2d_generator(
-            is_map=False, x=x, y=y, by=by, edges=edges,
-            C=C, C_split_0=C_split_0, kwds_basemap=None,
-            kwds_scatter=kwds_scatter, kwds_quiver=kwds_quiver,
-            kwds_quiver_0=kwds_quiver_0, passable_ax=passable_ax)
+            is_map=False,
+            x=x,
+            y=y,
+            by=by,
+            edges=edges,
+            C=C,
+            C_split_0=C_split_0,
+            kwds_basemap=None,
+            kwds_scatter=kwds_scatter,
+            kwds_quiver=kwds_quiver,
+            kwds_quiver_0=kwds_quiver_0,
+            passable_ax=passable_ax,
+        )
 
     def plot_map(
-            self,
-            lon, lat,
-            edges=False,
-            C=None, C_split_0=None,
-            kwds_basemap=None, kwds_scatter=None, kwds_quiver=None,
-            kwds_quiver_0=None,
-            ax=None, m=None):
+        self,
+        lon,
+        lat,
+        edges=False,
+        C=None,
+        C_split_0=None,
+        kwds_basemap=None,
+        kwds_scatter=None,
+        kwds_quiver=None,
+        kwds_quiver_0=None,
+        ax=None,
+        m=None,
+    ):
         """Plot nodes and corresponding edges on a basemap.
 
         Create a scatter plot of the nodes in ``v`` and optionally a quiver
@@ -3388,18 +3070,34 @@ class DeepGraph(object):
         """
 
         return self._plot_2d(
-            is_map=True, x=lon, y=lat, edges=edges, C=C,
-            C_split_0=C_split_0, kwds_basemap=kwds_basemap,
-            kwds_scatter=kwds_scatter, kwds_quiver=kwds_quiver,
-            kwds_quiver_0=kwds_quiver_0, ax=ax, m=m)
+            is_map=True,
+            x=lon,
+            y=lat,
+            edges=edges,
+            C=C,
+            C_split_0=C_split_0,
+            kwds_basemap=kwds_basemap,
+            kwds_scatter=kwds_scatter,
+            kwds_quiver=kwds_quiver,
+            kwds_quiver_0=kwds_quiver_0,
+            ax=ax,
+            m=m,
+        )
 
     def plot_map_generator(
-            self,
-            lon, lat, by,
-            edges=False,
-            C=None, C_split_0=None,
-            kwds_basemap=None, kwds_scatter=None, kwds_quiver=None,
-            kwds_quiver_0=None, passable_ax=False):
+        self,
+        lon,
+        lat,
+        by,
+        edges=False,
+        C=None,
+        C_split_0=None,
+        kwds_basemap=None,
+        kwds_scatter=None,
+        kwds_quiver=None,
+        kwds_quiver_0=None,
+        passable_ax=False,
+    ):
         """Plot nodes and corresponding edges by groups, on basemaps.
 
         Create a generator of scatter plots of the nodes in ``v``, split in
@@ -3523,18 +3221,21 @@ class DeepGraph(object):
         """
 
         return self._plot_2d_generator(
-            is_map=True, x=lon, y=lat, by=by, edges=edges,
-            C=C, C_split_0=C_split_0,
-            kwds_basemap=kwds_basemap, kwds_scatter=kwds_scatter,
-            kwds_quiver=kwds_quiver, kwds_quiver_0=kwds_quiver_0,
-            passable_ax=passable_ax)
+            is_map=True,
+            x=lon,
+            y=lat,
+            by=by,
+            edges=edges,
+            C=C,
+            C_split_0=C_split_0,
+            kwds_basemap=kwds_basemap,
+            kwds_scatter=kwds_scatter,
+            kwds_quiver=kwds_quiver,
+            kwds_quiver_0=kwds_quiver_0,
+            passable_ax=passable_ax,
+        )
 
-    def plot_3d(
-            self,
-            x, y, z,
-            edges=False,
-            kwds_scatter=None, kwds_quiver=None,
-            ax=None):
+    def plot_3d(self, x, y, z, edges=False, kwds_scatter=None, kwds_quiver=None, ax=None):
         """Work in progress!
 
         experimental, quiver3D scaling?
@@ -3562,19 +3263,18 @@ class DeepGraph(object):
         # create figure and axes
         if ax is None:
             fig = plt.figure()
-            ax = fig.add_subplot(111, projection='3d')
+            ax = fig.add_subplot(111, projection="3d")
         else:
             fig = ax.get_figure()
 
         # create PathCollection by scatter
         x, y, z = (self.v[x], self.v[y], self.v[z])
-        pc = plt.scatter(x, y, zs=z, zdir='z', **kwds_scatter)
+        pc = plt.scatter(x, y, zs=z, zdir="z", **kwds_scatter)
 
-        obj['pc'] = pc
+        obj["pc"] = pc
 
         # draw edges as arrows
         if edges is True:
-
             # get unique indices of edgeed nodes
             s = self.e.index.get_level_values(level=0).values
             t = self.e.index.get_level_values(level=1).values
@@ -3597,12 +3297,11 @@ class DeepGraph(object):
 
             qu = ax.quiver(xs, ys, zs, dx, dy, dz, **kwds_quiver)
 
-            obj['qu'] = qu
+            obj["qu"] = qu
 
         return obj
 
-    def plot_rects_label_numeric(self, label, xl, xr, colors=None, ax=None,
-                                 **kwargs):
+    def plot_rects_label_numeric(self, label, xl, xr, colors=None, ax=None, **kwargs):
         """Work in progress!
 
         Plot rectangles given by `label_xl_xr_df`.
@@ -3641,34 +3340,31 @@ class DeepGraph(object):
         else:
             fig = ax.get_figure()
 
-        obj['fig'] = fig
-        obj['ax'] = ax
+        obj["fig"] = fig
+        obj["ax"] = ax
 
         # include colors in dataframe for sorting
         if colors is not None:
-            v['color'] = colors
+            v["color"] = colors
         else:
-            v['color'] = 1
+            v["color"] = 1
 
         # rectangle coordinates
         xl, xr = (v[xl].values, v[xr].values)
         widths = xr - xl
-        yb = v[label] - .6
+        yb = v[label] - 0.6
         heights = np.ones(len(xr)) * 1.2
 
         recs = []
         for x, y, width, height in zip(xl, yb, widths, heights):
-            recs.append(((x, y),
-                        (x, y+height),
-                        (x+width, y+height),
-                        (x+width, y)))
+            recs.append(((x, y), (x, y + height), (x + width, y + height), (x + width, y)))
 
         # create poly collection of rectangles
         c = PolyCollection(recs, **kwargs)
 
         # set colors
-        c.set_array(v['color'])
-        obj['c'] = c
+        c.set_array(v["color"])
+        obj["c"] = c
 
         # add PolyCollection
         ax.add_collection(c)
@@ -3678,15 +3374,14 @@ class DeepGraph(object):
         ax.set_yticks(positions)
 
         # set x/y lims
-        dx = .05 * (xr.max() - xl.min())
-        dy = .05 * (yb.max() + 1.2 - yb.min())
+        dx = 0.05 * (xr.max() - xl.min())
+        dy = 0.05 * (yb.max() + 1.2 - yb.min())
         ax.set_xlim((xl.min() - dx, xr.max() + dx))
         ax.set_ylim((yb.min() - dy, yb.max() + 1.2 + dy))
 
         return obj
 
-    def plot_rects_numeric_numeric(self, yb, yt, xl, xr, colors=None, ax=None,
-                                   **kwargs):
+    def plot_rects_numeric_numeric(self, yb, yt, xl, xr, colors=None, ax=None, **kwargs):
         """Work in progress!
 
         Create a raster plot of all components given by `yb_yt_xl_xr_df`.
@@ -3722,14 +3417,14 @@ class DeepGraph(object):
         else:
             fig = ax.get_figure()
 
-        obj['fig'] = fig
-        obj['ax'] = ax
+        obj["fig"] = fig
+        obj["ax"] = ax
 
         # include colors in dataframe for sorting
         if colors is not None:
-            v['color'] = colors
+            v["color"] = colors
         else:
-            v['color'] = 1
+            v["color"] = 1
 
         # rectangle coordinates
         xl, xr = (v[xl].values, v[xr].values)
@@ -3739,31 +3434,28 @@ class DeepGraph(object):
 
         recs = []
         for x, y, width, height in zip(xl, yb, widths, heights):
-            recs.append(((x, y),
-                        (x, y+height),
-                        (x+width, y+height),
-                        (x+width, y)))
+            recs.append(((x, y), (x, y + height), (x + width, y + height), (x + width, y)))
 
         # create poly collection of rectangles
         c = PolyCollection(recs, **kwargs)
 
         # set colors
-        c.set_array(v['color'])
+        c.set_array(v["color"])
 
-        obj['c'] = c
+        obj["c"] = c
 
         # add PolyCollection
         ax.add_collection(c)
 
         # set x/y lims
-        dx = .05 * (xr.max() - xl.min())
-        dy = .05 * (yt.max() - yb.min())
+        dx = 0.05 * (xr.max() - xl.min())
+        dy = 0.05 * (yt.max() - yb.min())
         ax.set_xlim((xl.min() - dx, xr.max() + dx))
         ax.set_ylim((yb.min() - dy, yt.max() + dy))
 
         return obj
 
-    def plot_raster(self, label, time='time', ax=None, **kwargs):
+    def plot_raster(self, label, time="time", ax=None, **kwargs):
         """Work in progress!
 
         Create a raster plot of all nodes given by `supernode_id_time_df`.
@@ -3793,8 +3485,8 @@ class DeepGraph(object):
         else:
             fig = ax.get_figure()
 
-        obj['fig'] = fig
-        obj['ax'] = ax
+        obj["fig"] = fig
+        obj["ax"] = ax
 
         # sort by labels
         v = self.v[[label, time]].sort_values(label)
@@ -3805,10 +3497,9 @@ class DeepGraph(object):
         # create raster plot
         vlines = []
         for i, l in enumerate(labels):
-            vlines.append(ax.vlines(v[v[label] == l][time].values,
-                                    i + .5, i + 1.5, **kwargs))
+            vlines.append(ax.vlines(v[v[label] == l][time].values, i + 0.5, i + 1.5, **kwargs))
 
-        obj['vlines'] = vlines
+        obj["vlines"] = vlines
 
         # set labels as yticklabels
         positions = np.arange(1, len(labels) + 1)
@@ -3818,20 +3509,19 @@ class DeepGraph(object):
         ax.set_yticklabels(labels)
 
         # set x/y lims
-        dx = .05 * (v[time].max() - v[time].min())
-        dy = .05 * (positions.max() - positions.min())
+        dx = 0.05 * (v[time].max() - v[time].min())
+        dy = 0.05 * (positions.max() - positions.min())
         ax.set_xlim((v[time].min() - dx, v[time].max() + dx))
         ax.set_ylim((positions.min() - dy, positions.max() + dy))
 
         # set x/y label
-        ax.set_xlabel('time')
+        ax.set_xlabel("time")
         ax.set_ylabel(label)
 
         return obj
 
     @staticmethod
-    def plot_hist(x, bins=10, log_bins=False, density=False, floor=False,
-                  ax=None, **kwargs):
+    def plot_hist(x, bins=10, log_bins=False, density=False, floor=False, ax=None, **kwargs):
         """Plot a histogram (or pdf) of x.
 
         Compute and plot the histogram (or probability density) of x. Keyword
@@ -3892,7 +3582,7 @@ class DeepGraph(object):
         hist, _ = np.histogram(x, bin_edges, density=density)
         hist = hist.astype(float)
         hist[hist == 0] = np.nan
-        bin_centers = (bin_edges[1:] + bin_edges[:-1]) / 2.
+        bin_centers = (bin_edges[1:] + bin_edges[:-1]) / 2.0
 
         # plot
         if ax is None:
@@ -3902,7 +3592,7 @@ class DeepGraph(object):
 
         # set scales
         if log_bins:
-            ax.set_xscale('log')
+            ax.set_xscale("log")
 
         return ax, hist, bin_edges
 
@@ -3942,76 +3632,75 @@ class DeepGraph(object):
 
         fig, ax = plt.subplots()
 
-        obj['fig'] = fig
-        obj['ax'] = ax
+        obj["fig"] = fig
+        obj["ax"] = ax
 
         # scatter normal iterations
-        pc_n = ax.scatter(log_n[:, 1], log_n[:, 3],
-                          s=20,
-                          c=np.log10(log_n[:, 2] + 1),
-                          marker='o',
-                          label='normal', edgecolors='none')
+        pc_n = ax.scatter(
+            log_n[:, 1], log_n[:, 3], s=20, c=np.log10(log_n[:, 2] + 1), marker="o", label="normal", edgecolors="none"
+        )
 
-        obj['pc_n'] = pc_n
+        obj["pc_n"] = pc_n
 
         # scatter max_pair exceeded iterations
-        pc_e = ax.scatter(log_e[:, 1], log_e[:, 3],
-                          s=30,
-                          c=np.log10(log_e[:, 2] + 1),
-                          cmap='gist_earth',
-                          marker='D',
-                          label='max_pairs exceeded')
+        pc_e = ax.scatter(
+            log_e[:, 1],
+            log_e[:, 3],
+            s=30,
+            c=np.log10(log_e[:, 2] + 1),
+            cmap="gist_earth",
+            marker="D",
+            label="max_pairs exceeded",
+        )
 
-        obj['pc_e'] = pc_e
+        obj["pc_e"] = pc_e
 
-        msg = 'iterations: {:d} | total time: {:.2f}s | total edges: {:d}'
-        ax.set_title(msg.format(len(logfile),
-                                logfile[:, 3].sum(),
-                                int(logfile[:, 2].sum())))
-        ax.set_xlabel('nr.of pairs')
-        ax.set_ylabel('comp.time (s)')
-        ax.set_xscale('log')
+        msg = "iterations: {:d} | total time: {:.2f}s | total edges: {:d}"
+        ax.set_title(msg.format(len(logfile), logfile[:, 3].sum(), int(logfile[:, 2].sum())))
+        ax.set_xlabel("nr.of pairs")
+        ax.set_ylabel("comp.time (s)")
+        ax.set_xscale("log")
         ax.legend(loc=2)
         ax.grid()
 
         if len(log_e) == 0:
-            cb_n = fig.colorbar(pc_n, fraction=.03)
-            cb_n.set_label('log10(n_edges) (normal)')
+            cb_n = fig.colorbar(pc_n, fraction=0.03)
+            cb_n.set_label("log10(n_edges) (normal)")
 
             fig.tight_layout()
 
-            obj['cb_n'] = cb_n
+            obj["cb_n"] = cb_n
 
         elif len(log_n) == 0:
-            cb_e = fig.colorbar(pc_e, fraction=.03)
-            cb_e.set_label('log10(n_edges) (exceeded)')
+            cb_e = fig.colorbar(pc_e, fraction=0.03)
+            cb_e.set_label("log10(n_edges) (exceeded)")
 
             fig.tight_layout()
 
-            obj['cb_e'] = cb_e
+            obj["cb_e"] = cb_e
 
         else:
-            cb_e = fig.colorbar(pc_e, fraction=.03)
-            cb_n = fig.colorbar(pc_n, fraction=.03)
-            cb_n.set_label('log10(n_edges) (normal)')
-            cb_e.set_label('log10(n_edges) (exceeded)')
+            cb_e = fig.colorbar(pc_e, fraction=0.03)
+            cb_n = fig.colorbar(pc_n, fraction=0.03)
+            cb_n.set_label("log10(n_edges) (normal)")
+            cb_e.set_label("log10(n_edges) (exceeded)")
 
             fig.tight_layout()
 
-            obj['cb_n'] = cb_n
-            obj['cb_e'] = cb_e
+            obj["cb_n"] = cb_n
+            obj["cb_e"] = cb_e
 
         return obj
 
     @property
     def n(self):
         """The number of nodes"""
-        if hasattr(self, 'v'):
+        if hasattr(self, "v"):
             if isinstance(self.v, pd.HDFStore):
                 if len(self.v.keys()) == 1:
                     n = self.v.get_storer(self.v.keys()[0]).nrows
                 else:
-                    n = 'NA'
+                    n = "NA"
             else:
                 n = len(self.v)
         else:
@@ -4021,7 +3710,7 @@ class DeepGraph(object):
     @property
     def m(self):
         """The number of edges"""
-        if hasattr(self, 'e'):
+        if hasattr(self, "e"):
             m = len(self.e)
         else:
             m = 0
@@ -4030,28 +3719,27 @@ class DeepGraph(object):
     @property
     def f(self):
         """Types of features and number of features of corresponding type."""
-        if hasattr(self, 'v'):
+        if hasattr(self, "v"):
             if isinstance(self.v, pd.HDFStore):
-                f = 'NA'
+                f = "NA"
             else:
                 f = self.v.count()
         else:
-            f = 'there are no nodes'
+            f = "there are no nodes"
         return f
 
     @property
     def r(self):
         """Types of relations and number of relations of corresponding type."""
-        if hasattr(self, 'e'):
+        if hasattr(self, "e"):
             r = self.e.count()
         else:
-            r = 'there are no edges'
+            r = "there are no edges"
         return r
 
-    def _plot_2d(self, is_map, x, y, edges, C, C_split_0,
-                 kwds_scatter, kwds_quiver, kwds_quiver_0,
-                 kwds_basemap, ax, m):
-
+    def _plot_2d(
+        self, is_map, x, y, edges, C, C_split_0, kwds_scatter, kwds_quiver, kwds_quiver_0, kwds_basemap, ax, m
+    ):
         if is_map:
             from mpl_toolkits.basemap import Basemap
 
@@ -4075,15 +3763,15 @@ class DeepGraph(object):
 
         # set draw order
         try:
-            zorder_qu0 = kwds_quiver_0.pop('zorder')
+            zorder_qu0 = kwds_quiver_0.pop("zorder")
         except KeyError:
             zorder_qu0 = 1
         try:
-            zorder_qu = kwds_quiver.pop('zorder')
+            zorder_qu = kwds_quiver.pop("zorder")
         except KeyError:
             zorder_qu = 2
         try:
-            zorder_pc = kwds_scatter.pop('zorder')
+            zorder_pc = kwds_scatter.pop("zorder")
         except KeyError:
             zorder_pc = 3
 
@@ -4096,14 +3784,14 @@ class DeepGraph(object):
         else:
             fig = ax.get_figure()
 
-        obj['fig'] = fig
-        obj['ax'] = ax
+        obj["fig"] = fig
+        obj["ax"] = ax
 
         if is_map and m is None:
             m = Basemap(ax=ax, **kwds_basemap)
-            obj['m'] = m
+            obj["m"] = m
         elif is_map and m is not None:
-            obj['m'] = m
+            obj["m"] = m
 
         # create PathCollection by scatter
         x_str = x
@@ -4119,11 +3807,10 @@ class DeepGraph(object):
             axm = ax
 
         pc = axm.scatter(x, y, zorder=zorder_pc, **kwds_scatter)
-        obj['pc'] = pc
+        obj["pc"] = pc
 
         # draw edges as arrows
         if edges is True:
-
             # source- and target-indices
             s = self.e.index.get_level_values(level=0).values
             t = self.e.index.get_level_values(level=1).values
@@ -4154,47 +3841,61 @@ class DeepGraph(object):
             # create quiver plot
             if C_split_0 is not None:
                 try:
-                    color = kwds_quiver_0.pop('color')
+                    color = kwds_quiver_0.pop("color")
                 except KeyError:
-                    color = 'k'
+                    color = "k"
                 try:
-                    headwidth = kwds_quiver_0.pop('headwidth')
+                    headwidth = kwds_quiver_0.pop("headwidth")
                 except KeyError:
                     headwidth = 1
 
                 C = C_split_0
 
                 qu_0 = axm.quiver(
-                    xs[C == 0], ys[C == 0], dx[C == 0], dy[C == 0],
-                    color=color, angles='xy', scale_units='xy', scale=1,
-                    headwidth=headwidth, zorder=zorder_qu0, **kwds_quiver_0)
+                    xs[C == 0],
+                    ys[C == 0],
+                    dx[C == 0],
+                    dy[C == 0],
+                    color=color,
+                    angles="xy",
+                    scale_units="xy",
+                    scale=1,
+                    headwidth=headwidth,
+                    zorder=zorder_qu0,
+                    **kwds_quiver_0,
+                )
 
                 qu = axm.quiver(
-                    xs[C != 0], ys[C != 0], dx[C != 0], dy[C != 0], C[C != 0],
-                    angles='xy', scale_units='xy', scale=1,
-                    zorder=zorder_qu, **kwds_quiver)
+                    xs[C != 0],
+                    ys[C != 0],
+                    dx[C != 0],
+                    dy[C != 0],
+                    C[C != 0],
+                    angles="xy",
+                    scale_units="xy",
+                    scale=1,
+                    zorder=zorder_qu,
+                    **kwds_quiver,
+                )
 
-                obj['qu_0'] = qu_0
-                obj['qu'] = qu
+                obj["qu_0"] = qu_0
+                obj["qu"] = qu
 
             elif C is not None:
                 qu = axm.quiver(
-                    xs, ys, dx, dy, C, angles='xy', scale_units='xy', scale=1,
-                    zorder=zorder_qu, **kwds_quiver)
-                obj['qu'] = qu
+                    xs, ys, dx, dy, C, angles="xy", scale_units="xy", scale=1, zorder=zorder_qu, **kwds_quiver
+                )
+                obj["qu"] = qu
 
             else:
-                qu = axm.quiver(
-                    xs, ys, dx, dy, angles='xy', scale_units='xy', scale=1,
-                    zorder=zorder_qu, **kwds_quiver)
-                obj['qu'] = qu
+                qu = axm.quiver(xs, ys, dx, dy, angles="xy", scale_units="xy", scale=1, zorder=zorder_qu, **kwds_quiver)
+                obj["qu"] = qu
 
         return obj
 
-    def _plot_2d_generator(self, is_map, x, y, by, edges, C,
-                           C_split_0, kwds_basemap, kwds_scatter, kwds_quiver,
-                           kwds_quiver_0, passable_ax):
-
+    def _plot_2d_generator(
+        self, is_map, x, y, by, edges, C, C_split_0, kwds_basemap, kwds_scatter, kwds_quiver, kwds_quiver_0, passable_ax
+    ):
         if is_map:
             from mpl_toolkits.basemap import Basemap
 
@@ -4218,22 +3919,21 @@ class DeepGraph(object):
 
         # set draw order
         try:
-            zorder_qu0 = kwds_quiver_0.pop('zorder')
+            zorder_qu0 = kwds_quiver_0.pop("zorder")
         except KeyError:
             zorder_qu0 = 1
         try:
-            zorder_qu = kwds_quiver.pop('zorder')
+            zorder_qu = kwds_quiver.pop("zorder")
         except KeyError:
             zorder_qu = 2
         try:
-            zorder_pc = kwds_scatter.pop('zorder')
+            zorder_pc = kwds_scatter.pop("zorder")
         except KeyError:
             zorder_pc = 3
 
         # assert there's no color given in quiver kwds
         if kwds_quiver is not None:
-            assert 'color' not in kwds_quiver.keys(), (
-                "use 'C' or 'C_split_0' for setting the color of quiver!")
+            assert "color" not in kwds_quiver.keys(), "use 'C' or 'C_split_0' for setting the color of quiver!"
 
         # select v
         v = self.v[_flatten([x, y, by])]
@@ -4243,29 +3943,29 @@ class DeepGraph(object):
 
         # set xlim/ylim for non map plots
         if not is_map:
-            dx = (v[x].max() - v[x].min()) * .05
-            dy = (v[y].max() - v[y].min()) * .05
+            dx = (v[x].max() - v[x].min()) * 0.05
+            dy = (v[y].max() - v[y].min()) * 0.05
             xlim = (v[x].min() - dx, v[x].max() + dx)
             ylim = (v[y].min() - dy, v[y].max() + dy)
 
         # scatter size
         try:
-            pc_s = kwds_scatter.pop('s')
-            v['pc_s'] = pc_s
+            pc_s = kwds_scatter.pop("s")
+            v["pc_s"] = pc_s
         except KeyError:
-            v['pc_s'] = 20
+            v["pc_s"] = 20
 
         # scatter color
         try:
-            pc_c = kwds_scatter.pop('c')
-            v['pc_c'] = pc_c
+            pc_c = kwds_scatter.pop("c")
+            v["pc_c"] = pc_c
         except KeyError:
             pc_c = None
-            v['pc_c'] = 1
+            v["pc_c"] = 1
 
         # scatter vmin/vmax -> entire min/max
         try:
-            pc_vmin = kwds_scatter.pop('vmin')
+            pc_vmin = kwds_scatter.pop("vmin")
         except KeyError:
             if pc_c is not None:
                 try:
@@ -4275,7 +3975,7 @@ class DeepGraph(object):
             else:
                 pc_vmin = None
         try:
-            pc_vmax = kwds_scatter.pop('vmax')
+            pc_vmax = kwds_scatter.pop("vmax")
         except KeyError:
             if pc_c is not None:
                 try:
@@ -4287,18 +3987,17 @@ class DeepGraph(object):
 
         # quiver colors, and quiver clim -> entire min/max
         if edges is True:
-
             if C_split_0 is not None:
-                e = pd.DataFrame(data={'Cqu0': C_split_0}, index=self.e.index)
+                e = pd.DataFrame(data={"Cqu0": C_split_0}, index=self.e.index)
                 try:
-                    qu_clim = kwds_quiver.pop('clim')
+                    qu_clim = kwds_quiver.pop("clim")
                 except KeyError:
                     qu_clim = [C_split_0.min(), C_split_0.max()]
 
             elif C is not None:
-                e = pd.DataFrame(data={'C': C}, index=self.e.index)
+                e = pd.DataFrame(data={"C": C}, index=self.e.index)
                 try:
-                    qu_clim = kwds_quiver.pop('clim')
+                    qu_clim = kwds_quiver.pop("clim")
                 except KeyError:
                     qu_clim = [C.min(), C.max()]
 
@@ -4308,11 +4007,11 @@ class DeepGraph(object):
 
             # change standard kwargs for quiver_0 at [C_split_0 == 0]
             try:
-                color = kwds_quiver_0.pop('color')
+                color = kwds_quiver_0.pop("color")
             except KeyError:
-                color = 'k'
+                color = "k"
             try:
-                qu_0_headwidth = kwds_quiver_0.pop('headwidth')
+                qu_0_headwidth = kwds_quiver_0.pop("headwidth")
             except KeyError:
                 qu_0_headwidth = 1
 
@@ -4347,7 +4046,7 @@ class DeepGraph(object):
                 """
 
                 # store group labels in obj
-                obj = {'group': labels}
+                obj = {"group": labels}
 
                 # filter edges by group
                 g = DeepGraph(group, e)
@@ -4359,14 +4058,14 @@ class DeepGraph(object):
                 else:
                     fig = ax.get_figure()
 
-                obj['fig'] = fig
-                obj['ax'] = ax
+                obj["fig"] = fig
+                obj["ax"] = ax
 
                 if is_map and m is None:
                     m = Basemap(ax=ax, **kwds_basemap.copy())
-                    obj['m'] = m
+                    obj["m"] = m
                 elif is_map and m is not None:
-                    obj['m'] = m
+                    obj["m"] = m
                 else:
                     ax.set_xlim(xlim)
                     ax.set_ylim(ylim)
@@ -4380,14 +4079,20 @@ class DeepGraph(object):
                     axm = ax
 
                 # need to change colors to list, in case they're not numbers
-                pc = axm.scatter(x, y, c=g.v.pc_c.values.tolist(),
-                                 s=g.v.pc_s.values, vmin=pc_vmin, vmax=pc_vmax,
-                                 zorder=zorder_pc, **kwds_scatter)
-                obj['pc'] = pc
+                pc = axm.scatter(
+                    x,
+                    y,
+                    c=g.v.pc_c.values.tolist(),
+                    s=g.v.pc_s.values,
+                    vmin=pc_vmin,
+                    vmax=pc_vmax,
+                    zorder=zorder_pc,
+                    **kwds_scatter,
+                )
+                obj["pc"] = pc
 
                 # draw edges as arrows
                 if edges is True:
-
                     # source- and target-indices
                     s = g.e.index.get_level_values(level=0).values
                     t = g.e.index.get_level_values(level=1).values
@@ -4416,40 +4121,64 @@ class DeepGraph(object):
                         dy = np.array(dy, dtype=float)
 
                     if C_split_0 is not None:
-
                         C = g.e.Cqu0.values
 
                         qu_0 = axm.quiver(
-                            xs[C == 0], ys[C == 0], dx[C == 0], dy[C == 0],
-                            color=color, angles='xy', scale_units='xy',
-                            scale=1, headwidth=qu_0_headwidth,
-                            zorder=zorder_qu0, **kwds_quiver_0)
+                            xs[C == 0],
+                            ys[C == 0],
+                            dx[C == 0],
+                            dy[C == 0],
+                            color=color,
+                            angles="xy",
+                            scale_units="xy",
+                            scale=1,
+                            headwidth=qu_0_headwidth,
+                            zorder=zorder_qu0,
+                            **kwds_quiver_0,
+                        )
 
                         qu = axm.quiver(
-                            xs[C != 0], ys[C != 0], dx[C != 0], dy[C != 0],
-                            C[C != 0], angles='xy', scale_units='xy', scale=1,
-                            clim=qu_clim, zorder=zorder_qu, **kwds_quiver)
+                            xs[C != 0],
+                            ys[C != 0],
+                            dx[C != 0],
+                            dy[C != 0],
+                            C[C != 0],
+                            angles="xy",
+                            scale_units="xy",
+                            scale=1,
+                            clim=qu_clim,
+                            zorder=zorder_qu,
+                            **kwds_quiver,
+                        )
 
-                        obj['qu_0'] = qu_0
-                        obj['qu'] = qu
+                        obj["qu_0"] = qu_0
+                        obj["qu"] = qu
 
                     elif C is not None:
-
                         C = g.e.C.values
 
                         qu = axm.quiver(
-                            xs, ys, dx, dy, C, angles='xy', scale_units='xy',
-                            scale=1, clim=qu_clim, zorder=zorder_qu,
-                            **kwds_quiver)
+                            xs,
+                            ys,
+                            dx,
+                            dy,
+                            C,
+                            angles="xy",
+                            scale_units="xy",
+                            scale=1,
+                            clim=qu_clim,
+                            zorder=zorder_qu,
+                            **kwds_quiver,
+                        )
 
-                        obj['qu'] = qu
+                        obj["qu"] = qu
 
                     else:
                         qu = axm.quiver(
-                            xs, ys, dx, dy, angles='xy', scale_units='xy',
-                            scale=1, zorder=zorder_qu, **kwds_quiver)
+                            xs, ys, dx, dy, angles="xy", scale_units="xy", scale=1, zorder=zorder_qu, **kwds_quiver
+                        )
 
-                        obj['qu'] = qu
+                        obj["qu"] = qu
 
                 return obj
 
@@ -4457,1033 +4186,3 @@ class DeepGraph(object):
                 yield obj
             else:
                 yield obj()
-
-
-class CreatorFunction(object):
-
-    # dict to store relations
-    stored_relations = {}
-
-    # Connector attributes
-    c_instances = []
-    c_input_features = []
-    c_input_rs = []
-    c_output_rs = []
-
-    # Selector attributes
-    s_instances = []
-    s_input_features = []
-    s_input_rs = []
-    s_output_rs = []
-
-    def __init__(self, fct):
-
-        assert callable(fct), '{} is not callable.'.format(fct)
-
-        # make function accessible via self.fct, give self.name
-        self.fct = fct
-        self.name = fct.__name__
-
-        # find all input arguments
-        input_args = argspec(fct).args
-
-        self.input_features = [x for x in input_args if
-                               x.endswith('_s') or
-                               x.endswith('_t')]
-        self.input_rs = [x for x in input_args if
-                         x not in self.input_features and not
-                         x == 'sources' and not x == 'targets']
-
-        # find all ouput variables
-        source_code_return = inspect.getsourcelines(fct)[0][-1].strip()
-        source_code_output = source_code_return[len('return'):]
-        output = [x.strip() for x in source_code_output.split(',')]
-
-        self.output_rs = [x for x in output if
-                          x != 'sources' and
-                          x != 'targets']
-
-        # for selectors (connectors: self.output == self.output_rs)
-        self.output = [x for x in output]
-
-    @classmethod
-    def assertions(cls, v, r_dtype_dic):
-
-        # self.input_features of self.c_instances & self.s_instances
-        #     must be in v.columns.values
-        # set(cls.c_input_features).issubset(v.columns.values)
-
-        # connectors and selectors must have exlusive output relations
-        rs = cls.c_output_rs + cls.s_output_rs
-        count_rs = Counter(rs)
-        if not len(rs) == 0:
-            msg = ("There are common output relations in "
-                   "connectors and/or selectors. \n"
-                   "[(relation, number of occurences)]: \n {}")
-            assert set(count_rs.values()) == {1}, (
-                msg.format([(r, nr) for r, nr in count_rs.items() if nr > 1]))
-
-        # dtypes for relations given which are not in any output
-        unused_dtypes = set(r_dtype_dic.keys()).difference(rs)
-        if len(unused_dtypes) != 0:
-            warnings.warn(
-                "There are dtypes given by 'r_dtype_dic' for which there is no"
-                " output variable(s): \n {}".format(list(unused_dtypes)),
-                UserWarning)
-
-    @classmethod
-    def reset(cls, all_or_WS):
-
-        if all_or_WS == 'stored_relations':
-            cls.stored_relations = {}
-        elif all_or_WS == 'all':
-            cls.stored_relations = {}
-            atrs = [atr for atr in dir(cls) if not
-                    atr.startswith('__') and not
-                    atr == 'stored_relations' and not
-                    callable(getattr(cls, atr))]
-            for atr in atrs:
-                setattr(cls, atr, [])
-
-    @classmethod
-    def flatten_variables(cls):
-
-        atrs = [atr for atr in dir(cls) if not
-                atr.startswith('__') and not
-                atr == 'stored_relations' and not
-                callable(getattr(cls, atr))]
-        for atr in atrs:
-            setattr(cls, atr, _flatten(cls.__dict__[atr]))
-
-
-class Connector(CreatorFunction):
-
-    def __init__(self, fct):
-
-        super(Connector, self).__init__(fct)
-
-        # append to superclass attributes
-        self.c_instances.append(self)
-        self.c_input_features.append(self.input_features)
-        self.c_input_rs.append(self.input_rs)
-        self.c_output_rs.append(self.output_rs)
-
-    def map(self, vi, sources, targets, dt_unit, ft_feature):
-
-        # input value dict
-        ivdic = {}
-
-        # input features
-        for feature in self.input_features:
-            if feature == 'ft_feature_s':
-                ivdic[feature] = vi[ft_feature[0]].values[sources]
-            elif feature == 'ft_feature_t':
-                ivdic[feature] = vi[ft_feature[0]].values[targets]
-            else:
-                if feature.endswith('_s'):
-                    ivdic[feature] = vi[feature[:-2]].values[sources]
-                elif feature.endswith('_t'):
-                    ivdic[feature] = vi[feature[:-2]].values[targets]
-
-        # input relations
-        for r in self.input_rs:
-            try:
-                ivdic[r] = CreatorFunction.stored_relations[r]
-            except KeyError:
-                msg = ("{} requests {}, which has not yet "
-                       "been computed. Check the order of "
-                       "your connectors and selectors.".format(self.name, r))
-                raise KeyError(msg)
-
-        # evaluate
-        output = self.fct(**ivdic)
-
-        # store relations
-        if not isinstance(output, tuple):
-            output = (output, )
-        for i, r in enumerate(self.output_rs):
-            if r == 'ft_r' and dt_unit is not None:
-                CreatorFunction.stored_relations[r] = \
-                    output[i] / np.timedelta64(1, dt_unit)
-            else:
-                CreatorFunction.stored_relations[r] = output[i]
-
-
-class Selector(CreatorFunction):
-
-    def __init__(self, fct):
-
-        super(Selector, self).__init__(fct)
-
-        if self.name == '_ft_selector':
-            self.input_rs.remove('ftt')
-
-        # append to superclass variables
-        self.s_instances.append(self)
-        self.s_input_features.append(self.input_features)
-        self.s_input_rs.append(self.input_rs)
-        self.s_output_rs.append(self.output_rs)
-
-    def select_and_store(self, vi, sources, targets, ft_feature, dt_unit):
-
-        # input value dict
-        ivdic = {}
-
-        # input features
-        for feature in self.input_features:
-            if feature.endswith('_s'):
-                ivdic[feature] = vi[feature[:-2]].values[sources]
-            elif feature.endswith('_t'):
-                ivdic[feature] = vi[feature[:-2]].values[targets]
-
-        # input relations
-        for r in self.input_rs:
-            if r not in CreatorFunction.stored_relations:
-                self.request_r(r, vi, sources, targets, dt_unit, ft_feature)
-            try:
-                ivdic[r] = CreatorFunction.stored_relations[r]
-            except KeyError:
-                msg = ("{} requests {}, which has not yet "
-                       "been computed. Check the order of "
-                       "your connectors and selectors.".format(self.name, r))
-                raise KeyError(msg)
-
-        # input indices
-        ivdic['sources'] = sources
-        ivdic['targets'] = targets
-
-        # for the fast track selector, we need the threshold value
-        if self.name == '_ft_selector':
-            ivdic['ftt'] = ft_feature[1]
-
-        # select and return rs and new node indices
-        output = self.fct(**ivdic)
-
-        # output value dict
-        ovdic = {}
-        for i, name in enumerate(self.output):
-            ovdic[name] = output[i]
-
-        # assert that all output_rs have the same shape as the indices
-        # PERFORMANCE
-        for r in self.output_rs:
-            assert len(ovdic[r]) == len(sources), (
-                "shape of {} has been modified in {}".format(r, self.name))
-
-        # assert that new sources and target indices have same shape
-        # PERFORMANCE
-        assert len(ovdic['sources']) == len(ovdic['targets']), (
-            "shape of reduced source and target indices must "
-            "be the same.")
-
-        # store output rs of selectors in CreatorFunction.stored_relations
-        for r in self.output_rs:
-            CreatorFunction.stored_relations[r] = ovdic[r]
-
-        # positional indices of selected pairs in the former indices
-        if not len(ovdic['sources']) == len(sources):
-            index = _find_selected_indices(
-                sources, targets, ovdic['sources'], ovdic['targets'])
-        else:
-            index = np.arange(len(sources))
-
-        # shrink CreatorFunction.stored_relations by selected indices
-        for r in CreatorFunction.stored_relations:
-            CreatorFunction.stored_relations[r] = \
-                CreatorFunction.stored_relations[r][index]
-
-        # return updated indices
-        return ovdic['sources'], ovdic['targets']
-
-    @staticmethod
-    def request_r(r, vi, sources, targets, dt_unit, ft_feature):
-
-        # find the connector mapping to r, evaluate and store
-        for connector in CreatorFunction.c_instances:
-            if r in connector.output_rs:
-                connector.map(vi, sources, targets, dt_unit, ft_feature)
-
-
-def _initiate_create_edges(verbose, v, ft_feature, connectors, selectors,
-                           r_dtype_dic, transfer_features, no_transfer_rs,
-                           hdf_key):
-
-    # verboseprint
-    verboseprint = print if verbose else lambda *a, **k: None
-
-    # reset all class attributes, necessary for consecutive calls
-    # of create_edges
-    CreatorFunction.reset('all')
-
-    # ====================================================================
-    #  INITIALIZATION OF CLASSES
-    # ====================================================================
-
-    # for single connectors/selectors, create lists
-    if not connectors:
-        connectors = []
-    elif not _is_array_like(connectors):
-        connectors = [connectors]
-    if not selectors:
-        selectors = []
-    elif not _is_array_like(selectors):
-        selectors = [selectors]
-
-    # fast track
-    if ft_feature is not None:
-        if _ft_connector not in connectors:
-            # if clause necesarry for consecutive calls
-            connectors.append(_ft_connector)
-        if 'ft_selector' in selectors:
-            selectors = [_ft_selector if s == 'ft_selector' else
-                         s for s in selectors]
-        else:
-            selectors.insert(0, _ft_selector)
-
-    # adjust dtype dict for relations
-    if r_dtype_dic is None:
-        r_dtype_dic = {}
-
-    # initialize connectors
-    for connector in connectors:
-        Connector(connector)
-
-    # initialize selectors
-    for selector in selectors:
-        Selector(selector)
-
-    # flatten all attributes of CreatorFunction
-    CreatorFunction.flatten_variables()
-
-    # check for consistency of given functions
-    CreatorFunction.assertions(v, r_dtype_dic)
-
-    # ====================================================================
-    #  EDGE COLUMNS AND DTYPES
-    # ====================================================================
-
-    # 1) dtype of node indices
-    if isinstance(v, pd.HDFStore):
-        assert hasattr(v.get_storer(hdf_key).group, 'table'), (
-            '{} must be in table(t) format, not fixed(f).'.format(hdf_key))
-        v = v.select(hdf_key, start=0, stop=0)
-    ndic = {'s': v.index.dtype, 't': v.index.dtype}
-
-    # 2) output rs of connectors and selectors
-    rs = _flatten(CreatorFunction.c_output_rs + CreatorFunction.s_output_rs)
-    rdic = {}
-    for r in rs:
-        try:
-            rdic[r] = r_dtype_dic[r]
-        except KeyError:
-            rdic[r] = None
-
-    # 3) transfer features
-    tfdic = {}
-    for tf in transfer_features:
-        tfdic[tf + '_s'] = v[tf].dtype
-        tfdic[tf + '_t'] = v[tf].dtype
-
-    # put all together
-    coldtypedic = _merge_dicts(ndic, rdic, tfdic)
-
-    # get rid of no_transfer relations
-    if no_transfer_rs:
-        if not _is_array_like(no_transfer_rs):
-            no_transfer_rs = [no_transfer_rs]
-        for key in no_transfer_rs:
-            if key in coldtypedic:
-                del coldtypedic[key]
-
-    return coldtypedic, verboseprint
-
-
-def _matrix_iterator(v, min_chunk_size, from_pos, to_pos, coldtypedic,
-                     transfer_features, verboseprint, logfile, hdf_key):
-
-    ft_feature = None
-    dt_unit = None
-
-    # if hdf, find requested features
-    if isinstance(v, pd.HDFStore):
-        v_is_hdf = True
-        rf = [transfer_features,
-              CreatorFunction.c_input_features,
-              CreatorFunction.s_input_features]
-        rf = set([feature[:-2] if
-                  feature.endswith('_s') or
-                  feature.endswith('_t') else
-                  feature for feature in _flatten(rf)])
-    else:
-        v_is_hdf = False
-
-    if v_is_hdf:
-        N = v.get_storer(hdf_key).nrows
-    else:
-        N = len(v)
-
-    if to_pos is None:
-        to_pos = N*(N-1)/2
-
-    # assertions
-    assert to_pos <= N*(N-1)/2, (
-        'the given to_pos parameter is too large, '
-        '{} > g.n*(g.n-1)/2={}'.format(to_pos, N*(N-1)/2))
-
-    assert from_pos < N*(N-1)/2, (
-        "the given from_pos argument is too large, "
-        "{} (given) > {} (max)".format(from_pos, int(N*(N-1)/2)-1))
-
-    assert from_pos < to_pos, 'to_pos must be larger than from_pos'
-
-    # cumulatively count the generated edges
-    cum_edges = 0
-
-    # iterate through matrix
-    c = 0
-    ei_list = []
-    pos_array, n_steps = _pos_array(from_pos, to_pos, min_chunk_size)
-    for from_pos, to_pos in pos_array:
-
-        # measure time per iteration
-        starttime = datetime.now()
-
-        # print
-        verboseprint(
-            '# =====================================================')
-        verboseprint("Iteration {} of {} ({:.2f}%)".format(
-            c+1, n_steps, float(c+1)/n_steps*100))
-        c += 1
-
-        # construct node indices
-        sources_k, targets_k = _triu_indices(N, from_pos, to_pos)
-
-        # unique indices of sources' & targets' union
-        indices = _union_of_indices(N, sources_k, targets_k)
-
-        # create triu_indices for subset of v
-        sources_k, targets_k = _reduce_triu_indices(
-            sources_k, targets_k, indices)
-
-        # select subset of v
-        if v_is_hdf:
-            vi = v.select(hdf_key, where=indices, columns=rf)
-        else:
-            vi = v.iloc[indices]
-
-        # return i'th selection
-        ei = _select_and_return(vi, sources_k, targets_k, ft_feature,
-                                dt_unit, transfer_features, coldtypedic)
-        ei_list.append(ei)
-
-        # print
-        cum_edges += _count_edges(ei)
-        timediff = datetime.now() - starttime
-        verboseprint(' nr of edges:', [_count_edges(ei)],
-                     ', cum nr of edges:', [cum_edges])
-        verboseprint(' pos_interval:', [from_pos, to_pos])
-        verboseprint(' nr of pairs (total):', [int(N*(N-1)/2)])
-        verboseprint(' copied rs: {}'.format(ei.columns.values))
-        verboseprint(' computation time:', '\ts =',
-                     int(timediff.total_seconds()),
-                     '\tms =', str(timediff.microseconds / 1000.)[:6],
-                     '\n')
-
-        # logging
-        if logfile:
-            with open(logfile, 'a') as log:
-                print("0\t{}\t".format(len(sources_k)), end='', file=log)
-                print("{}\t{:.3f}".format(
-                    _count_edges(ei), timediff.total_seconds()), file=log)
-
-    # concat eik_list
-    e = pd.concat(ei_list, ignore_index=True, copy=False)
-
-    # set indices
-    e.set_index(['s', 't'], inplace=True)
-
-    return e
-
-
-def _ft_iterator(self, v, min_chunk_size, from_pos, to_pos, dt_unit,
-                 ft_feature, coldtypedic, transfer_features, max_pairs,
-                 verboseprint, logfile, hdf_key):
-
-    # fast track feature references
-    ftf = ft_feature[0]
-    ftt = ft_feature[1]
-
-    # if hdf, find requested features
-    if isinstance(v, pd.HDFStore):
-        v_is_hdf = True
-        rf = [transfer_features,
-              CreatorFunction.c_input_features,
-              CreatorFunction.s_input_features]
-        rf = set([feature[:-2] if
-                  feature.endswith('_s') or
-                  feature.endswith('_t') else
-                  feature for feature in _flatten(rf)])
-        rf.remove('ft_feature')
-        rf.add(ftf)
-    else:
-        v_is_hdf = False
-
-    # number of nodes
-    if v_is_hdf:
-        N = v.get_storer(hdf_key).nrows
-    else:
-        N = len(v)
-
-    # iteration parameters
-    n = min_chunk_size
-    i = from_pos
-    if to_pos is None:
-        to_pos = N
-        to_pos_default = True
-    else:
-        assert to_pos <= N, (
-            'the given to_pos parameter is too large, '
-            '{} > len(v)={}'.format(to_pos, N))
-        to_pos_default = False
-
-    assert from_pos < N, (
-        'the given from_pos argument is too large, '
-        '{} >= len(v)'.format(from_pos))
-    assert from_pos < to_pos, 'to_pos must be larger than from_pos'
-
-    # cumulatively count the generated edges
-    cum_edges = 0
-
-    # for testing / logging
-    self._triggered = {'large_enough': 0,
-                       'increase_p1d': 0,
-                       'increased_leq_N': 0,
-                       'increased_end_of_table': 0,
-                       'gap_cases': 0}
-
-    # create ei list to append to
-    ei_list = []
-    # start iteration
-    while i < to_pos:
-
-        # measure time per iteration
-        starttime = datetime.now()
-
-        # select partial fast track feature
-        if v_is_hdf:
-            vi = v.select(
-                hdf_key, start=i, stop=i+n, columns=[ftf])[ftf].values
-        else:
-            vi = v.iloc[i:i+n][ftf].values
-
-        # compute max p1 difference of vi, if p1d <= ftt, increase chunk size
-        ftf_first = vi[0]
-        ftf_last = vi[-1]
-        if dt_unit is None:
-            p1d = ftf_last - ftf_first
-        else:
-            p1d = (ftf_last - ftf_first) / np.timedelta64(1, dt_unit)
-
-        # ================================================================
-        # case 1) min_chunk_size large enough
-        if p1d > ftt:
-
-            # for testing
-            self._triggered['large_enough'] += 1
-
-            # take one more node here, since 'trapez' always takes away the
-            # last node
-            if v_is_hdf:
-                vi = v.select(hdf_key, start=i, stop=i+n+1, columns=rf)
-            else:
-                vi = v.iloc[i:i+n+1]
-
-            ei, ns = _ft_create_ei(
-                self, vi, ft_feature, dt_unit, coldtypedic, transfer_features,
-                max_pairs, verboseprint, logfile, symmetry='trapez')
-
-            ei_list.extend(ei)
-
-            cum_edges += _count_edges(ei)
-            verboseprint(' processed sources:', [ns])
-            verboseprint(' mapped with targets:', [len(vi)-1])
-            verboseprint(' pos interval:', [i, i+ns])
-            verboseprint(' nr of nodes (total):', [N])
-            verboseprint(' ft_feature of last source:',
-                         [vi.at[vi.iloc[ns-1].name, ftf]])
-            verboseprint(' nr of edges:', [_count_edges(ei)],
-                         ', cum nr of edges:', [cum_edges])
-            verboseprint(' copied rs: {}'.format(_copied_rs(ei)))
-
-            i += ns
-
-        # ================================================================
-        # case 2) increase vi, s.t. p1d > ftt
-        # when increasing, form only pairs with p1d <= ftt, no excessive ones
-        else:
-
-            # for testing
-            self._triggered['increase_p1d'] += 1
-
-            verboseprint('min_chunk_size too small, increasing partial v..')
-
-            # again, include the first node with ftf > ftf_first + ftt to
-            # pass to _ft_create_ei, which will use it and then get rid of it.
-            if dt_unit is None:
-                if v_is_hdf:
-                    where = '{} <= {}'.format(ftf, ftf_first + ftt)
-                    upto = v.select_as_coordinates(
-                        hdf_key, where=where, start=i)[-1] + 2
-                else:
-                    upto = i + np.searchsorted(
-                        v[ftf].values[i:], ftf_first + ftt, side='right') + 1
-            else:
-                if v_is_hdf:
-                    # is there a better way then converting to timestamp?
-                    ts = pd.Timestamp(ftf_first + np.timedelta64(ftt, dt_unit))
-                    where = '{} <= {!r}'.format(ftf, ts)
-                    upto = v.select_as_coordinates(
-                        hdf_key, where=where, start=i)[-1] + 2
-                else:
-                    ts = ftf_first + np.timedelta64(ftt, dt_unit)
-                    upto = i + np.searchsorted(
-                        v[ftf].values[i:], ts, side='right') + 1
-
-            if upto <= N:
-
-                # for testing
-                self._triggered['increased_leq_N'] += 1
-
-                if v_is_hdf:
-                    vi = v.select(hdf_key, start=i, stop=upto, columns=rf)
-                else:
-                    vi = v.iloc[i:upto]
-
-                ei, ns = _ft_create_ei(
-                    self, vi, ft_feature, dt_unit, coldtypedic,
-                    transfer_features, max_pairs, verboseprint, logfile,
-                    symmetry='trapez')
-
-                ei_list.extend(ei)
-
-                cum_edges += _count_edges(ei)
-                verboseprint(' processed sources:', [ns])
-                verboseprint(' mapped with targets:', [upto-i-1])
-                verboseprint(' pos interval:', [i, i+ns])
-                verboseprint(' nr of nodes (total):', [N])
-                verboseprint(' ft_feature of last source:',
-                             [vi.at[vi.iloc[ns-1].name, ftf]])
-                verboseprint(' nr of edges:', [_count_edges(ei)],
-                             ', cum nr of edges:', [cum_edges])
-                verboseprint(' copied rs: {}'.format(_copied_rs(ei)))
-
-                i += ns
-
-            # ============================================================
-            # case 3) end of table, compute upper triangle matrix
-            else:
-
-                # for testing
-                self._triggered['increased_end_of_table'] += 1
-
-                if v_is_hdf:
-                    vi = v.select(hdf_key, start=i, columns=rf)
-                else:
-                    vi = v.iloc[i:]
-
-                ei, ns = _ft_create_ei(
-                    self, vi, ft_feature, dt_unit, coldtypedic,
-                    transfer_features, max_pairs, verboseprint, logfile,
-                    symmetry='triangle')
-
-                ei_list.extend(ei)
-
-                cum_edges += _count_edges(ei)
-                verboseprint('# LAST', [len(vi)],
-                             'EVENTS PROCESSED (END OF TABLE)')
-                verboseprint(
-                    '# =====================================================')
-                verboseprint(' processed sources:', [ns])
-                verboseprint(' mapped with targets:', [ns])
-                verboseprint(' pos interval:', [i, i + len(vi)])
-                verboseprint(' nr of nodes (total):', [N])
-                verboseprint(' ft_feature of last source:',
-                             [vi.at[vi.iloc[-1].name, ftf]])
-                verboseprint(' nr of edges:', [_count_edges(ei)],
-                             ', cum nr of edges:', [cum_edges])
-                verboseprint(' copied rs: {}'.format(_copied_rs(ei)))
-
-                i += ns
-
-        timediff = datetime.now() - starttime
-        verboseprint(' computation time:', '\ts =',
-                     int(timediff.total_seconds()),
-                     '\tms =', str(timediff.microseconds / 1000.)[:6],
-                     '\n')
-        # logging
-        if logfile:
-            with open(logfile, 'a') as log:
-                print("{}\t{:.3f}".format(
-                    _count_edges(ei), timediff.total_seconds()), file=log)
-
-    # BUG: concatenating changes dtypes of float16 and float32
-    # to float64 if there is an empty frame in ei_list!
-    # concat ei_list
-    e = pd.concat(ei_list, ignore_index=True, copy=False)
-
-    # set indices
-    e.set_index(['s', 't'], inplace=True)
-
-    # delete excessive sources (only return sources up to to_pos)
-    # PERFORMANCE (look for better solution, not 'isin'...)
-    if to_pos_default is False:
-        if v_is_hdf:
-            indices = v.select_column(
-                hdf_key, 'index', start=from_pos, stop=to_pos).values
-        else:
-            indices = v.iloc[from_pos:to_pos].index.values
-
-        s = e.index.get_level_values(level=0)
-        e = e.loc[s.isin(indices)]
-
-    return e
-
-
-def _ft_subiterator(nl, vi, ft_feature, dt_unit, coldtypedic,
-                    transfer_features, pairs, max_pairs,
-                    verboseprint):
-
-    # iterate through node indices
-    c = 0
-    eik_list = []
-    pos_array, n_steps = _pos_array(0, pairs, max_pairs)
-    for from_pos, to_pos in pos_array:
-
-        verboseprint('subiteration {} of {}'.format(c+1, n_steps))
-        c += 1
-
-        # # construct node indices
-        sources_k, targets_k = _triu_indices(nl, from_pos, to_pos)
-
-        # unique indices of sources' & targets' union
-        indices = _union_of_indices(nl, sources_k, targets_k)
-
-        # create triu_indices for subset of v
-        sources_k, targets_k = _reduce_triu_indices(
-            sources_k, targets_k, indices)
-
-        # select subset of vi
-        vik = vi.iloc[indices]
-
-        # return k'th selection
-        eik = _select_and_return(vik, sources_k, targets_k, ft_feature,
-                                 dt_unit, transfer_features, coldtypedic)
-
-        eik_list.append(eik)
-
-    return eik_list
-
-
-def _ft_create_ei(self, vi, ft_feature, dt_unit, coldtypedic,
-                  transfer_features, max_pairs, verboseprint, logfile,
-                  symmetry):
-
-    ftf = ft_feature[0]
-    ftt = ft_feature[1]
-
-    if symmetry == 'trapez':
-        # dimensions of the trapez
-        # nl: number of targets
-        # ns: number of sources
-        # nd: nl - ns
-        if dt_unit is None:
-            ns = (vi[ftf] < vi.at[vi.iloc[-1].name, ftf] - ftt).sum()
-        else:
-            ns = (vi[ftf] < vi.at[vi.iloc[-1].name, ftf] -
-                  np.timedelta64(ftt, dt_unit)).sum()
-
-        vi = vi.iloc[:-1]
-        nl = len(vi)
-
-        nd = nl - ns
-        # number of pairs
-        pairs = (ns*(ns-1))//2 + nd*ns
-
-        if nl == 1:
-
-            # for testing
-            self._triggered['gap_cases'] += 1
-
-            # only happens for "gap" cases
-            verboseprint(
-                '# =====================================================')
-            verboseprint(' nr of pairs: [{}]'.format(pairs))
-            ei = pd.DataFrame({col: pd.Series(data=[], dtype=dtype) for
-                               col, dtype in coldtypedic.items()})
-
-            return [ei], ns
-
-        else:
-            if pairs > max_pairs:
-                verboseprint(
-                    '# =====================================================')
-                verboseprint('maximum number of pairs exceeded')
-                verboseprint(' nr of pairs: [{}]'.format(pairs))
-                ei = _ft_subiterator(nl, vi, ft_feature, dt_unit, coldtypedic,
-                                     transfer_features, pairs,
-                                     max_pairs, verboseprint)
-                # logging
-                if logfile:
-                    with open(logfile, 'a') as log:
-                        print("1\t{}\t".format(pairs), end='', file=log)
-
-                return ei, ns
-
-            else:
-                # construct node indices
-                sources, targets = _triu_indices(nl, 0, pairs)
-
-                verboseprint(
-                    '# =====================================================')
-                verboseprint(' nr of pairs: [{}]'.format(pairs))
-                ei = _select_and_return(vi, sources, targets,
-                                        ft_feature, dt_unit,
-                                        transfer_features, coldtypedic)
-                # logging
-                if logfile:
-                    with open(logfile, 'a') as log:
-                        print("0\t{}\t".format(len(sources)), end='', file=log)
-
-                return [ei], ns
-
-    elif symmetry == 'triangle':
-        # dimensions of the square
-        # nl: number of targets
-        # ns: number of sources
-        # nd: nl - ns = 0
-        nl = len(vi)
-        ns = len(vi)
-        nd = 0
-
-        # number of pairs
-        pairs = (nl*(nl-1))//2
-
-        if pairs > max_pairs:
-
-            verboseprint(
-                '# =====================================================')
-            verboseprint('maximum number of pairs exceeded')
-            verboseprint(' nr of pairs: [{}]'.format(pairs))
-            ei = _ft_subiterator(nl, vi, ft_feature, dt_unit, coldtypedic,
-                                 transfer_features, pairs,
-                                 max_pairs, verboseprint)
-            # logging
-            if logfile:
-                with open(logfile, 'a') as log:
-                    print("1\t{}\t".format(pairs), end='', file=log)
-
-            return ei, ns
-
-        else:
-            # construct node indices
-            sources, targets = np.triu_indices(nl, k=1)
-            sources = sources.astype(np.uint64)
-            targets = targets.astype(np.uint64)
-
-            verboseprint(
-                '# =====================================================')
-            verboseprint(' nr of pairs: [{}]'.format(pairs))
-            ei = _select_and_return(vi, sources, targets,
-                                    ft_feature, dt_unit,
-                                    transfer_features, coldtypedic)
-            # logging
-            if logfile:
-                with open(logfile, 'a') as log:
-                    print("0\t{}\t".format(len(sources)), end='', file=log)
-
-            return [ei], ns
-
-
-def _select_and_return(vi, sources, targets, ft_feature, dt_unit,
-                       transfer_features, coldtypedic):
-
-    for selector in CreatorFunction.s_instances:
-        sources, targets = selector.select_and_store(
-            vi, sources, targets, ft_feature, dt_unit)
-
-    # output relations that have not been requested by selectors
-    for r in CreatorFunction.c_output_rs:
-        if r not in CreatorFunction.stored_relations:
-            Selector.request_r(r, vi, sources, targets, dt_unit, ft_feature)
-
-    # ========================================================================
-    #  COLLECT DATA (indices, rs and transfer features)
-    # ========================================================================
-
-    data = CreatorFunction.stored_relations
-
-    # go back in original v base
-    sources = vi.index.values[sources]
-    targets = vi.index.values[targets]
-
-    # node indices
-    data['s'] = sources
-    data['t'] = targets
-
-    # transfer features
-    for tf in transfer_features:
-        data[tf + '_s'] = vi.loc[sources, tf].values
-        data[tf + '_t'] = vi.loc[targets, tf].values
-
-    # create ei
-    ei = pd.DataFrame({col: data[col] for col in coldtypedic})
-
-    # dtypes
-    if PY2:
-        cdd = {key: value for key, value in coldtypedic.iteritems()
-               if value is not None}
-    else:
-        cdd = {key: value for key, value in coldtypedic.items()
-               if value is not None}
-    ei = ei.astype(cdd)
-
-    # reset stored_relations
-    CreatorFunction.reset('stored_relations')
-
-    return ei
-
-
-def _ft_connector(ft_feature_s, ft_feature_t):
-    ft_r = ft_feature_t - ft_feature_s
-    return ft_r
-
-
-def _ft_selector(ft_r, ftt, sources, targets):
-    sources = sources[ft_r <= ftt]
-    targets = targets[ft_r <= ftt]
-    return sources, targets
-
-
-def _pos_array(from_pos, to_pos, step_size):
-    # make sure all arguments are type(int)
-    from_pos = int(from_pos)
-    to_pos = int(to_pos)
-    step_size = int(step_size)
-    # create range generators
-    a = range(from_pos, to_pos, step_size)
-    b = range(from_pos + step_size, to_pos, step_size)
-    b = chain(b, [to_pos])
-    # number of steps
-    n_steps = len(a)
-    return zip(a, b), n_steps
-
-
-def _count_edges(ei):
-    if type(ei) is list:
-        c = 0
-        for eik in ei:
-            c += eik.shape[0]
-    else:
-        c = ei.shape[0]
-    return c
-
-
-def _copied_rs(ei):
-    if type(ei) is list:
-        return ei[0].columns.values
-    else:
-        return ei.columns.values
-
-
-def _aggregate_super_table(funcs=None, size=False, gt=None):
-
-    # aggregate values
-    t = []
-    if size:
-        tt = gt.size()
-        tt.name = 'size'
-        t.append(tt)
-
-    if funcs is not None:
-        tt = gt.agg(funcs)
-
-        # flatten hierarchical index
-        cols = []
-        for col in tt.columns:
-            if isinstance(col, tuple):
-                cols.append('_'.join(col).strip())
-            else:
-                cols.append(col)
-        tt.columns = cols
-
-        t.append(tt)
-
-    try:
-        t = pd.concat(t, axis=1)
-    except TypeError:
-        t = dd.concat(t, axis=1)
-
-    return t
-
-
-def _create_bin_edges(x, bins, log_bins, floor):
-
-        xmax = x.max()
-        xmin = x.min()
-        if log_bins is False:
-            if floor is False:
-                bin_edges = np.linspace(xmin, xmax, bins)
-            else:
-                bin_edges = np.unique(np.floor(np.linspace(
-                    xmin, xmax, bins)))
-                bin_edges[-1] = xmax
-        else:
-            log_xmin = np.log10(xmin)
-            log_xmax = np.log10(xmax)
-            bins = int(np.ceil((log_xmax - log_xmin) * bins))
-            if floor is False:
-                bin_edges = np.logspace(log_xmin, log_xmax, bins)
-            else:
-                bin_edges = np.unique(np.floor(np.logspace(
-                    log_xmin, log_xmax, bins)))
-                bin_edges[-1] = xmax
-
-        return bin_edges
-
-
-def _iter_edges(e, dropna):
-    """To use as ebunch for networkx.MultiDiGraph.add_edges_from(ebunch)."""
-    for col in e:
-        et = e[col]
-        if dropna:
-            et = et.dropna()
-        for ind, val in et.iteritems():
-            yield (ind[0], ind[1], col, {col: val})
-
-
-def _dic_translator(x, dic):
-    x = x.copy()
-    for i in range(len(x)):
-        x[i] = dic[x[i]]
-    return x
-
-
-def _is_array_like(x):
-    return isinstance(x, Iterable) and not isinstance(x, basestring)
-
-
-def _flatten(x):
-    result = []
-    for el in x:
-        if _is_array_like(el):
-            result.extend(_flatten(el))
-        else:
-            result.append(el)
-    return result
-
-
-def _merge_dicts(*dicts):
-    result = {}
-    for dictionary in dicts:
-        result.update(dictionary)
-    return result
