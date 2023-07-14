@@ -1045,7 +1045,9 @@ class DeepGraph:
 
         # assert that v is sorted by the fast track feature
         if isinstance(v, pd.DataFrame):
-            assert pd.Index(v[ft_feature[0]]).is_monotonic, "The node table is not sorted by the fast track feature."
+            assert pd.Index(
+                v[ft_feature[0]]
+            ).is_monotonic_increasing, "The node table is not sorted by the fast track feature."
 
         # initialize
         coldtypedic, verboseprint = _initiate_create_edges(
