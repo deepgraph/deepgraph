@@ -711,5 +711,5 @@ def _iter_edges(e, dropna):
         et = e[col]
         if dropna:
             et = et.dropna()
-        for ind, val in et.iteritems():
+        for ind, val in et.items():
             yield (ind[0], ind[1], col, {col: val})
