@@ -13,14 +13,14 @@ ext = '.pyx' if USE_CYTHON else '.c'
 
 extensions = [
     Extension(
-        "deepgraph._triu_indices",
-        ["deepgraph/_triu_indices" + ext],
+        name="deepgraph._triu_indices",
+        sources=["deepgraph/_triu_indices" + ext],
         include_dirs=[np.get_include()],
         # language='c++',
     ),
     Extension(
-        "deepgraph._find_selected_indices",
-        ["deepgraph/_find_selected_indices" + ext],
+        name="deepgraph._find_selected_indices",
+        sources=["deepgraph/_find_selected_indices" + ext],
         include_dirs=[np.get_include()]
     )
 ]

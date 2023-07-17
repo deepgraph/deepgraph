@@ -8,31 +8,31 @@ They are described in their corresponding docstrings.
 
 """
 
-from __future__ import print_function, division, absolute_import
-
 # Copyright (C) 2017-2020 by
 # Dominik Traxl <dominik.traxl@posteo.org>
 # All rights reserved.
 # BSD license.
 
-# py2/3 compatibility
-try:
-    range = xrange
-except NameError:
-    pass
 
 import numpy as np
 
-__all__ = ['great_circle_dist',
-           'cp_node_intersection',
-           'cp_intersection_strength',
-           'hypergeometric_p_value',
-           ]
+__all__ = [
+    "great_circle_dist",
+    "cp_node_intersection",
+    "cp_intersection_strength",
+    "hypergeometric_p_value",
+]
 
 
 # ============================================================================
 # CONNECTORS
 # ============================================================================
+
+
+def _ft_connector(ft_feature_s, ft_feature_t):
+    ft_r = ft_feature_t - ft_feature_s
+    return ft_r
+
 
 def great_circle_dist(lat_s, lat_t, lon_s, lon_t):
     """Return the great circle distance between nodes.
@@ -59,9 +59,7 @@ def great_circle_dist(lat_s, lat_t, lon_s, lon_t):
     R = 6371
 
     # spatial distance of nodes
-    gcd = np.arccos(np.sin(phi_i) * np.sin(phi_j) +
-                    np.cos(phi_i) * np.cos(phi_j) *
-                    np.cos(delta_alpha)) * R
+    gcd = np.arccos(np.sin(phi_i) * np.sin(phi_j) + np.cos(phi_i) * np.cos(phi_j) * np.cos(delta_alpha)) * R
 
     # for 0 gcd, there might be nans, convert to 0.
     gcd = np.nan_to_num(gcd)
@@ -70,13 +68,11 @@ def great_circle_dist(lat_s, lat_t, lon_s, lon_t):
 
 
 def cp_node_intersection(supernode_ids, sources, targets):
-    """Work in progress!
-
-    """
+    """Work in progress!"""
     nodess = supernode_ids[sources]
     nodest = supernode_ids[targets]
 
-    identical_nodes = (nodess == nodest)
+    identical_nodes = nodess == nodest
 
     intsec = np.zeros(len(sources), dtype=object)
     intsec_card = np.zeros(len(sources), dtype=np.int)
@@ -89,9 +85,7 @@ def cp_node_intersection(supernode_ids, sources, targets):
 
 
 def cp_intersection_strength(n_unique_nodes, intsec_card, sources, targets):
-    """Work in progress!
-
-    """
+    """Work in progress!"""
     us = n_unique_nodes[sources]
     ut = n_unique_nodes[targets]
 
@@ -105,16 +99,14 @@ def cp_intersection_strength(n_unique_nodes, intsec_card, sources, targets):
 
 
 def hypergeometric_p_value(n_unique_nodes, intsec_card, sources, targets):
-    """Work in progress!
-
-    """
+    """Work in progress!"""
     from scipy.stats import hypergeom
 
     us = n_unique_nodes[sources]
     ut = n_unique_nodes[targets]
 
     # population size
-    M = 220*220
+    M = 220 * 220
     # number of success states in population
     n = np.vstack((us, ut)).max(axis=0)
     # total draws
@@ -132,3 +124,9 @@ def hypergeometric_p_value(n_unique_nodes, intsec_card, sources, targets):
 # ============================================================================
 # Selectors
 # ============================================================================
+
+
+def _ft_selector(ft_r, ftt, sources, targets):
+    sources = sources[ft_r <= ftt]
+    targets = targets[ft_r <= ftt]
+    return sources, targets
