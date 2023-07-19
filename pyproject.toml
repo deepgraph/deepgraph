@@ -9,7 +9,8 @@ test-command = "pytest {project}/tests"
 # cp311: inspect.getsourcelines(object) throws OSError: could not get source code
 # pypy versions throw error when trying to install tables
 # i686 throw errors on dtype tests
-test-skip = ["*cp311-manylinux*", "*pp*-manylinux*", "*i686*", "*-musllinux*"]
+# test-skip = ["*cp311-manylinux*", "*pp*-manylinux*", "*win*"]
+test-skip = ["*win*", "*mac*"]
 
 [tool.pytest.ini_options]
 addopts = [
