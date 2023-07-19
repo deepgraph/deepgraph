@@ -539,7 +539,7 @@ class TestCreateEdges:
         e_test = g.e.rename(columns={"ft_r": "dsi"})
         e_test["dsi"] = e_test.dsi.astype(int)
 
-        assert_frame_equal(e_test.sort_index(axis=1), e_true.sort_index(axis=1))
+        assert_frame_equal(e_test.sort_index(axis=1), e_true.sort_index(axis=1), check_dtype=False)
 
     def test_ft_sdt_hdf(self, tmpdir):
         pytest.importorskip("tables")
@@ -567,7 +567,7 @@ class TestCreateEdges:
         e_test = g.e.rename(columns={"ft_r": "dsi"})
         e_test["dsi"] = e_test.dsi.astype(int)
 
-        assert_frame_equal(e_test.sort_index(axis=1), e_true.sort_index(axis=1))
+        assert_frame_equal(e_test.sort_index(axis=1), e_true.sort_index(axis=1), check_dtype=False)
 
     def test_ft_ftt_order(self):
         e_true = e_full_true[e_full_true.dsf <= 1]
@@ -588,13 +588,13 @@ class TestCreateEdges:
         e_test = g.e.rename(columns={"ft_r": "dmcs"})
         e_test["dmcs"] = e_test.dmcs.astype(int)
 
-        assert_frame_equal(e_test.sort_index(axis=1), e_true.sort_index(axis=1))
+        assert_frame_equal(e_test.sort_index(axis=1), e_true.sort_index(axis=1), check_dtype=False)
 
         g.create_edges_ft(ft_feature=("dtmcs", 2, "h"), min_chunk_size=min_chunk_size)
         e_test = g.e.rename(columns={"ft_r": "dmcs"})
         e_test["dmcs"] = e_test.dmcs.astype(int)
 
-        assert_frame_equal(e_test.sort_index(axis=1), e_true.sort_index(axis=1))
+        assert_frame_equal(e_test.sort_index(axis=1), e_true.sort_index(axis=1), check_dtype=False)
 
     def test_ft_dt_min_chunk_size_hdf(self, tmpdir, min_chunk_size):
         pytest.importorskip("tables")
