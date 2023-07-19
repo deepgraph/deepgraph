@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools", "wheel", "oldest-supported-numpy", "Cython"]
+build-backend = "setuptools.build_meta"
+
+[tool.cibuildwheel]
+test-requires = ["pytest", "scipy", "networkx", "tables"]
+test-command = "pytest {project}/tests"
+# skip some tests:
+# cp311: inspect.getsourcelines(object) throws OSError: could not get source code
+# pypy versions throw error when trying to install tables
+# i686 throw errors on dtype tests
+test-skip = ["*cp311-manylinux*", "*pp*-manylinux*", "*i686*", "*-musllinux*"]
+
+[tool.pytest.ini_options]
+addopts = [
+    "--import-mode=importlib",
+]
