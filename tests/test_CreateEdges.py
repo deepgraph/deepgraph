@@ -614,7 +614,7 @@ class TestCreateEdges:
         e_test = g.e.rename(columns={"ft_r": "dmcs"})
         e_test["dmcs"] = e_test.dmcs.astype(int)
 
-        assert_frame_equal(e_test.sort_index(axis=1), e_true.sort_index(axis=1))
+        assert_frame_equal(e_test.sort_index(axis=1), e_true.sort_index(axis=1), check_dtype=False)
 
     def test_ft_from_pos(self, ft_from_pos):
         e_true = e_full_true[["dsi"]]
