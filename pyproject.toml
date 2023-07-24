@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 skip = ["pp*win*", "pp*mac*"]
 test-requires = ["pytest", "scipy", "networkx", "tables"]
 test-command = "pytest {project}/tests"
-test-skip = ["pp*linux*", "*win*", "*mac*", "*i686"]
+test-skip = ["pp*linux*", "*win*", "*mac*", "*i686", "*musllinux*"]
 
 [tool.pytest.ini_options]
 addopts = [
