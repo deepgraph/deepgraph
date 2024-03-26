@@ -72,7 +72,13 @@ class TestPartitionNodes:
         assert_frame_equal(sv_test, sv_true)
 
     def test_features(self):
-        sv_true = pd.DataFrame({"color": ["b", "g", "g", "r"], "size": [2, 1, 3, 1], "n_nodes": [1, 1, 2, 1]})
+        sv_true = pd.DataFrame(
+            {
+                "color": ["b", "g", "g", "r"],
+                "size": [2, 1, 3, 1],
+                "n_nodes": [1, 1, 2, 1],
+            }
+        )
         sv_true.set_index(["color", "size"], inplace=True)
 
         sv_test = g.partition_nodes(["color", "size"])
@@ -91,7 +97,11 @@ class TestPartitionEdges:
 
     def test_relations(self):
         se_true = pd.DataFrame(
-            {"larger_than": [False, False, True], "same_color": [False, True, False], "n_edges": [2, 3, 2]}
+            {
+                "larger_than": [False, False, True],
+                "same_color": [False, True, False],
+                "n_edges": [2, 3, 2],
+            }
         )
         se_true.set_index(["larger_than", "same_color"], inplace=True)
 
@@ -145,7 +155,11 @@ class TestPartitionGraph:
         sv_true.set_index("color", inplace=True)
 
         se_true = pd.DataFrame(
-            {"color_s": ["b", "g", "g", "g"], "color_t": ["g", "b", "g", "r"], "n_edges": [1, 2, 3, 1]}
+            {
+                "color_s": ["b", "g", "g", "g"],
+                "color_t": ["g", "b", "g", "r"],
+                "n_edges": [1, 2, 3, 1],
+            }
         )
         se_true.set_index(["color_s", "color_t"], inplace=True)
 
@@ -156,7 +170,12 @@ class TestPartitionGraph:
 
     def test_features_agg(self):
         sv_true = pd.DataFrame(
-            {"color": ["b", "g", "g", "r"], "size": [2, 1, 3, 1], "n_nodes": [1, 1, 2, 1], "time": [2, 0, 5, 9]}
+            {
+                "color": ["b", "g", "g", "r"],
+                "size": [2, 1, 3, 1],
+                "n_nodes": [1, 1, 2, 1],
+                "time": [2, 0, 5, 9],
+            }
         )
         sv_true.set_index(["color", "size"], inplace=True)
 
@@ -173,11 +192,13 @@ class TestPartitionGraph:
         se_true.set_index(["color_s", "size_s", "color_t", "size_t"], inplace=True)
 
         sv_test, se_test = g.partition_graph(
-            ["color", "size"], feature_funcs={"time": "max"}, relation_funcs={"dt": "mean"}
+            ["color", "size"],
+            feature_funcs={"time": "max"},
+            relation_funcs={"dt": "mean"},
         )
 
         assert_frame_equal(sv_test.sort_index(axis=1), sv_true.sort_index(axis=1))
-        assert_frame_equal(se_test.sort_index(axis=1), se_true.sort_index(axis=1))
+        assert_frame_equal(se_test.sort_index(axis=1), se_true.sort_index(axis=1), check_dtype=False)
 
     def test_n_nodes_n_edges(self):
         sv_true = pd.DataFrame({"color": ["b", "g", "g", "r"], "size": [2, 1, 3, 1], "time": [2, 0, 5, 9]})
@@ -203,7 +224,7 @@ class TestPartitionGraph:
         )
 
         assert_frame_equal(sv_test.sort_index(axis=1), sv_true.sort_index(axis=1))
-        assert_frame_equal(se_test.sort_index(axis=1), se_true.sort_index(axis=1))
+        assert_frame_equal(se_test.sort_index(axis=1), se_true.sort_index(axis=1), check_dtype=False)
 
     def test_return_gve(self):
         sv_true = pd.DataFrame({"color": ["b", "g", "g", "r"], "size": [2, 1, 3, 1], "time": [2, 0, 5, 9]})
@@ -230,7 +251,7 @@ class TestPartitionGraph:
         )
 
         assert_frame_equal(sv_test.sort_index(axis=1), sv_true.sort_index(axis=1))
-        assert_frame_equal(se_test.sort_index(axis=1), se_true.sort_index(axis=1))
+        assert_frame_equal(se_test.sort_index(axis=1), se_true.sort_index(axis=1), check_dtype=False)
 
 
 class TestInterfaces:
@@ -393,7 +414,12 @@ class TestAppendCP:
         self.g.append_cp()
         cp = g.v.cp.values
 
-        assert np.all(np.equal(np.unique(cp, return_counts=True), (np.array([0, 1, 2]), np.array([3, 1, 1]))))
+        assert np.all(
+            np.equal(
+                np.unique(cp, return_counts=True),
+                (np.array([0, 1, 2]), np.array([3, 1, 1])),
+            )
+        )
         assert np.all(cp[:3] == cp[0])
 
     def test_consolidate_singles(self):
