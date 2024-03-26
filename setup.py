@@ -20,12 +20,12 @@ extensions = cythonize(extensions, compiler_directives={"language_level": sys.ve
 
 setup(
     name="DeepGraph",
-    version="0.2.3",
+    version="0.2.4",
     packages=find_packages(),
     author="Dominik Traxl",
     author_email="dominik.traxl@posteo.org",
     url="https://github.com/deepgraph/deepgraph/",
-    download_url="https://github.com/deepgraph/deepgraph/tarball/v0.2.3",
+    download_url="https://github.com/deepgraph/deepgraph/tarball/v0.2.4",
     description=("Analyze Data with Pandas-based Networks."),
     long_description=open("README.rst").read(),
     install_requires=["numpy>=1.6", "pandas>=0.17.0"],
