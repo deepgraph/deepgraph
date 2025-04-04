@@ -37,7 +37,7 @@ v = pd.DataFrame(
     }
 )
 
-dts = pd.date_range("1998-01-01", periods=v.mcs.max() + 1, freq="1H")
+dts = pd.date_range("1998-01-01", periods=v.mcs.max() + 1, freq="1h")
 tdtdic = {i: j for i, j in enumerate(dts.values)}
 v["sdt"] = v.si.apply(lambda x: tdtdic[x])
 v["dtmcs"] = v.mcs.apply(lambda x: tdtdic[x])
