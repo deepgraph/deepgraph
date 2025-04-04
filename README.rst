@@ -135,9 +135,9 @@ For your convenience, you can find the BibTex entry below:
 Licence
 -------
 
-Distributed with a `BSD license <LICENSE.txt>`_::
+Distributed with a `BSD license <LICENSE>`_::
 
-    Copyright (C) 2017-2020 DeepGraph Developers
+    Copyright (C) 2017-2025 DeepGraph Developers
     Dominik Traxl <dominik.traxl@posteo.org>
 
 
