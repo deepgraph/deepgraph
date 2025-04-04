@@ -256,6 +256,7 @@ class TestPartitionGraph:
 
 class TestInterfaces:
     e = g.e[["dx", "dt", "larger_than", "same_color", "v"]]
+    e = e.astype({"same_color": object, "larger_than": object, "dt": np.float64})
     e.iloc[0:5, 0] = np.nan
     e.iloc[1, 1] = np.nan
     e.iloc[2, 2] = np.nan
