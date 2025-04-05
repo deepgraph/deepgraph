@@ -42,7 +42,10 @@ all = [
 ]
 
 [dependency-groups]
-dev = ["pytest>=7.3.2"]
+dev = [
+    "cython>=3.0.12",
+    "pytest>=7.3.2",
+]
 
 [build-system]
 requires = [
