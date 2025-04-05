@@ -68,9 +68,11 @@ skip = [
 ]
 test-requires = [
     "pytest",
+]
+test-extras = [
+    "tables",
     "scipy",
-    "networkx",
-    "tables"
+    "networkx"
 ]
 test-command = "pytest {project}/tests -v"
 test-skip = [
