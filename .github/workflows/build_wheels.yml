@@ -27,6 +27,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
+          name: sdist
           path: dist/*.tar.gz
 
 
@@ -48,14 +49,17 @@ jobs:
         with:
           # unpacks default artifact into dist/
           # if `name: artifact` is omitted, the action will create extra parent dir
-          name: artifact
+          name: sdist
           path: dist
+      - name: Display structure of downloaded files
+        run: ls -R dist
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.23.2
         with:
           package-dir: "dist/*.tar.gz"
       - uses: actions/upload-artifact@v4
         with:
+          name: wheels
           path: ./wheelhouse/*.whl
 
 #  upload_pypi:
