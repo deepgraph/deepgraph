@@ -1,52 +1,40 @@
 import sys
-from setuptools import setup, find_packages, Extension
+import re
+from pathlib import Path
+from setuptools import setup, Extension
 import numpy as np
 from Cython.Build import cythonize
+
+
+def return_version_string() -> str:
+    init_file = Path("src/deepgraph/__init__.py").read_text(encoding="utf-8")
+    version_match = re.search(r"^__version__\s*=\s*['\"]([^'\"]*)['\"]", init_file, re.MULTILINE)
+    if version_match:
+        return version_match.group(1)
+    raise RuntimeError("Unable to find version string.")
+
 
 extensions = [
     Extension(
         name="deepgraph._triu_indices",
-        sources=["deepgraph/_triu_indices.pyx"],
+        sources=["src/deepgraph/_triu_indices.pyx"],
         include_dirs=[np.get_include()],
+        # define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")]
     ),
     Extension(
         name="deepgraph._find_selected_indices",
-        sources=["deepgraph/_find_selected_indices.pyx"],
+        sources=["src/deepgraph/_find_selected_indices.pyx"],
         include_dirs=[np.get_include()],
+        # define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")]
     ),
 ]
 
-extensions = cythonize(extensions, compiler_directives={"language_level": sys.version_info[0]})
+extensions = cythonize(
+    extensions,
+    compiler_directives={"language_level": sys.version_info[0]}
+)
 
 setup(
-    name="DeepGraph",
-    version="0.2.4",
-    packages=find_packages(),
-    author="Dominik Traxl",
-    author_email="dominik.traxl@posteo.org",
-    url="https://github.com/deepgraph/deepgraph/",
-    download_url="https://github.com/deepgraph/deepgraph/tarball/v0.2.4",
-    description=("Analyze Data with Pandas-based Networks."),
-    long_description=open("README.rst").read(),
-    install_requires=["numpy>=1.6", "pandas>=0.17.0"],
-    license="BSD",
-    classifiers=[
-        "License :: OSI Approved :: BSD License",
-        "Operating System :: OS Independent",
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Cython",
-        "Topic :: Software Development :: Libraries :: Python Modules",
-        "Topic :: Scientific/Engineering :: Information Analysis",
-        "Topic :: Scientific/Engineering :: Mathematics",
-        "Topic :: Scientific/Engineering :: Physics",
-    ],
+    version=return_version_string(),
     ext_modules=extensions,
-    package_data={
-        "deepgraph": [
-            "../tests/*.py",
-            "../LICENSE.txt",
-            "./*.pyx",
-            "./*.c",
-        ]
-    },
 )
