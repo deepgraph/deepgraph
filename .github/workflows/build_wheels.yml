@@ -8,13 +8,14 @@ on:
 
 jobs:
   build_sdist:
-    name: Build source distribution
+    name: "Build source distribution"
     runs-on: ubuntu-latest
 
     steps:
+      - name: "checkout"
       - uses: actions/checkout@v4
 
-      - name: Install uv
+      - name: "Install uv"
         uses: astral-sh/setup-uv@v5
 
       - name: "Set up Python"
@@ -25,53 +26,53 @@ jobs:
       - name: "Build sdist"
         run: uv build --sdist --out-dir dist
 
-      - name: Rename sdist package
+      - name: "Rename sdist package"
         run: mv ${{ github.workspace }}/dist/deepgraph-*.tar.gz ${{ github.workspace }}/dist/deepgraph.tar.gz
 
-      - name: Display structure of sdist files
+      - name: "Display structure of sdist files"
         run: |
           ls
           ls -R dist
 
+      - name: "upload artifact"
       - uses: actions/upload-artifact@v4
         with:
           name: sdist
-          path: dist/*.tar.gz
+          path: dist/deepgraph.tar.gz
           if-no-files-found: error
-
-#      - uses: actions/checkout@v4
-#      - name: Build sdist
-#        run: pipx run build --sdist
-
 
   build_wheels:
     needs: build_sdist
-    name: Build wheels on ${{ matrix.os }}
+    name: "Build wheels on ${{ matrix.os }}"
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, ubuntu-24.04-arm, windows-latest, macos-13, macos-latest]
 
     steps:
-      # - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - name: "download artifact"
+        uses: actions/download-artifact@v4
         with:
-          # unpacks default artifact into dist/
-          # if `name: artifact` is omitted, the action will create extra parent dir
           name: sdist
           path: dist
 
-      - name: Display structure of downloaded files
+      - name: "Display structure of downloaded files"
         run: |
           ls
           ls -R dist
 
-      - name: Build wheels
+      - name: "Build wheels"
         uses: pypa/cibuildwheel@v2.23.2
         with:
-          package-dir: "dist/*.tar.gz"
+          package-dir: dist/deepgraph.tar.gz
 
-      - uses: actions/upload-artifact@v4
+      - name: "Display structure of downloaded files"
+        run: |
+          ls
+          ls -R dist
+
+      - name: "upload artifacts"
+        uses: actions/upload-artifact@v4
         with:
           name: wheels
           path: ./wheelhouse/*.whl
