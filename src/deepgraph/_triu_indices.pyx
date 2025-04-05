@@ -1,10 +1,8 @@
-from __future__ import division
-
 # encoding: utf-8
 # cython: profile=False
 # filename: _triu_indices.pyx
 
-# Copyright (C) 2017-2020 by
+# Copyright (C) 2017-2025 by
 # Dominik Traxl <dominik.traxl@posteo.org>
 # All rights reserved.
 # BSD license.

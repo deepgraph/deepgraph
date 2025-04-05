@@ -67,7 +67,7 @@ use the following BibTex entry
 
 from __future__ import print_function, division, absolute_import
 
-# Copyright (C) 2017-2020 by
+# Copyright (C) 2017-2025 by
 # Dominik Traxl <dominik.traxl@posteo.org>
 # All rights reserved.
 # BSD license.

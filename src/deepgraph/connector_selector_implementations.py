@@ -8,7 +8,7 @@ They are described in their corresponding docstrings.
 
 """
 
-# Copyright (C) 2017-2020 by
+# Copyright (C) 2017-2025 by
 # Dominik Traxl <dominik.traxl@posteo.org>
 # All rights reserved.
 # BSD license.
