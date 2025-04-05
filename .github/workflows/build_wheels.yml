@@ -25,6 +25,9 @@ jobs:
       - name: "Build sdist"
         run: uv build --sdist --out-dir dist
 
+      - name: Rename sdist package
+        run: mv ${{ github.workspace }}/dist/deepgraph-*.tar.gz ${{ github.workspace }}/dist/deepgraph.tar.gz
+
       - name: Display structure of sdist files
         run: |
           ls
