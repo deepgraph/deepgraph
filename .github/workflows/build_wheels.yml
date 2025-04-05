@@ -25,11 +25,16 @@ jobs:
       - name: "Build sdist"
         run: uv build --sdist --out-dir dist
 
+      - name: Display structure of sdist files
+        run: |
+          ls
+          ls -R dist
+
       - uses: actions/upload-artifact@v4
         with:
           name: sdist
           path: dist/*.tar.gz
-
+          if-no-files-found: error
 
 #      - uses: actions/checkout@v4
 #      - name: Build sdist
@@ -50,13 +55,17 @@ jobs:
           # unpacks default artifact into dist/
           # if `name: artifact` is omitted, the action will create extra parent dir
           name: sdist
-          path: dist
+
       - name: Display structure of downloaded files
-        run: ls -R dist
+        run: |
+          ls
+          ls -R dist
+
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.23.2
         with:
           package-dir: "dist/*.tar.gz"
+
       - uses: actions/upload-artifact@v4
         with:
           name: wheels
