@@ -55,6 +55,7 @@ jobs:
           # unpacks default artifact into dist/
           # if `name: artifact` is omitted, the action will create extra parent dir
           name: sdist
+          path: dist
 
       - name: Display structure of downloaded files
         run: |
