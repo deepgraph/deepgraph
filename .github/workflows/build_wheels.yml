@@ -69,10 +69,8 @@ jobs:
         with:
           package-dir: dist/deepgraph.tar.gz
 
-      - name: "Display structure of downloaded files"
-        run: |
-          ls
-          ls -R dist
+      - name: "Display structure of dist folder"
+        run: ls -R dist
 
       - name: "upload artifacts"
         uses: actions/upload-artifact@v4
