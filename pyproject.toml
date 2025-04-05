@@ -80,7 +80,6 @@ test-skip = [
     "*i686",
     "*musllinux*"
 ]
-package-dir = ["dist/*.tar.gz"]
 
 [tool.pytest.ini_options]
 addopts = ["--import-mode=importlib"]

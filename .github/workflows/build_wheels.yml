@@ -29,6 +29,7 @@ jobs:
         with:
           path: dist/*.tar.gz
 
+
 #      - uses: actions/checkout@v4
 #      - name: Build sdist
 #        run: pipx run build --sdist
@@ -45,6 +46,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.23.2
+        with:
+          package-dir: "dist/*.tar.gz"
       - uses: actions/upload-artifact@v4
         with:
           path: ./wheelhouse/*.whl
