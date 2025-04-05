@@ -493,10 +493,11 @@ def _ft_iterator(
             with open(logfile, "a") as log:
                 print("{}\t{:.3f}".format(_count_edges(ei), timediff.total_seconds()), file=log)
 
-    # BUG: concatenating changes dtypes of float16 and float32
-    # to float64 if there is an empty frame in ei_list!
-    # concat ei_list
-    e = pd.concat(ei_list, ignore_index=True, copy=False)
+    ei_list_without_emtpy_dataframes = [ei_list_i for ei_list_i in ei_list if not ei_list_i.empty]
+    if ei_list_without_emtpy_dataframes:
+        e = pd.concat(ei_list_without_emtpy_dataframes, ignore_index=True, copy=False)
+    else:
+        e = ei_list[0].iloc[0:0]
 
     # set indices
     e.set_index(["s", "t"], inplace=True)
