@@ -64,7 +64,8 @@ before-all = "uname -a"
 build-frontend = "build[uv]"
 skip = [
     "pp*win*",
-    "pp*mac*"
+    "pp*mac*",
+    "pp39-manylinux_i686"
 ]
 test-requires = [
     "pytest",
