@@ -69,14 +69,15 @@ jobs:
         with:
           package-dir: dist/deepgraph.tar.gz
 
-      - name: "Display structure of dist folder"
-        run: ls -R dist
+      - name: "Display structure of wheelhouse folder"
+        run: ls -R wheelhouse
 
       - name: "upload artifacts"
         uses: actions/upload-artifact@v4
         with:
-          name: wheels
+          # name: wheels
           path: ./wheelhouse/*.whl
+          if-no-files-found: error
 
 #  upload_pypi:
 #    needs: [build_wheels, build_sdist]
