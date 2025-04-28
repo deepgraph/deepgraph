@@ -65,8 +65,7 @@ build-frontend = "build[uv]"
 skip = [
     # "pp*i686",
     "pp*manylinux*",
-    # "pp*win*",
-    # "pp*mac*",
+    "pp311-win_amd64",
     "cp*",
 ]
 test-requires = [
