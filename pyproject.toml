@@ -63,10 +63,8 @@ package-dir = {""="src"}
 before-all = "uname -a"
 build-frontend = "build[uv]"
 skip = [
-    # "pp*i686",
-    "pp*manylinux*",
+    "pp*i686",
     "pp311-win_amd64",
-    "cp*",
 ]
 test-requires = [
     "pytest",
