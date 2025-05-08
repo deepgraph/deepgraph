@@ -115,7 +115,7 @@ jobs:
         id: extract_version
         run: |
           filename=$(ls dist/*.whl | head -n 1)
-          version=$(echo $filename | grep -Po '(?<=deepgraph-)[^-.]+')
+          version=$(echo $filename | grep -Po '(?<=deepgraph-)[0-9]+\.[0-9]+\.[0-9]+')
           echo $version
           echo "version=$version" >> $GITHUB_ENV
 
@@ -126,6 +126,7 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           repository-url: https://test.pypi.org/legacy/
+          verbose: true
 
 #      - name: "Publish package distributions to PyPI"
 #        uses: pypa/gh-action-pypi-publish@release/v1
