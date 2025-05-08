@@ -26,6 +26,7 @@ dependencies = [
 [project.urls]
 Homepage = "https://github.com/deepgraph/deepgraph/"
 Documentation = "https://deepgraph.readthedocs.io"
+Repository = "https://github.com/deepgraph/deepgraph/"
 
 [project.optional-dependencies]
 plot = ["matplotlib>=3.1"]

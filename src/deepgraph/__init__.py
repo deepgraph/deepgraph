@@ -76,7 +76,7 @@ from deepgraph.deepgraph import DeepGraph
 from deepgraph import connector_selector_implementations
 
 __all__ = ["DeepGraph", "connector_selector_implementations"]
-__version__ = "0.2.4"
+__version__ = "0.2.5"
 __author__ = "Dominik Traxl <dominik.traxl@posteo.org>"
 __copyright__ = "Copyright 2017-2020 Dominik Traxl"
 __license__ = "BSD"
