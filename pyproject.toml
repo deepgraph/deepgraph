@@ -80,7 +80,7 @@ test-skip = [
     "pp*linux*",
     "*win*",
     "*mac*",
-    "*i686",
+    "*i686*",
     "*musllinux*"
 ]
 
