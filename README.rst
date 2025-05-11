@@ -1,5 +1,5 @@
 
-|Anaconda Version| |Anaconda Downloads| |Documentation| |PyPi|
+|PyPi Version| |PyPi Downloads| |Conda Version| |Conda Downloads| |Documentation|
 
 DeepGraph
 =========
@@ -141,17 +141,17 @@ Distributed with a `BSD license <LICENSE>`_::
     Dominik Traxl <dominik.traxl@posteo.org>
 
 
-.. |Anaconda Version| image:: https://anaconda.org/conda-forge/deepgraph/badges/version.svg
+.. |PyPi Version| image:: https://badge.fury.io/py/DeepGraph.svg
+    :target: https://pypi.org/project/DeepGraph/
+
+.. |PyPi Downloads| image:: https://img.shields.io/pypi/dm/deepgraph.svg?label=PyPI%20downloads
+   :target: https://pypi.org/project/DeepGraph/
+
+.. |Conda Version| image:: https://anaconda.org/conda-forge/deepgraph/badges/version.svg
    :target: https://anaconda.org/conda-forge/deepgraph
 
-.. |Anaconda Downloads| image:: https://anaconda.org/conda-forge/deepgraph/badges/downloads.svg
-   :target: https://anaconda.org/conda-forge/deepgraph
-
-.. |Anaconda Install| image:: https://anaconda.org/conda-forge/deepgraph/badges/installer/conda.svg
+.. |Conda Downloads| image:: https://img.shields.io/conda/dn/conda-forge/deepgraph.svg?label=Conda%20downloads
    :target: https://anaconda.org/conda-forge/deepgraph
 
 .. |Documentation| image:: https://readthedocs.org/projects/deepgraph/badge/?version=latest
     :target: http://deepgraph.readthedocs.io/en/latest/?badge=latest
-
-.. |PyPi| image:: https://badge.fury.io/py/DeepGraph.svg
-    :target: https://badge.fury.io/py/DeepGraph
