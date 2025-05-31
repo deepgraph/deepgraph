@@ -7,11 +7,11 @@ DeepGraph
 DeepGraph is a scalable, general-purpose data analysis package. It implements a
 `network representation <https://en.wikipedia.org/wiki/Network_theory>`_ based
 on `pandas <http://pandas.pydata.org/>`_
-`DataFrames <http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html>`_
+`DataFrames <https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html>`_
 and provides methods to construct, partition and plot networks, to interface
 with popular network packages and more.
 
-It is based on a new network representation introduced
+It is based on the network representation introduced
 `here <http://arxiv.org/abs/1604.00971>`_. DeepGraph is also capable of
 representing
 `multilayer networks <http://deepgraph.readthedocs.io/en/latest/tutorials/terrorists.html>`_.
@@ -20,12 +20,10 @@ representing
 Main Features
 -------------
 
-This network package is targeted specifically towards
-`Pandas <http://pandas.pydata.org/>`_ users. Utilizing one of Pandas' primary
-data structures, the
-`DataFrame <http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html>`_,
-we represent the (super)nodes of a graph by one set of tables, and their
-pairwise relations (i.e. the (super)edges of a graph) by another set of tables.
+Utilizing one of Pandas' primary data structures, the
+`DataFrame <https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html>`_,
+DeepGraph represents the (super)nodes of a graph by one (set of) table(s), and their
+pairwise relations (i.e. the (super)edges of a graph) by another (set of) table(s).
 DeepGraph's main features are
 
 - `Create edges <https://deepgraph.readthedocs.io/en/latest/api_reference.html#creating-edges>`_:
@@ -35,6 +33,9 @@ DeepGraph's main features are
   provide arguments to parallelize the computation and control memory consumption,
   making them suitable for very large data-sets and adjustable to whatever
   hardware you have at hand (from netbooks to cluster architectures).
+  Note: the documentation provides a
+  `tutorial <https://deepgraph.readthedocs.io/en/latest/tutorials/pairwise_correlations.html>`_
+  on how to compute large correlation matrices in parallel using DeepGraph.
 
 - `Partition nodes, edges or a graph <https://deepgraph.readthedocs.io/en/latest/api_reference.html#graph-partitioning>`_:
   Methods to partition nodes,
@@ -50,23 +51,25 @@ DeepGraph's main features are
 
 - `Plotting <https://deepgraph.readthedocs.io/en/latest/api_reference.html#plotting-methods>`_:
   A number of useful plotting methods for networks,
-  including drawings on geographical map projections.
+  including drawings on geographical map projections using `basemap <https://github.com/matplotlib/basemap>`_.
 
 
 Quick Start
 -----------
 
-DeepGraph can be installed via pip from
-`PyPI <https://pypi.python.org/pypi/deepgraph>`_
+The source code is hosted on GitHub at: https://github.com/deepgraph/deepgraph.
 
-::
+Binary installers are available at the
+`Python Package Index (PyPI) <https://pypi.python.org/pypi/deepgraph>`_
+and on
+`Conda <https://anaconda.org/conda-forge/deepgraph>`_.
+
+DeepGraph can be installed via pip::
 
    $ pip install deepgraph
 
 or if you're using `Conda <http://conda.pydata.org/docs/>`_,
-install with
-
-::
+install with::
 
    $ conda install -c conda-forge deepgraph
 
@@ -74,6 +77,27 @@ Then, import and get started with::
 
    >>> import deepgraph as dg
    >>> help(dg)
+
+Dependencies
+------------
+
+**required dependencies**
+
+- python
+- numpy
+- pandas
+
+**optional dependencies**
+
+- scipy
+- networkx
+- graph-tool
+- tables
+- matplotlib
+- basemap
+
+See the `full installation instructions <https://deepgraph.readthedocs.io/en/latest/installation.html>`_
+for minimum supported versions of required and optional dependencies.
 
 
 Documentation
@@ -83,23 +107,40 @@ The official documentation is hosted here:
 http://deepgraph.readthedocs.io
 
 The documentation provides a good starting point for learning how
-to use the library. Expect the docs to continue to expand as time goes on.
+to use the library.
+
+The `API Reference <https://deepgraph.readthedocs.io/en/latest/api_reference.html>`_
+lists all available methods of the core
+`DeepGraph <https://deepgraph.readthedocs.io/en/latest/generated/deepgraph.deepgraph.DeepGraph.html>`_
+class, including links to their respective source code and docstrings. These docstrings
+provide detailed information, usage examples and notes for each method.
 
 
 Development
 -----------
 
-So far the package has only been developed by me, a fact that I would like
-to change very much. So if you feel like contributing in any way, shape or
-form, please feel free to contact me, report bugs, create pull requestes,
-milestones, etc. You can contact me via email: dominik.traxl@posteo.org
+All forms of contributions to this project are welcome, whether it's bug reports, bug fixes,
+documentation enhancements, feature requests, or new ideas.
+
+How to Contribute
+
+- Report Issues: If you encounter any bugs or issues, please
+  `create an issue <https://github.com/deepgraph/deepgraph/issues>`_ detailing the problem.
+- Submit Pull Requests: For bug fixes, enhancements, or new features, fork the repository and
+  submit a pull request with your changes.
+- Documentation Improvements: Help us improve our documentation by suggesting edits or additions.
+- Share Ideas: Have an idea to improve the project? Feel free to
+  `open a discussion <https://github.com/deepgraph/deepgraph/discussions>`_.
+
+For additional inquiries or direct communication, you can reach me via email: dominik.traxl@posteo.org.
 
 
-Bug Reports
------------
+How to Get Started as a Developer
+---------------------------------
 
-To search for bugs or report them, please use the bug tracker:
-https://github.com/deepgraph/deepgraph/issues
+See the `Installing from Source
+<https://deepgraph.readthedocs.io/en/latest/installation.html#installing-from-source>`_
+section in the documentation for complete instructions on building from the git source tree.
 
 
 Citing DeepGraph
@@ -108,7 +149,7 @@ Citing DeepGraph
 Please acknowledge the authors and cite the use of this software when results
 are used in publications or published elsewhere. Various citation formats are
 available here:
-https://aip.scitation.org/action/showCitFormats?type=show&doi=10.1063%2F1.4952963
+https://dx.doi.org/10.1063/1.4952963
 For your convenience, you can find the BibTex entry below:
 
 ::
