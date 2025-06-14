@@ -33,6 +33,7 @@ DeepGraph's main features are
   provide arguments to parallelize the computation and control memory consumption,
   making them suitable for very large data-sets and adjustable to whatever
   hardware you have at hand (from netbooks to cluster architectures).
+
   Note: the documentation provides a
   `tutorial <https://deepgraph.readthedocs.io/en/latest/tutorials/pairwise_correlations.html>`_
   on how to compute large correlation matrices in parallel using DeepGraph.
@@ -83,21 +84,37 @@ Dependencies
 
 **required dependencies**
 
-- python
-- numpy
-- pandas
++---------------------------------------+---------------------------+
+| Package                               | Minimum supported version |
++=======================================+===========================+
+| `Python <https://www.python.org/>`_   | 3.9                       |
++---------------------------------------+---------------------------+
+| `NumPy <http://www.numpy.org/>`_      | 1.21.6                    |
++---------------------------------------+---------------------------+
+| `Pandas <http://pandas.pydata.org/>`_ | 1.2                       |
++---------------------------------------+---------------------------+
 
-**optional dependencies**
+**optional dependencies ("extras")**
 
-- scipy
-- networkx
-- graph-tool
-- tables
-- matplotlib
-- basemap
++-----------------------------------------------------+-----------------+-----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Dependency                                          | Minimum Version | pip extra | Notes                                                                                                                                                                                                                                                                                                                      |
++=====================================================+=================+===========+============================================================================================================================================================================================================================================================================================================================+
+| `Matplotlib <http://matplotlib.org/>`_              | 3.1             | plot      | Used by the :ref:`plotting methods <plotting_methods>` of DeepGraph.                                                                                                                                                                                                                                                       |
++-----------------------------------------------------+-----------------+-----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| `basemap <https://matplotlib.org/basemap/stable/>`_ | 2.0             | basemap   | Used by :py:meth:`plot_map <.plot_map>` and :py:meth:`plot_map_generator <.plot_map_generator>` to plot networks on map projections.                                                                                                                                                                                       |
++-----------------------------------------------------+-----------------+-----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| `PyTables <http://www.pytables.org/>`_              | 3.7             | tables    | Necessary for HDF5-based storage of pandas DataFrames. A :py:class:`DeepGraph <.DeepGraph>` may be instantiated with an HDFStore containing a node table in order to iteratively create edges directly from disc (see :py:meth:`create_edges <.create_edges>` and :py:meth:`create_edges_ft <.create_edges_ft>`).          |
++-----------------------------------------------------+-----------------+-----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| `SciPy <http://www.scipy.org/>`_                    | 1.5.4           | scipy     | Used by :py:meth:`return_cs_graph <.return_cs_graph>` to convert from DeepGraph's network representation to sparse adjacency matrices, and by :py:meth:`append_cp <.append_cp>` to append a `connected components <https://en.wikipedia.org/wiki/Component_(graph_theory)>`_ column to the node table.                     |
++-----------------------------------------------------+-----------------+-----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| `NetworkX <https://networkx.github.io/>`_           | 2.4             | networkx  | Used by :py:meth:`return_nx_graph <.return_nx_graph>` and :py:meth:`return_nx_multigraph <.return_nx_multigraph>` to convert from DeepGraph's network representation to NetworkX's network representations.                                                                                                                |
++-----------------------------------------------------+-----------------+-----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| `graph\_tool <https://graph-tool.skewed.de/>`_      | 2.27            | N/A       | Used by :py:meth:`return_gt_graph <.return_gt_graph>` to convert from DeepGraph's network representation to Graph-Tool's network representation. See `here <https://graph-tool.skewed.de/installation.html>`_ for installation instructions.                                                                               |
++-----------------------------------------------------+-----------------+-----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
 
 See the `full installation instructions <https://deepgraph.readthedocs.io/en/latest/installation.html>`_
-for minimum supported versions of required and optional dependencies.
+for further details.
 
 
 Documentation
