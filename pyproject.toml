@@ -50,6 +50,10 @@ dev = [
     "sphinx>=1.8",
     "sphinx_rtd_theme>=0.5"
 ]
+doc = [
+    "sphinx>=1.8",
+    "sphinx_rtd_theme>=0.5"
+]
 
 [build-system]
 requires = [
