@@ -13,7 +13,7 @@ For further information type
 """
 import inspect
 
-# Copyright (C) 2017-2023 by
+# Copyright (C) 2017-2025 by
 # Dominik Traxl <dominik.traxl@posteo.org>
 # All rights reserved.
 # BSD license.
@@ -692,7 +692,7 @@ class DeepGraph:
         described in ``create_edges`` (see 1.-3.). Per default, the (internal)
         fast-track selector is applied first. It's order of application,
         however, may be determined by inserting the string 'ft_selector' in the
-        desired position of the list of ``selectors``.
+        desired position of the list ``selectors``.
 
         The remaining arguments are as described in ``create_edges``, apart
         from ``min_chunk_size``, ``max_pairs``, ``from_pos`` and ``to_pos``. If
@@ -709,11 +709,11 @@ class DeepGraph:
         their relations with all n nodes are computed (hierarchical selection).
         In case d_ftf <= ``ftt``, n is increased, s.t. d_ftf > ``ftt``. This
         might lead to a large number of pairs of nodes to process at a given
-        iteration step. In order to control memory consumption, one might
+        iteration step. To control memory consumption, one might
         therefore set ``max_pairs`` to a suitable value, triggering a
         subiteration if this value is exceeded.
 
-        In order to parallelize the iterative computation, one may pass the
+        To parallelize the iterative computation, one may pass the
         arguments ``from_pos`` and ``to_pos``. They determine the range of
         **source nodes** to process (endpoint excluded). Hence, ``from_pos``
         has to be in [0, g.n[, and ``to_pos`` in [1,g.n]. For instance, given
