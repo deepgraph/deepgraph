@@ -7,33 +7,27 @@ implements a network representation based on pandas DataFrames and
 provides methods to construct, partition and plot graphs, to interface
 with popular network packages and more.
 
-It is based on a new network representation introduced here:
+It is based on the network representation introduced here:
 http://arxiv.org/abs/1604.00971
 
-This module provides:
+This module provides the ``deepgraph.DeepGraph`` class for graph representation,
+construction and partitioning, with interfacing methods to common
+network representations and popular Python network packages. This
+class also provides plotting methods to visualize graphs and
+their properties and to benchmark the graph construction
+parameters.
 
-   1. A ``deepgraph.DeepGraph`` class for graph representation,
-       construction and partitioning, with interfacing methods to common
-       network representations and popular Python network packages. This
-       class also provides plotting methods to visualize graphs and
-       their properties and to benchmark the graph construction
-       parameters.
-
-   2. A ``deepgraph.functions`` module, providing auxiliary
-       **connector** and **selector** functions to create edges between
-       nodes.
 
 Documentation
 -------------
 
-See http://deepgraph.readthedocs.io for a full documentation, and
-http://arxiv.org/abs/1604.00971 for the paper describing the theoretical
+See https://deepgraph.readthedocs.io for the full documentation, and
+https://arxiv.org/abs/1604.00971 for the paper describing the theoretical
 framework. Otherwise, see the docstrings of the objects in the deepgraph
 namespace.
 
 >>> import deepgraph as dg
 >>> help(dg.DeepGraph)
->>> help(dg.functions)
 
 The docstrings assume that ``deepgraph`` has been imported as ``dg``,
 ``numpy`` as ``np``, and ``pandas`` as ``pd``.
@@ -65,17 +59,13 @@ use the following BibTex entry
 
 """
 
-from __future__ import print_function, division, absolute_import
-
 # Copyright (C) 2017-2025 by
 # Dominik Traxl <dominik.traxl@posteo.org>
 # All rights reserved.
 # BSD license.
 
 from deepgraph.deepgraph import DeepGraph
-from deepgraph import connector_selector_implementations
 
-__all__ = ["DeepGraph", "connector_selector_implementations"]
 __version__ = "0.2.5"
 __author__ = "Dominik Traxl <dominik.traxl@posteo.org>"
 __copyright__ = "Copyright 2017-2020 Dominik Traxl"
@@ -89,6 +79,6 @@ __bibtex__ = """@Article{traxl-2016-deep,
   date        = {2016-04-04},
   eprinttype  = {arxiv},
   eprintclass = {physics.data-an, cs.SI, physics.ao-ph, physics.soc-ph},
-  eprint      = {http://arxiv.org/abs/1604.00971v1},
-  url         = {http://arxiv.org/abs/1604.00971v1}
+  eprint      = {https://arxiv.org/abs/1604.00971v1},
+  url         = {https://arxiv.org/abs/1604.00971v1}
 }"""
