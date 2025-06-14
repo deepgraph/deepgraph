@@ -138,8 +138,8 @@ For additional inquiries or direct communication, you can reach me via email: do
 How to Get Started as a Developer
 ---------------------------------
 
-See the `Installing from Source
-<https://deepgraph.readthedocs.io/en/latest/installation.html#installing-from-source>`_
+See the `Installation from Source & Environment Setup
+<https://deepgraph.readthedocs.io/en/latest/installation.html#installation-from-source-environment-setup>`_
 section in the documentation for complete instructions on building from the git source tree.
 
 
