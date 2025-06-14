@@ -82,7 +82,7 @@ Then, import and get started with::
 Dependencies
 ------------
 
-**required dependencies**
+**Required dependencies**
 
 +---------------------------------------+---------------------------+
 | Package                               | Minimum supported version |
@@ -94,7 +94,7 @@ Dependencies
 | `Pandas <http://pandas.pydata.org/>`_ | 1.2                       |
 +---------------------------------------+---------------------------+
 
-**optional dependencies ("extras")**
+**Optional dependencies ("extras")**
 
 +-----------------------------------------------------+-----------------+-----------+
 | Dependency                                          | Minimum Version | pip extra |
@@ -111,7 +111,6 @@ Dependencies
 +-----------------------------------------------------+-----------------+-----------+
 | `graph\_tool <https://graph-tool.skewed.de/>`_      | 2.27            | N/A       |
 +-----------------------------------------------------+-----------------+-----------+
-
 
 See the `full installation instructions <https://deepgraph.readthedocs.io/en/latest/installation.html>`_
 for further details.
