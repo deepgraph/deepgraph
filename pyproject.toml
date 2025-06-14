@@ -30,13 +30,13 @@ Repository = "https://github.com/deepgraph/deepgraph/"
 
 [project.optional-dependencies]
 plot = ["matplotlib>=3.1"]
-# basemap = ["basemap>=1.3"]  # TODO: add again once version 2.0.0 is out [alternatively, find and add source for binaries]
+basemap = ["basemap>=2.0"]
 tables = ["tables>=3.7"]
 scipy = ["scipy>=1.5.4"]
 networkx = ["networkx>=2.4"]
 all = [
     "matplotlib>=3.1",
-    # "basemap>=1.3",
+    "basemap>=2.0",
     "tables>=3.7",
     "scipy>=1.5.4",
     "networkx>=2.4"
@@ -44,8 +44,11 @@ all = [
 
 [dependency-groups]
 dev = [
+    "notebook>=7.4.3",
     "cython>=3.0.12",
     "pytest>=7.3.2",
+    "sphinx>=1.8",
+    "sphinx_rtd_theme>=0.5"
 ]
 
 [build-system]
