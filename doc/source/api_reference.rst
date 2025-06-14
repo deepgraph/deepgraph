@@ -86,30 +86,3 @@ Other Methods
    DeepGraph.filter_by_interval_v
    DeepGraph.filter_by_interval_e
    DeepGraph.update_edges
-
-The Functions Module
-====================
-
-.. currentmodule:: deepgraph.functions
-
-.. autosummary::
-   deepgraph.functions
-
-Connector Functions
--------------------
-
-.. autosummary::
-   :toctree: generated/
-
-     great_circle_dist
-     cp_node_intersection
-     cp_intersection_strength
-     hypergeometric_p_value
-
-Selector Functions
-------------------
-
-.. autosummary::
-   :toctree: generated/
-
-

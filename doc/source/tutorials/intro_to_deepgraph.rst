@@ -1,12 +1,10 @@
 
-10 Minutes to DeepGraph
-=======================
+A Short Introduction to DeepGraph
+=================================
 
-[:download:`ipython notebook <10min_to_deepgraph.ipynb>`] [:download:`python script <10min_to_deepgraph.py>`] [:download:`data <flying_balls.csv>`]
+[:download:`ipython notebook <intro_to_deepgraph.ipynb>`] [:download:`python script <intro_to_deepgraph.py>`] [:download:`data <flying_balls.csv>`]
 
-This is a short introduction to DeepGraph. In the following, we
-demonstrate DeepGraph's core functionalities by a toy data-set, "flying
-balls".
+In the following, we demonstrate DeepGraph's core functionalities by a toy data-set, "flying balls".
 
 First of all, we need to import some packages
 
@@ -66,7 +64,7 @@ Let's plot the data such that each ball has it's own color
     plt.scatter(v.x, v.y, s=v.time, c=v.ball_id)
 
 
-.. image:: 10min_to_deepgraph_files/10min_to_deepgraph_10_1.png
+.. image:: intro_to_deepgraph_files/intro_to_deepgraph_10_1.png
 
 
 Creating Edges
@@ -309,7 +307,7 @@ We can now plot the flying balls and the edges we just created with the :py:meth
     obj['ax'].set_xlim(1000,3000)
 
 
-.. image:: 10min_to_deepgraph_files/10min_to_deepgraph_37_1.png
+.. image:: intro_to_deepgraph_files/intro_to_deepgraph_37_1.png
 
 
 Graph Partitioning

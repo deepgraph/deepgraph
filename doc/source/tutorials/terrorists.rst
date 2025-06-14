@@ -8,7 +8,7 @@ From Multilayer Networks to Deep Graphs
 
 In this tutorial we exemplify the representation of multilayer networks (MLNs) by deep graphs and demonstrate some of the advantages of deepgraph's network representation.
 
-We start by converting the `Noordin Top Terrorist MLN <https://sites.google.com/site/sfeverton18/research/appendix-1>`_ into a graph :py:class:`g <.DeepGraph>` - comprised of two DataFrames, a node table :py:attr:`g.v <.DeepGraph.v>` and an edge table :py:attr:`g.e <.DeepGraph.e>` - that corresponds to the supra-graph representation of the multilayer network.
+We start by converting the `Noordin Top Terrorist MLN <https://osf.io/zmb9c/>`_ into a graph :py:class:`g <.DeepGraph>` - comprised of two DataFrames, a node table :py:attr:`g.v <.DeepGraph.v>` and an edge table :py:attr:`g.e <.DeepGraph.e>` - that corresponds to the supra-graph representation of the multilayer network.
 
 We then partition the graph ``g`` by the information attributed to its layers, resulting in different supergraphs on the partition lattice of ``g`` that correpsond to different representations of a MLN (including its tensor representation).
 
@@ -39,18 +39,18 @@ The Noordin Top Terrorist Data
 
 [:download:`high-res version <terrorists_files/radial_g_8.png>`] [:download:`python plot script <circular_plot.py>`]
 
-The data we use in this tutorial is the `Noordin Top Terrorist Network <https://sites.google.com/site/sfeverton18/research/appendix-1>`_, which has previously been represented as a multilayer network (e.g., http://arxiv.org/abs/1308.3182)
+The data we use in this tutorial is the `Noordin Top Terrorist Network <https://osf.io/zmb9c/>`_, which has previously been represented as a multilayer network (e.g., http://arxiv.org/abs/1308.3182)
 
 It includes relational data on 79 Indonesian terrorists belonging to the so-called Noordin Top Terrorist Network.
 
 For information about the individual's attributes and their relations, see
-http://www.thearda.com/archive/files/codebooks/origCB/Noordin%20Subset%20Codebook.pdf and
+https://osf.io/zmb9c/ and
 http://arxiv.org/pdf/1308.3182v3.pdf.
 
 Preprocessing
 ~~~~~~~~~~~~~
 
-We download the data from `here <https://sites.google.com/site/sfeverton18/research/appendix-1>`_, and process it into two pandas `DataFrames <http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html>`_, a node table and an edge table. The preprocessing is quite lengthy, so you might want to proceed directly to the :ref:`next section <skip_preprocessing>`.
+We download the data from `here <https://osf.io/zmb9c/>`_, and process it into two pandas `DataFrames <http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html>`_, a node table and an edge table. The preprocessing is quite lengthy, so you might want to proceed directly to the :ref:`next section <skip_preprocessing>`.
 
 First of all, we need to import some packages
 

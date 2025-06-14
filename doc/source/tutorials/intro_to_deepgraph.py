@@ -1,9 +1,9 @@
 
 # coding: utf-8
 
-# # 10 Minutes to DeepGraph
+# # A Short Introduction to DeepGraph
 
-# This is a short introduction to DeepGraph. In the following, we demonstrate DeepGraph's core functionalities by a toy data-set, "flying balls".
+# In the following, we demonstrate DeepGraph's core functionalities by a toy data-set, "flying balls".
 #
 # First of all, we need to import some packages
 

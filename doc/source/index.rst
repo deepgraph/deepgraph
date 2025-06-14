@@ -9,7 +9,7 @@ DeepGraph - Analyze Data with Pandas-based Networks
     :Date: |today|
     :Code: `GitHub <https://github.com/deepgraph/deepgraph>`_
 
-|Anaconda Version| |Anaconda Downloads| |Documentation| |PyPi|
+|PyPi Version| |PyPi Downloads| |Conda Version| |Conda Downloads| |Documentation|
 
 Contents
 --------
@@ -24,24 +24,17 @@ Contents
    contact
 
 
-Indices and tables
-------------------
+.. |PyPi Version| image:: https://badge.fury.io/py/DeepGraph.svg
+    :target: https://pypi.org/project/DeepGraph/
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+.. |PyPi Downloads| image:: https://img.shields.io/pypi/dm/deepgraph.svg?label=PyPI%20downloads
+   :target: https://pypi.org/project/DeepGraph/
 
-.. |Anaconda Version| image:: https://anaconda.org/conda-forge/deepgraph/badges/version.svg
+.. |Conda Version| image:: https://anaconda.org/conda-forge/deepgraph/badges/version.svg
    :target: https://anaconda.org/conda-forge/deepgraph
 
-.. |Anaconda Downloads| image:: https://anaconda.org/conda-forge/deepgraph/badges/downloads.svg
-   :target: https://anaconda.org/conda-forge/deepgraph
-
-.. |Anaconda Install| image:: https://anaconda.org/conda-forge/deepgraph/badges/installer/conda.svg
+.. |Conda Downloads| image:: https://img.shields.io/conda/dn/conda-forge/deepgraph.svg?label=Conda%20downloads
    :target: https://anaconda.org/conda-forge/deepgraph
 
 .. |Documentation| image:: https://readthedocs.org/projects/deepgraph/badge/?version=latest
     :target: http://deepgraph.readthedocs.io/en/latest/?badge=latest
-
-.. |PyPi| image:: https://badge.fury.io/py/DeepGraph.svg
-    :target: https://badge.fury.io/py/DeepGraph

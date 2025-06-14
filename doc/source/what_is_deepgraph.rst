@@ -6,22 +6,21 @@ What is DeepGraph
 *****************
 
 DeepGraph is an open source `Python <https://www.python.org/>`_ implementation
-of a new network representation introduced
+of a network representation introduced
 `here <http://arxiv.org/abs/1604.00971>`_. Its purpose is to facilitate
-`data analysis <https://en.wikipedia.org/wiki/Data_analysis>`_ by
-interpreting data in terms of
+data analysis by interpreting data in terms of
 `network theory <https://en.wikipedia.org/wiki/Network_theory>`_.
 
 The basis of this software package is `Pandas <http://pandas.pydata.org/>`_, a
 fast and flexible data analysis tool for the Python programming language.
 Utilizing one of its primary data structures, the
-`DataFrame <http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html>`_,
+`DataFrame <https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html>`_,
 we represent objects (i.e. the nodes of a network) by one DataFrame, and their
 pairwise relations (i.e. the edges of a network) by another DataFrame.
 
 One of the main features of DeepGraph is an efficient and scalable creation of
 edges. Given a set of nodes in the form of a DataFrame (or an on disc
-`HDFStore <http://pandas.pydata.org/pandas-docs/stable/io.html#hdf5-pytables>`_),
+`HDFStore <https://pandas.pydata.org/pandas-docs/stable/user_guide/io.html#hdf5-pytables>`_),
 DeepGraph's :py:meth:`core class <deepgraph.deepgraph.DeepGraph>` provides
 :ref:`methods <creating_edges>` to iteratively compute pairwise relations
 between the nodes (e.g. similarity/distance measures) using arbitrary, user-defined
@@ -59,7 +58,7 @@ dedicated to the analysis of multilayer networks.
     Please acknowledge the authors and cite the use of this software when results
     are used in publications or published elsewhere. Various citation formats are
     available here:
-    https://aip.scitation.org/action/showCitFormats?type=show&doi=10.1063%2F1.4952963
+    https://dx.doi.org/10.1063/1.4952963
 
     For your convenience, you can find the BibTex entry below:
 
@@ -89,15 +88,6 @@ dedicated to the analysis of multilayer networks.
   - :ref:`DeepGraph's Tutorials <tutorials>`
   - :ref:`API Reference <api_reference>`
 
-**Want to share feedback, or contribute?**
-
-So far the package has only been developed by :ref:`me <contact>`, a fact that
-I would like to change very much. So if you feel like contributing in any way,
-shape or form, please feel free to contact me, report bugs, create pull
-requestes, milestones, etc. You can contact me via email:
-dominik.traxl@posteo.org
-
-
 .. note::
 
     This documentation assumes general familiarity with
@@ -108,5 +98,4 @@ dominik.traxl@posteo.org
 .. note::
 
     DeepGraph is free software; you can redistribute it and/or modify it under
-    the terms of the :doc:`BSD License </reference/legal>`. We highly welcome
-    contributions from the community.
+    the terms of the BSD License. We highly welcome contributions from the community.

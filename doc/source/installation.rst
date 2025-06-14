@@ -1,262 +1,168 @@
 .. _installation:
 
-
 ************
 Installation
 ************
 
 
-Quick Install
-=============
+Installation Using `pip` or `conda`
+===================================
 
 DeepGraph can be installed via pip from
-`PyPI <https://pypi.python.org/pypi/deepgraph>`_
+`PyPI <https://pypi.python.org/pypi/deepgraph>`_::
 
-::
+  $ pip install deepgraph
 
-   $ pip install deepgraph
+To install with optional dependencies (i.e. "extras", extending the base functionality of DeepGraph), use::
 
-Depending on your system, you may need root privileges. On UNIX-based operating
-systems (Linux, Mac OS X etc.) this is achieved with sudo
+  $ pip install deepgraph[plot,basemap,tables,scipy,networkx]
 
-::
+or simply use::
 
-   $ sudo pip install deepgraph
+  $ pip install deepgraph[all]
+
+to install all optional dependencies. Extras and their added
+functionality are described :ref:`below <optional_dependencies>`.
+
+.. note::
+   There is one optional dependency that can not (yet) be install via pip: `graph-tool <https://graph-tool.skewed.de/>`_.
+   Please refer to the linked project homepage for recommended installation.
 
 Alternatively, if you're using `Conda <http://conda.pydata.org/docs/>`_,
-install with
+install with::
 
-::
+  $ conda install -c conda-forge deepgraph
 
-   $ conda install -c conda-forge deepgraph
+It is not possible to specify optional dependencies ("extras") directly when installing a Python package using conda.
+To enable the extra features of deepgraph, you have to manually add the corresponding packages to your conda
+environment.
 
+For example, if you want to use features that require "scipy", you would need to install scipy separately using::
 
-Installing from Source
-======================
+   $ conda install scipy
 
-Alternatively, you can install DeepGraph from source by downloading a source
-archive file (tar.gz or zip).
+To install deepgraph including all optional dependencies, you could also use an `environment.yml` file, e.g.
 
+.. code-block:: yaml
 
-Source Archive File
--------------------
+   name: deepgraph-env
+   channels:
+     - conda-forge
+   dependencies:
+     - python>=3.9
+     - numpy>=1.21.6
+     - pandas>=1.2
+     - matplotlib>=3.1
+     - basemap>=2.0
+     - pytables>=3.7
+     - scipy>=1.5.4
+     - networkx>=2.4
+     - graph-tool>=2.27
+     - deepgraph
 
-  1. Download the source (tar.gz or zip file) from
-     https://pypi.python.org/pypi/deepgraph/
-     or https://github.com/deepgraph/deepgraph/
+Then create the environment with::
 
-  2. Unpack and change directory to the source directory (it should have the
-     files README.rst and setup.py).
+   $ conda env create -f environment.yml
 
-  3. Run :samp:`python setup.py install` to build and install.
-     As a developer, you may want to install using cython:
-     :samp:`python setup.py install --use-cython`.
+and activate it via::
 
-  4. (Optional) Run :samp:`py.test` to execute the tests if you have
-     `pytest <https://pypi.python.org/pypi/pytest>`_ installed.
-
-
-GitHub
-------
-
-  1. Clone the deepgraph repostitory
-
-       git clone https://github.com/deepgraph/deepgraph.git
-
-  2. Change directory to :samp:`deepgraph`
-
-  3. Run :samp:`python setup.py install` to build and install.
-     As a developer, you may want to install using cython:
-     :samp:`python setup.py install --use-cython`.
-
-  4. (Optional) Run :samp:`py.test` to execute the tests if you have
-     `pytest <https://pypi.python.org/pypi/pytest>`_ installed.
+   $ conda activate deepgraph-env
 
 
-Installing without Root Privileges
-----------------------------------
+Installation from Source & Environment Setup
+============================================
 
-If you don't have permission to install software on your system, you can
-install into another directory using the :samp:`--user`, :samp:`--prefix`,
-or :samp:`--home` flags to setup.py.
+DeepGraph uses `uv <https://docs.astral.sh/uv/>`_ to manage the package. To get started as a developer,
+follow the instructions below
 
-For example
+  1. Install `uv`
+      If you haven't already, install uv by following the
+      `official instructions <https://docs.astral.sh/uv/getting-started/installation/>`_::
 
-::
+        $ curl -Ls https://astral.sh/uv/install.sh | sh
 
-    $ python setup.py install --prefix=/home/username/python
+  2. Clone the repository
+      Use git to clone the repository and cd into it::
 
-or
+        $ git clone https://github.com/deepgraph/deepgraph.git
+        $ cd deepgraph
 
-::
+  3. Set up the development environment
+      Use uv to create and manage your virtual environment::
 
-    $ python setup.py install --home=~
+        $ uv sync
 
-or
+      This will create a virtual environment, install the required and the developer dependencies,
+      build the DeepGraph package and install it in editable mode.
 
-::
+  4. Installing with optional dependencies ("extras")
+      To install extras (i.e. optional dependencies, extending the core functionality of DeepGraph), use
+      the following command::
 
-    $ python setup.py install --user
+        $ uv sync --extra <EXTRA>
 
-Note: If you didn't install in the standard Python site-packages directory you
-will need to set your PYTHONPATH variable to the alternate location. See
-`here <https://docs.python.org/2/install/index.html#modifying-python-s-search-path>`_
-for further details.
+      where <EXTRA> can be one of
+        - tables
+        - scipy
+        - networkx
+        - plot
+        - basemap
+
+      To install all optional dependencies, simply use::
+
+        $ uv sync --all-extras
+
+  5. Run tests
+      To run tests, use the following command::
+
+        $ uv run pytest .
+
+  6. Build the documentation
+      To build the documentation, run the following commands::
+
+        $ cd doc
+        $ make html
 
 
-Requirements
+Dependencies
 ============
 
-The easiest way to get Python and the required/optional packages is to use
-`Conda <http://conda.pydata.org/docs/>`_ (or
-`Miniconda <http://conda.pydata.org/miniconda.html>`_), a cross-platform (Linux, Mac
-OS X, Windows) Python distribution for data analytics and scientific computing.
++---------------------------------------+---------------------------+
+| Package                               | Minimum supported version |
++=======================================+===========================+
+| `Python <https://www.python.org/>`_   | 3.9                       |
++---------------------------------------+---------------------------+
+| `NumPy <http://www.numpy.org/>`_      | 1.21.6                    |
++---------------------------------------+---------------------------+
+| `Pandas <http://pandas.pydata.org/>`_ | 1.2                       |
++---------------------------------------+---------------------------+
+
+It is highly recommended to install Pandas'
+`optional dependencies <https://pandas.pydata.org/pandas-docs/stable/getting_started/install.html#optional-dependencies>`_.
+In particular, it is recommended to install the
+`performance dependencies <https://pandas.pydata.org/pandas-docs/stable/getting_started/install.html#performance-dependencies-recommended>`_.
 
 
-Python
-------
+.. _optional_dependencies:
 
-To use DeepGraph you need `Python <https://www.python.org/>`_ 2.7, 3.4 or
-later.
-
-
-Pandas
-------
-
-`Pandas <http://pandas.pydata.org/>`_ is an open source, BSD-licensed library
-providing high-performance, easy-to-use data structures and data analysis tools
-for the Python programming language.
-
-Pandas is the core dependency of DeepGraph, and it is highly recommended to
-install the
-`recommended <http://pandas.pydata.org/pandas-docs/stable/install.html#recommended-dependencies>`_
-and
-`optional <http://pandas.pydata.org/pandas-docs/stable/install.html#optional-dependencies>`_
-dependencies of Pandas as well.
-
-
-NumPy
------
-
-`NumPy <http://www.numpy.org/>`_ is the fundamental package for scientific
-computing with Python.
-
-Needed for internal operations.
-
-
-Recommended Packages
-====================
+Optional Dependencies / Extras
+==============================
 
 The following are recommended packages that DeepGraph can use to provide
 additional functionality.
 
-
-Matplotlib
-----------
-
-`Matplotlib <http://matplotlib.org/>`_ is a python 2D plotting library which
-produces publication quality figures in a variety of hardcopy formats and
-interactive environments across platforms.
-
-Allows you to use the :ref:`plotting methods <plotting_methods>` of DeepGraph.
-
-
-Matplotlib Basemap Toolkit
---------------------------
-
-`basemap <http://matplotlib.org/basemap/>`_ is an add-on toolkit for matplotlib
-that lets you plot data on map projections with coastlines, lakes, rivers and
-political boundaries. See the
-`basemap tutorial <https://basemaptutorial.readthedocs.org/en/latest/>`_ for
-documentation and examples of what it can do.
-
-Used by :py:meth:`plot_map <.plot_map>` and
-:py:meth:`plot_map_generator <.plot_map_generator>` to plot networks on map
-projections.
-
-
-PyTables
---------
-
-`PyTables <http://www.pytables.org/>`_ is a package for managing hierarchical
-datasets and designed to efficiently and easily cope with extremely large
-amounts of data.
-
-Necessary for HDF5-based storage of pandas DataFrames. DeepGraph's
-:py:class:`core class <.DeepGraph>` may be initialized with a HDFStore
-containing a node table in order to iteratively create edges directly from disc
-(see :py:meth:`create_edges <.create_edges>` and
-:py:meth:`create_edges_ft <.create_edges_ft>`).
-
-
-SciPy
------
-
-`SciPy <http://www.scipy.org/>`_ is a Python-based ecosystem of open-source
-software for mathematics, science, and engineering.
-
-Allows you to convert from DeepGraph's network representation to sparse adjacency
-matrices (see :py:meth:`return_cs_graph <.return_cs_graph>`).
-
-
-NetworkX
---------
-
-`NetworkX <https://networkx.github.io/>`_ is a Python language software package
-for the creation, manipulation, and study of the structure, dynamics, and
-functions of complex networks.
-
-Allows you to convert from DeepGraph's network representation to NetworkX's network
-representation (see :py:meth:`return_nx_graph <.return_nx_graph>`).
-
-
-Graph-Tool
-----------
-
-`graph\_tool <https://graph-tool.skewed.de/>`_ is an efficient Python module for
-manipulation and statistical analysis of graphs (a.k.a. networks).
-
-Allows you to convert from DeepGraph's network representation to Graph-Tool's
-network representation (see :py:meth:`return_gt_graph <.return_gt_graph>`).
-
-Conda users can install graph_tool by adding the following channels to their
-~/.condarc
-
-::
-
-   $ conda config --add channels conda-forge
-   $ conda config --add channels ostrokach-forge
-
-Then, install graph-tool
-
-::
-
-   $ conda install graph-tool
-
-You can test your graph-tool installation by
-
-::
-
-   $ python -c "from graph_tool.all import *"
-
-
-Optional Packages
-=================
-
-The following packages are considered to provide very useful tools and methods.
-
-
-Scikit-Learn
-------------
-
-`sklearn <http://scikit-learn.org/stable/>`_ is a Python module integrating
-classical machine learning algorithms in the tightly-knit world of scientific
-Python packages (numpy, scipy, matplotlib).
-
-
-Sklearn-pandas
---------------
-
-`sklearn-pandas <https://github.com/paulgb/sklearn-pandas>`_ provides a bridge
-between Scikit-Learn's machine learning methods and pandas-style Data Frames.
-
++-----------------------------------------------------+-----------------+-----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Dependency                                          | Minimum Version | pip extra | Notes                                                                                                                                                                                                                                                                                                                      |
++=====================================================+=================+===========+============================================================================================================================================================================================================================================================================================================================+
+| `Matplotlib <http://matplotlib.org/>`_              | 3.1             | plot      | Used by the :ref:`plotting methods <plotting_methods>` of DeepGraph.                                                                                                                                                                                                                                                       |
++-----------------------------------------------------+-----------------+-----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| `basemap <https://matplotlib.org/basemap/stable/>`_ | 2.0             | basemap   | Used by :py:meth:`plot_map <.plot_map>` and :py:meth:`plot_map_generator <.plot_map_generator>` to plot networks on map projections.                                                                                                                                                                                       |
++-----------------------------------------------------+-----------------+-----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| `PyTables <http://www.pytables.org/>`_              | 3.7             | tables    | Necessary for HDF5-based storage of pandas DataFrames. A :py:class:`DeepGraph <.DeepGraph>` may be instantiated with an HDFStore containing a node table in order to iteratively create edges directly from disc (see :py:meth:`create_edges <.create_edges>` and :py:meth:`create_edges_ft <.create_edges_ft>`).          |
++-----------------------------------------------------+-----------------+-----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| `SciPy <http://www.scipy.org/>`_                    | 1.5.4           | scipy     | Used by :py:meth:`return_cs_graph <.return_cs_graph>` to convert from DeepGraph's network representation to sparse adjacency matrices, and by :py:meth:`append_cp <.append_cp>` to append a `connected components <https://en.wikipedia.org/wiki/Component_(graph_theory)>`_ column to the node table.                     |
++-----------------------------------------------------+-----------------+-----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| `NetworkX <https://networkx.github.io/>`_           | 2.4             | networkx  | Used by :py:meth:`return_nx_graph <.return_nx_graph>` and :py:meth:`return_nx_multigraph <.return_nx_multigraph>` to convert from DeepGraph's network representation to NetworkX's network representations.                                                                                                                |
++-----------------------------------------------------+-----------------+-----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| `graph\_tool <https://graph-tool.skewed.de/>`_      | 2.27            | N/A       | Used by :py:meth:`return_gt_graph <.return_gt_graph>` to convert from DeepGraph's network representation to Graph-Tool's network representation. See `here <https://graph-tool.skewed.de/installation.html>`_ for installation instructions.                                                                               |
++-----------------------------------------------------+-----------------+-----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
