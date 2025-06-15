@@ -10,7 +10,7 @@ Computing Very Large Correlation Matrices in Parallel
     Please acknowledge the authors and cite the use of this software when results
     are used in publications or published elsewhere. Various citation formats are
     available here:
-    https://aip.scitation.org/action/showCitFormats?type=show&doi=10.1063%2F1.4952963
+    https://dx.doi.org/10.1063/1.4952963
 
     For your convenience, you can find the BibTex entry below:
 
