@@ -29,9 +29,9 @@ jobs:
       - name: "Rename sdist package"
         run: mv ${{ github.workspace }}/dist/deepgraph-*.tar.gz ${{ github.workspace }}/dist/deepgraph.tar.gz
 
-      - name: "Display content of dist/ folder"
-        run: |
-          ls -lahR dist
+#      - name: "Display content of dist/ folder"
+#        run: |
+#          ls -lahR dist
 
       - name: "Upload artifact"
         uses: actions/upload-artifact@v4
@@ -55,9 +55,9 @@ jobs:
           name: sdist
           path: dist
 
-      - name: "Display content of dist/ folder"
-        run: |
-          ls -lahR dist
+#      - name: "Display content of dist/ folder"
+#        run: |
+#          ls -lahR dist
 
       - name: "Install uv"
         uses: astral-sh/setup-uv@v5
@@ -67,8 +67,8 @@ jobs:
         with:
           package-dir: dist/deepgraph.tar.gz
 
-      - name: "Display structure of wheelhouse/ folder"
-        run: ls -lahR wheelhouse
+#      - name: "Display structure of wheelhouse/ folder"
+#        run: ls -lahR wheelhouse
 
       - name: "Upload artifacts"
         uses: actions/upload-artifact@v4
@@ -115,9 +115,9 @@ jobs:
       - name: "Rename sdist package with version"
         run: mv dist/deepgraph.tar.gz dist/deepgraph-${{ env.version }}.tar.gz
 
-      - name: "Display content of dist/ folder"
-        run: |
-          ls -lahR dist
+#      - name: "Display content of dist/ folder"
+#        run: |
+#          ls -lahR dist
 
       - name: "Publish package distributions to TestPyPI"
         uses: pypa/gh-action-pypi-publish@release/v1
