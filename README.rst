@@ -52,7 +52,7 @@ DeepGraph's main features are
 
 - `Plotting <https://deepgraph.readthedocs.io/en/latest/api_reference.html#plotting-methods>`_:
   A number of useful plotting methods for networks,
-  including drawings on geographical map projections using `basemap <https://github.com/matplotlib/basemap>`_.
+  including drawings on geographical map projections using `basemap <https://github.com/matplotlib/basemap>`__.
 
 
 Quick Start
@@ -63,7 +63,7 @@ The source code is hosted on GitHub at: https://github.com/deepgraph/deepgraph.
 Binary installers are available at the
 `Python Package Index (PyPI) <https://pypi.python.org/pypi/deepgraph>`_
 and on
-`Conda <https://anaconda.org/conda-forge/deepgraph>`_.
+`conda-forge <https://anaconda.org/conda-forge/deepgraph>`_.
 
 DeepGraph can be installed via pip::
 
@@ -192,7 +192,7 @@ For your convenience, you can find the BibTex entry below:
 Licence
 -------
 
-Distributed with a `BSD license <LICENSE>`_::
+Distributed with a `BSD license <https://github.com/deepgraph/deepgraph/blob/master/LICENSE>`_::
 
     Copyright (C) 2017-2025 DeepGraph Developers
     Dominik Traxl <dominik.traxl@posteo.org>
