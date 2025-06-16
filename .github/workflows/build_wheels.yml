@@ -33,7 +33,7 @@ jobs:
         run: uvx twine check ${{ github.workspace }}/dist/deepgraph.tar.gz
 
       - name: "Test unzipping source distribution .tar.gz"
-        run: tar -xzf deepgraph.tar.gz
+        run: tar -xzf dist/deepgraph.tar.gz
 
       - name: "Display content of dist/ folder"
         run: |
