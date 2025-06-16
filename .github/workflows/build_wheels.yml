@@ -49,7 +49,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest]  # [ubuntu-latest, ubuntu-24.04-arm, windows-latest, macos-13, macos-latest]
+        os: [ubuntu-latest, ubuntu-24.04-arm, windows-latest, macos-13, macos-latest]
 
     steps:
       - name: "Download artifact"
@@ -79,53 +79,53 @@ jobs:
           path: ./wheelhouse/*.whl
           if-no-files-found: error
 
-#  upload_pypi:
-#    needs: [build_wheels, build_sdist]
-#    name: "Upload release to PyPI"
-#    runs-on: ubuntu-latest
-#    environment:
-#      name: pypi
-#      # url: https://pypi.org/p/deepgraph
-#    permissions:
-#      id-token: write
-#    # if: github.event_name == 'push'
-#    # if: github.event_name == 'release' && github.event.action == 'published'
-#    # or, alternatively, upload to PyPI on every tag starting with 'v' (remove on: release above to use this)
-#    # if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
-#    steps:
-#      - name: "Download wheels"
-#        uses: actions/download-artifact@v4
-#        with:
-#          pattern: wheels-*
-#          merge-multiple: true
-#          path: dist
-#
-#      - name: "Download sdist"
-#        uses: actions/download-artifact@v4
-#        with:
-#          name: sdist
-#          path: dist
-#
-#      - name: "Extract version from wheel filename"
-#        id: extract_version
+  upload_pypi:
+    needs: [build_wheels, build_sdist]
+    name: "Upload release to PyPI"
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      # url: https://pypi.org/p/deepgraph
+    permissions:
+      id-token: write
+    # if: github.event_name == 'push'
+    # if: github.event_name == 'release' && github.event.action == 'published'
+    # or, alternatively, upload to PyPI on every tag starting with 'v' (remove on: release above to use this)
+    # if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - name: "Download wheels"
+        uses: actions/download-artifact@v4
+        with:
+          pattern: wheels-*
+          merge-multiple: true
+          path: dist
+
+      - name: "Download sdist"
+        uses: actions/download-artifact@v4
+        with:
+          name: sdist
+          path: dist
+
+      - name: "Extract version from wheel filename"
+        id: extract_version
+        run: |
+          filename=$(ls dist/*.whl | head -n 1)
+          version=$(echo $filename | grep -Po '(?<=deepgraph-)[0-9]+\.[0-9]+\.[0-9]+')
+          echo $version
+          echo "version=$version" >> $GITHUB_ENV
+
+      - name: "Rename sdist package with version"
+        run: mv dist/deepgraph.tar.gz dist/deepgraph-${{ env.version }}.tar.gz
+
+#      - name: "Display content of dist/ folder"
 #        run: |
-#          filename=$(ls dist/*.whl | head -n 1)
-#          version=$(echo $filename | grep -Po '(?<=deepgraph-)[0-9]+\.[0-9]+\.[0-9]+')
-#          echo $version
-#          echo "version=$version" >> $GITHUB_ENV
-#
-#      - name: "Rename sdist package with version"
-#        run: mv dist/deepgraph.tar.gz dist/deepgraph-${{ env.version }}.tar.gz
-#
-##      - name: "Display content of dist/ folder"
-##        run: |
-##          ls -lahR dist
-#
-#      - name: "Publish package distributions to TestPyPI"
+#          ls -lahR dist
+
+      - name: "Publish package distributions to TestPyPI"
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          verbose: true
+
+#      - name: "Publish package distributions to PyPI"
 #        uses: pypa/gh-action-pypi-publish@release/v1
-#        with:
-#          repository-url: https://test.pypi.org/legacy/
-#          verbose: true
-#
-##      - name: "Publish package distributions to PyPI"
-##        uses: pypa/gh-action-pypi-publish@release/v1
