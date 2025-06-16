@@ -27,16 +27,17 @@ jobs:
         run: uv build --sdist --out-dir dist
 
       - name: "Rename sdist package"
-        run: mv ${{ github.workspace }}/dist/deepgraph-*.tar.gz ${{ github.workspace }}/dist/deepgraph.tar.gz
+        run: mv dist/deepgraph-*.tar.gz dist/deepgraph.tar.gz
 
       - name: "Use twine to check source distribution validity"
-        run: uvx twine check ${{ github.workspace }}/dist/deepgraph.tar.gz
+        run: uvx twine check dist/deepgraph.tar.gz
 
       - name: "Test unzipping source distribution .tar.gz"
         run: tar -xzf dist/deepgraph.tar.gz
 
       - name: "Display content of dist/ folder"
         run: |
+          ls -lahR .
           ls -lahR dist
 
       - name: "Upload artifact"
