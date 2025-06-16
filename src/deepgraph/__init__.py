@@ -66,9 +66,9 @@ use the following BibTex entry
 
 from deepgraph.deepgraph import DeepGraph
 
-__version__ = "0.2.5"
+__version__ = "1.0.0"
 __author__ = "Dominik Traxl <dominik.traxl@posteo.org>"
-__copyright__ = "Copyright 2017-2020 Dominik Traxl"
+__copyright__ = "Copyright 2017-2025 Dominik Traxl"
 __license__ = "BSD"
 __URL__ = "https://github.com/deepgraph/deepgraph/"
 __bibtex__ = """@Article{traxl-2016-deep,
