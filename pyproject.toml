@@ -70,6 +70,7 @@ package-dir = {""="src"}
 [tool.cibuildwheel]
 before-all = "uname -a"
 build-frontend = "build[uv]"
+enable = ["pypy"]
 skip = [
     "pp*i686",
     "pp311-win_amd64",
