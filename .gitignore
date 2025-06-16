@@ -26,6 +26,7 @@ deepgraph.egg-info/
 doc/build
 doc/source/generated
 doc/source/tutorials/tmp
+src/deepgraph/*.so
 
 # IPython Notebook Checkpoints
 .ipynb_checkpoints/
