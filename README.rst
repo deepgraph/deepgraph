@@ -192,7 +192,7 @@ For your convenience, you can find the BibTex entry below:
 Licence
 -------
 
-Distributed with a `BSD license <https://github.com/deepgraph/deepgraph/blob/master/LICENSE>`_::
+Distributed with a `BSD-3-Clause License. <https://github.com/deepgraph/deepgraph/blob/master/LICENSE>`_::
 
     Copyright (C) 2017-2025 DeepGraph Developers
     Dominik Traxl <dominik.traxl@posteo.org>

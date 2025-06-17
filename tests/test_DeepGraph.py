@@ -3,7 +3,7 @@
 # Copyright (C) 2017-2020 by
 # Dominik Traxl <dominik.traxl@posteo.org>
 # All rights reserved.
-# BSD license.
+# BSD-3-Clause License.
 
 import pytest
 

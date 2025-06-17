@@ -62,14 +62,14 @@ use the following BibTex entry
 # Copyright (C) 2017-2025 by
 # Dominik Traxl <dominik.traxl@posteo.org>
 # All rights reserved.
-# BSD license.
+# BSD-3-Clause License.
 
 from deepgraph.deepgraph import DeepGraph
 
 __version__ = "1.0.0"
 __author__ = "Dominik Traxl <dominik.traxl@posteo.org>"
 __copyright__ = "Copyright 2017-2025 Dominik Traxl"
-__license__ = "BSD"
+__license__ = "BSD-3-Clause"
 __URL__ = "https://github.com/deepgraph/deepgraph/"
 __bibtex__ = """@Article{traxl-2016-deep,
   author      = {Dominik Traxl AND Niklas Boers AND J\"urgen Kurths},

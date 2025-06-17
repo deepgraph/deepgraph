@@ -5,7 +5,7 @@
 # Copyright (C) 2017-2025 by
 # Dominik Traxl <dominik.traxl@posteo.org>
 # All rights reserved.
-# BSD license.
+# BSD-3-Clause License.
 
 import numpy as np
 cimport numpy as np

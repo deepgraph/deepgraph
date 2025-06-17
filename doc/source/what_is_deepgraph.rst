@@ -98,4 +98,4 @@ dedicated to the analysis of multilayer networks.
 .. note::
 
     DeepGraph is free software; you can redistribute it and/or modify it under
-    the terms of the BSD License. We highly welcome contributions from the community.
+    the terms of the BSD-3-Clause License. We highly welcome contributions from the community.

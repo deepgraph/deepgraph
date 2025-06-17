@@ -1,3 +1,8 @@
+# Copyright (C) 2017-2025 by
+# Dominik Traxl <dominik.traxl@posteo.org>
+# All rights reserved.
+# BSD-3-Clause License.
+
 from datetime import datetime
 from itertools import chain
 

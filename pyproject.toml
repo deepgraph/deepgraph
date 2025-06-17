@@ -5,7 +5,7 @@ readme = "README.rst"
 authors = [
     {name="Dominik Traxl", email="dominik.traxl@posteo.org"}
 ]
-license = "BSD-2-Clause"
+license = "BSD-3-Clause"
 license-files = ["LICENSE"]
 classifiers=[
     "Operating System :: OS Independent",
