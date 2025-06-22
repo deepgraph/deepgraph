@@ -5,14 +5,14 @@
 
 import inspect
 import warnings
+import ast
+import textwrap
 from collections import Counter
 
 import numpy as np
 
 from deepgraph._find_selected_indices import _find_selected_indices
 from deepgraph.utils import _flatten
-
-argspec = inspect.getfullargspec
 
 
 class CreatorFunction:
@@ -39,22 +39,16 @@ class CreatorFunction:
         self.name = fct.__name__
 
         # find all input arguments
-        input_args = argspec(fct).args
-
+        input_args = list(inspect.signature(fct).parameters.keys())
         self.input_features = [x for x in input_args if x.endswith("_s") or x.endswith("_t")]
         self.input_rs = [
             x for x in input_args if x not in self.input_features and not x == "sources" and not x == "targets"
         ]
 
         # find all output variables
-        source_code_return = inspect.getsourcelines(fct)[0][-1].strip()
-        source_code_output = source_code_return[len("return") :]
-        output = [x.strip() for x in source_code_output.split(",")]
-
+        output = self._extract_return_variables()
         self.output_rs = [x for x in output if x != "sources" and x != "targets"]
-
-        # for selectors (connectors: self.output == self.output_rs)
-        self.output = [x for x in output]
+        self.output = output
 
     @classmethod
     def assertions(cls, v, r_dtype_dic):
@@ -105,6 +99,25 @@ class CreatorFunction:
         ]
         for atr in atrs:
             setattr(cls, atr, _flatten(cls.__dict__[atr]))
+
+    def _extract_return_variables(self):
+        source = textwrap.dedent(inspect.getsource(self.fct))
+        tree = ast.parse(source)
+
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Return):
+                value = node.value
+                if isinstance(value, ast.Tuple):
+                    if all(isinstance(elt, ast.Name) for elt in value.elts):
+                        return [elt.id for elt in value.elts]
+                    else:
+                        raise ValueError("Return tuple must contain only variable names.")
+                elif isinstance(value, ast.Name):
+                    return [value.id]
+                else:
+                    raise ValueError("Return must consist of variable names only.")
+
+        raise ValueError("No return statement found in the function.")
 
 
 class Connector(CreatorFunction):

@@ -66,7 +66,7 @@ use the following BibTex entry
 
 from deepgraph.deepgraph import DeepGraph
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 __author__ = "Dominik Traxl <dominik.traxl@posteo.org>"
 __copyright__ = "Copyright 2017-2025 Dominik Traxl"
 __license__ = "BSD-3-Clause"
