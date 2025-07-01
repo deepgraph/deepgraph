@@ -5,8 +5,14 @@
 API Reference
 *************
 
-The API reference summarizes DeepGraph's core class, its methods and the
-functions subpackage.
+This section provides a detailed overview of deepgraph's core functionality,
+including the DeepGraph class, its methods for graph construction,
+partitioning, interfacing with other network packages, visualization, as well
+as various utility functions.
+
+Additionally, you will find a decorator to facilitate the use of user-defined
+connector and selector functions when creating edges.
+
 
 .. Table of Contents
 .. =================
@@ -86,3 +92,14 @@ Other Methods
    DeepGraph.filter_by_interval_v
    DeepGraph.filter_by_interval_e
    DeepGraph.update_edges
+
+
+The deepgraph.output_names Decorator
+====================================
+
+.. currentmodule:: deepgraph
+
+.. autosummary::
+   :toctree: generated/
+
+   output_names

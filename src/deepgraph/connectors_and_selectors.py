@@ -15,6 +15,61 @@ from deepgraph._find_selected_indices import _find_selected_indices
 from deepgraph.utils import _flatten
 
 
+def output_names(*names):
+    """Decorator to specify the output variable names of a connector or selector function.
+
+    Use this decorator to explicitly define the names of the output variables returned by your
+    connector or selector functions. This is necessary when the source code of the
+    function is not available at runtime.
+
+    Parameters
+    ----------
+    *names : str
+        One or more positional string arguments representing the names of the output variables.
+
+    Returns
+    -------
+    callable
+        A decorator that attaches the specified output names to the decorated function via
+        the `_output_names` attribute.
+
+    See also
+    --------
+    deepgraph.DeepGraph.create_edges
+    deepgraph.DeepGraph.create_edges_ft
+
+    Examples
+    --------
+    Specifying output variable names for a connector function:
+
+    >>> import deepgraph as dg
+    >>>
+    >>> @dg.output_names("dx", "dt", "v"):
+    >>> def velocity(x_s, x_t, time_s, time_t):
+    >>>     dx = x_t - x_s
+    >>>     dt = time_t - time_s
+    >>>     v = dx/dt
+    >>>     return dx, dt, v
+
+    Specifying output variable names for a selector function:
+
+    >>> import deepgraph as dg
+    >>>
+    >>> @dg.output_names("sources", "targets", "dx")
+    >>> def distance_selector(x_s, x_t, sources, targets):
+    >>>     dx = x_t - x_s
+    >>>     sources = sources[dx <= 5]
+    >>>     targets = targets[dx <= 5]
+    >>>     return sources, targets, dx
+
+    """
+
+    def decorator(func):
+        func._output_names = names
+        return func
+    return decorator
+
+
 class CreatorFunction:
     # dict to store relations
     stored_relations = {}
@@ -36,7 +91,7 @@ class CreatorFunction:
 
         # make function accessible via self.fct, give self.name
         self.fct = fct
-        self.name = fct.__name__
+        self.name = getattr(self.fct, '__name__', repr(self.fct))
 
         # find all input arguments
         input_args = list(inspect.signature(fct).parameters.keys())
@@ -46,7 +101,10 @@ class CreatorFunction:
         ]
 
         # find all output variables
-        output = self._extract_return_variables()
+        try:
+            output = list(getattr(fct, "_output_names"))
+        except AttributeError:
+            output = self._extract_return_variables()
         self.output_rs = [x for x in output if x != "sources" and x != "targets"]
         self.output = output
 
@@ -101,7 +159,19 @@ class CreatorFunction:
             setattr(cls, atr, _flatten(cls.__dict__[atr]))
 
     def _extract_return_variables(self):
-        source = textwrap.dedent(inspect.getsource(self.fct))
+
+        try:
+            source = inspect.getsource(self.fct)
+        except OSError as e:
+            msg = (
+                f"Unable to retrieve the source code of the function '{self.name}'.\n\n"
+                f"To avoid this issue, decorate your function with @deepgraph.output_names so metadata is explicitly attached.\n"
+                f"For more information, use: `help(deepgraph.output_names)`.\n"
+                f"This ensures compatibility even in environments where source code is unavailable (e.g., interactive shells or compiled code).\n\n"
+            )
+            raise OSError(msg) from e
+
+        source = textwrap.dedent(source)
         tree = ast.parse(source)
 
         for node in ast.walk(tree):
