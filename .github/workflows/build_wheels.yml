@@ -1,7 +1,7 @@
 name: Build and upload to PyPI
 
 on:
-  # push:
+  push:
   release:
     types:
       - published
@@ -85,7 +85,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/p/deepgraph
+      # url: https://pypi.org/p/deepgraph
     permissions:
       id-token: write
     # if: github.event_name == 'push'
@@ -121,13 +121,13 @@ jobs:
 #        run: |
 #          ls -lahR dist
 
-#      - name: "Publish package distributions to TestPyPI"
-#        uses: pypa/gh-action-pypi-publish@release/v1
-#        with:
-#          repository-url: https://test.pypi.org/legacy/
-#          verbose: true
-
-      - name: "Publish package distributions to PyPI"
+      - name: "Publish package distributions to TestPyPI"
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
+          repository-url: https://test.pypi.org/legacy/
           verbose: true
+
+#      - name: "Publish package distributions to PyPI"
+#        uses: pypa/gh-action-pypi-publish@release/v1
+#        with:
+#          verbose: true

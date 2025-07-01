@@ -74,7 +74,7 @@ from deepgraph.deepgraph import DeepGraph
 from deepgraph.connectors_and_selectors import output_names
 
 
-__version__ = "1.1.0"
+__version__ = "1.2.0"
 __author__ = "Dominik Traxl <dominik.traxl@posteo.org>"
 __copyright__ = "Copyright 2017-2025 Dominik Traxl"
 __license__ = "BSD-3-Clause"
