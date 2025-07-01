@@ -23,7 +23,7 @@ connector and selector functions when creating edges.
 The DeepGraph class
 ===================
 
-.. currentmodule:: deepgraph.deepgraph
+.. currentmodule:: deepgraph
 
 .. autosummary::
    :toctree: generated/
