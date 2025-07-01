@@ -17,6 +17,12 @@ class also provides plotting methods to visualize graphs and
 their properties and to benchmark the graph construction
 parameters.
 
+Additionally, the module provides the ``deepgraph.output_names`` decorator,
+which allows you to explicitly define the output variable names of connector
+and selector functions. For more information, use:
+
+>>> import deepgraph as dg
+>>> help(dg.output_names)
 
 Documentation
 -------------
@@ -65,8 +71,10 @@ use the following BibTex entry
 # BSD-3-Clause License.
 
 from deepgraph.deepgraph import DeepGraph
+from deepgraph.connectors_and_selectors import output_names
 
-__version__ = "1.1.0"
+
+__version__ = "1.2.0"
 __author__ = "Dominik Traxl <dominik.traxl@posteo.org>"
 __copyright__ = "Copyright 2017-2025 Dominik Traxl"
 __license__ = "BSD-3-Clause"

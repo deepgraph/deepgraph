@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 since version 1.1.0.
 
 
-## [Unreleased] - 2025-06-22
+## [Unreleased] - 2025-07-01
 
 ### Added
 
@@ -16,6 +16,49 @@ since version 1.1.0.
 ### Removed
 
 ### Fixed
+
+
+## [1.2.0] - 2025-07-01
+
+This release introduces a new decorator, 
+[output_names](https://deepgraph.readthedocs.io/en/latest/generated/deepgraph.output_names.html#deepgraph.output_names), 
+designed for use with user-defined connector and selector functions. If you've
+ever encountered an `OSError: could not get source code` using either
+[create_edges](https://deepgraph.readthedocs.io/en/latest/generated/deepgraph.DeepGraph.create_edges.html#deepgraph.DeepGraph.create_edges) 
+or
+[create_edges_ft](https://deepgraph.readthedocs.io/en/latest/generated/deepgraph.DeepGraph.create_edges_ft.html#deepgraph.DeepGraph.create_edges_ft),
+this release addresses that issue. The `output_names` decorator allows you to 
+explicitly define the names of the output variables returned by these 
+functions, avoiding the need to read source code.
+
+
+### Added
+
+- `deepgraph.output_names` **decorator**: A new decorator to explicitly
+  define the output variable names of connector or selector functions. 
+  This is necessary when the source code of the function is not available 
+  at runtime. The decorator attaches the specified output names to the 
+  decorated function via the _output_names attribute.
+  
+  **Example:**
+
+  ```python
+  import deepgraph as dg
+  
+  @dg.output_names("dx", "dt", "v")
+  def velocity(x_s, x_t, time_s, time_t):
+      dx = x_t - x_s
+      dt = time_t - time_s
+      v = dx/dt
+      return dx, dt, v
+  ```
+
+
+### Fixed
+
+- Fixed `OSError: could not get source code` by introducing the `output_names` 
+  decorator for explicitly defining output variable names in user-defined 
+  functions.
 
 
 ## [1.1.0] - 2025-06-22
@@ -27,6 +70,7 @@ Specifically, explicit tuples and multi-line return statements are now possible.
 This enhancement increases flexibility and improves input validation. 
 
 The public API remains unchanged.
+
 
 ### Added
 

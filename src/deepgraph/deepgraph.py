@@ -542,6 +542,34 @@ class DeepGraph:
         != f(t, s)), one can always create an additional connector (or output
         variable) that computes the mirrored values of that function.
 
+        4. Exception: OSError when inspecting user-defined functions
+
+        When the source code of a user-defined connector or
+        selector function is not available, the following error may occur:
+
+        >>> OSError: Unable to retrieve the source code of the function
+
+        If you encounter this error, it can often be resolved by using the
+        ``deepgraph.output_names`` decorator on your connector or selector
+        function. It ensures that the output variable names of your function are
+        registered without the need to inspect its source code. You can
+        use the decorator as follows:
+
+        **Example:**
+
+        >>> import deepgraph as dg
+        >>>
+        >>> @dg.output_names("dx", "dt", "v"):
+        >>> def velocity(x_s, x_t, time_s, time_t):
+        >>>     dx = x_t - x_s
+        >>>     dt = time_t - time_s
+        >>>     v = dx/dt
+        >>>     return dx, dt, v
+
+        For more details, see:
+
+        >>> help(dg.output_names)
+
         """
 
         # logging
