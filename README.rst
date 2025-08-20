@@ -201,7 +201,7 @@ Distributed with a `BSD-3-Clause License. <https://github.com/deepgraph/deepgrap
 .. |PyPi Version| image:: https://badge.fury.io/py/DeepGraph.svg
     :target: https://pypi.org/project/DeepGraph/
 
-.. |PyPi Downloads| image:: https://img.shields.io/pypi/dm/deepgraph.svg?label=PyPI%20downloads
+.. |PyPi Downloads| image:: https://static.pepy.tech/badge/deepgraph/month
    :target: https://pypi.org/project/DeepGraph/
 
 .. |Conda Version| image:: https://anaconda.org/conda-forge/deepgraph/badges/version.svg
