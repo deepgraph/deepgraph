@@ -44,23 +44,23 @@ def output_names(*names):
 
     >>> import deepgraph as dg
     >>>
-    >>> @dg.output_names("dx", "dt", "v"):
-    >>> def velocity(x_s, x_t, time_s, time_t):
-    >>>     dx = x_t - x_s
-    >>>     dt = time_t - time_s
-    >>>     v = dx/dt
-    >>>     return dx, dt, v
+    >>> @dg.output_names("dx", "dt", "v")
+    ... def velocity(x_s, x_t, time_s, time_t):
+    ...     dx = x_t - x_s
+    ...     dt = time_t - time_s
+    ...     v = dx/dt
+    ...     return dx, dt, v
 
     Specifying output variable names for a selector function:
 
     >>> import deepgraph as dg
     >>>
     >>> @dg.output_names("sources", "targets", "dx")
-    >>> def distance_selector(x_s, x_t, sources, targets):
-    >>>     dx = x_t - x_s
-    >>>     sources = sources[dx <= 5]
-    >>>     targets = targets[dx <= 5]
-    >>>     return sources, targets, dx
+    ... def distance_selector(x_s, x_t, sources, targets):
+    ...     dx = x_t - x_s
+    ...     sources = sources[dx <= 5]
+    ...     targets = targets[dx <= 5]
+    ...     return sources, targets, dx
 
     """
 

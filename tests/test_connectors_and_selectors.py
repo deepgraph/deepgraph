@@ -1,9 +1,17 @@
+import doctest
 import textwrap
 
 import pytest
 from unittest.mock import patch, Mock
 from deepgraph.connectors_and_selectors import CreatorFunction
 from deepgraph import output_names
+
+
+def test_output_names_examples():
+    runner = doctest.DocTestRunner()
+    for example in doctest.DocTestFinder().find(output_names):
+        result = runner.run(example)
+        assert result.failed == 0
 
 
 # dummy values
